@@ -44,6 +44,12 @@ namespace Myra.Graphics2D.UI
 
 		internal readonly Menu SubMenu = new VerticalMenu();
 
+
+
+        public void Cleanup()
+        {
+			SubMenu.Cleanup();
+        }
 		[DefaultValue(null)]
 		public string Text
 		{

@@ -132,7 +132,20 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		public override Desktop Desktop
+        public void Cleanup()
+        {
+
+            _layout.Child.CleanProportions();
+
+            Items.CollectionChanged -= ItemsOnCollectionChanged;
+            InternalChild.HoverIndexChanged -= OnHoverIndexChanged;
+            InternalChild.SelectedIndexChanged -= OnSelectedIndexChanged;
+            InternalChild.TouchUp -= InternalChild_TouchUp;
+
+            Items.Clear();
+
+        }
+        public override Desktop Desktop
 		{
 			get
 			{

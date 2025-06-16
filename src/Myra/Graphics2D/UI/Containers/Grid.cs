@@ -272,30 +272,47 @@ namespace Myra.Graphics2D.UI
 
 		public Rectangle GetCellRectangle(int col, int row) => _layout.GetCellRectangle(col, row);
 
-		private void OnProportionsChanged(object sender, NotifyCollectionChangedEventArgs args)
-		{
-			if (args.Action == NotifyCollectionChangedAction.Add)
-			{
-				foreach (var i in args.NewItems)
-				{
-					((Proportion)i).Changed += OnProportionsChanged;
-				}
-			}
-			else if (args.Action == NotifyCollectionChangedAction.Remove)
-			{
-				foreach (var i in args.OldItems)
-				{
-					((Proportion)i).Changed -= OnProportionsChanged;
-				}
-			}
+        private List<Proportion> _proportions = new List<Proportion>();
+        public void CleanProportions()
+        {
+            _layout.ColumnsProportions.Clear();
+            _layout.RowsProportions.Clear();
 
-			HoverRowIndex = null;
-			SelectedRowIndex = null;
+            _layout.ColumnsProportions.CollectionChanged -= OnProportionsChanged;
+            _layout.RowsProportions.CollectionChanged -= OnProportionsChanged;
 
-			InvalidateMeasure();
-		}
+            foreach (var i in _proportions)
+            {
+                i.Changed -= OnProportionsChanged; // unsubscribe
+            }
+            _proportions.Clear();
+        }
+        private void OnProportionsChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            if (args.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var i in args.NewItems)
+                {
+                    _proportions.Add(((Proportion)i));
+                    ((Proportion)i).Changed += OnProportionsChanged;
+                }
+            }
+            else if (args.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var i in args.OldItems)
+                {
+                    ((Proportion)i).Changed -= OnProportionsChanged;
+                }
+            }
 
-		private void OnProportionsChanged(object sender, EventArgs args)
+
+            HoverRowIndex = null;
+            SelectedRowIndex = null;
+
+            InvalidateMeasure();
+        }
+
+        private void OnProportionsChanged(object sender, EventArgs args)
 		{
 			InvalidateMeasure();
 		}
