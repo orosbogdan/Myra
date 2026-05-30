@@ -13,15 +13,18 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// Specifies how an image is resized to fit available space.
+	/// </summary>
 	public enum ImageResizeMode
 	{
 		/// <summary>
-		/// Simply Stretch
+		/// Stretch the image to fill available space without preserving aspect ratio.
 		/// </summary>
 		Stretch,
 
 		/// <summary>
-		/// Keep Aspect Ratio
+		/// Resize the image while maintaining its aspect ratio.
 		/// </summary>
 		KeepAspectRatio
 	}
@@ -31,26 +34,38 @@ namespace Myra.Graphics2D.UI
 		bool IsPressed { get; set; }
 	}
 
+	/// <summary>
+	/// An image widget that displays a texture region with optional resize modes.
+	/// </summary>
 	public class Image : Widget, IPressable
 	{
 		private IImage _image, _overImage, _pressedImage;
 
-        private bool _isAnisotropicFiltering = false;
+#if MONOGAME
+		private bool _isAnisotropicFiltering = false;
 
-        public bool IsAnisotropicFiltering
-        {
-            get
-            {
-                return _isAnisotropicFiltering;
-            }
-            set
-            {
-                _isAnisotropicFiltering = value;
-                InvalidateMeasure();
-            }
-        }
+		/// <summary>
+		/// Gets or sets a value indicating whether anisotropic filtering is applied to the image.
+		/// </summary>
+		[DefaultValue(false)]
+		public bool IsAnisotropicFiltering
+		{
+			get
+			{
+				return _isAnisotropicFiltering;
+			}
+			set
+			{
+				_isAnisotropicFiltering = value;
+				InvalidateMeasure();
+			}
+		}
+#endif
 
-        [Category("Appearance")]
+		/// <summary>
+		/// Gets or sets the image displayed by the widget.
+		/// </summary>
+		[Category("Appearance")]
 		public IImage Renderable
 		{
 			get
@@ -70,6 +85,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the image displayed when the cursor is over the widget.
+		/// </summary>
 		[Category("Appearance")]
 		public IImage OverRenderable
 		{
@@ -90,6 +108,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the image displayed when the widget is pressed.
+		/// </summary>
 		[Category("Appearance")]
 		public IImage PressedRenderable
 		{
@@ -118,14 +139,25 @@ namespace Myra.Graphics2D.UI
 			set => IsPressed = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the color multiplier applied when rendering the image.
+		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue("#FFFFFFFF")]
 		public Color Color { get; set; } = Color.White;
 
+		/// <summary>
+		/// Gets or sets how the image is resized to fit available space.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(ImageResizeMode.Stretch)]
 		public ImageResizeMode ResizeMode { get; set; }
 
+		/// <summary>
+		/// Measures the size required for the image, considering all image states (normal, over, pressed).
+		/// </summary>
+		/// <param name="availableSize">The available size for the image.</param>
+		/// <returns>The measured size needed for the image.</returns>
 		protected override Point InternalMeasure(Point availableSize)
 		{
 			var result = _image != null ? _image.Size : Mathematics.PointZero;
@@ -155,6 +187,10 @@ namespace Myra.Graphics2D.UI
 			return result;
 		}
 
+		/// <summary>
+		/// Renders the image with the appropriate state-based image (normal, over, or pressed).
+		/// </summary>
+		/// <param name="context">The render context to draw with.</param>
 		public override void InternalRender(RenderContext context)
 		{
 			var image = Renderable;
@@ -179,12 +215,20 @@ namespace Myra.Graphics2D.UI
 					bounds.Height = (int)(bounds.Width * aspect);
 				}
 
-                context.SetAnisotropicFilteringMode(_isAnisotropicFiltering);
-                image.Draw(context, bounds, Color);
-                context.SetAnisotropicFilteringMode(false);
-            }
+#if MONOGAME
+				context.SetAnisotropicFilteringMode(_isAnisotropicFiltering);
+#endif
+				image.Draw(context, bounds, Color);
+#if MONOGAME
+				context.SetAnisotropicFilteringMode(false);
+#endif
+			}
 		}
 
+		/// <summary>
+		/// Applies the specified pressable image style to the image.
+		/// </summary>
+		/// <param name="imageStyle">The style to apply.</param>
 		public void ApplyPressableImageStyle(PressableImageStyle imageStyle)
 		{
 			ApplyWidgetStyle(imageStyle);
@@ -194,6 +238,10 @@ namespace Myra.Graphics2D.UI
 			PressedRenderable = imageStyle.PressedImage;
 		}
 
+		/// <summary>
+		/// Copies all properties from another widget to this image.
+		/// </summary>
+		/// <param name="w">The widget to copy properties from.</param>
 		protected internal override void CopyFrom(Widget w)
 		{
 			base.CopyFrom(w);

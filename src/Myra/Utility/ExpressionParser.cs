@@ -20,32 +20,32 @@ namespace Myra.Utility
 		{
 			_widgets = widgets;
 			#region Check
-			///check on depths
+			// Check on depths
 			if (level > DepthOfCalculations)
 			{
 				return;
 			}
-			///check parent on dynamic layout
+			// Check parent on dynamic layout
 			if (widget.Parent != null && !widget.Parent.Layout2d.Nullable)
 			{
 				Parse(widget.Parent, widgets, ++level);
 			}
 			#endregion
-			///expresion parser
+			// Expression parser
 			info.lundin.math.ExpressionParser parser = new info.lundin.math.ExpressionParser();
 			parser.ImplicitMultiplication = false;
 
 			#region Calculation
-			/// if X exp not null
+			// If X expression not null
 			if (widget.Layout2d.PositionXExpression != "NULL")
 				widget.Left = (int)parser.Parse(CheckAndAddRef(widget.Layout2d.PositionXExpression, parser, widget));
-			/// if Y exp not null
+			// If Y expression not null
 			if (widget.Layout2d.PositionYExpression != "NULL")
 				widget.Top = (int)parser.Parse(CheckAndAddRef(widget.Layout2d.PositionYExpression, parser, widget));
-			/// if H exp not null
+			// If H expression not null
 			if (widget.Layout2d.SizeYExpression != "NULL")
 				widget.Height = (int)parser.Parse(CheckAndAddRef(widget.Layout2d.SizeYExpression, parser, widget));
-			/// if W exp not null
+			// If W expression not null
 			if (widget.Layout2d.SizeXExpression != "NULL")
 				widget.Width = (int)parser.Parse(CheckAndAddRef(widget.Layout2d.SizeXExpression, parser, widget));
 			#endregion
@@ -56,40 +56,39 @@ namespace Myra.Utility
 		{
 			string expression = Expression;
 
-			/*replace to values*/
-			///add this. values pos
+			// Replace to values
+			// Add this values position
 			expression = expression.Replace("this.X", $"{widget.Left}");
 			expression = expression.Replace("this.Y", $"{widget.Top}");
 			expression = expression.Replace("this.l", $"{widget.Left}");
 			expression = expression.Replace("this.t", $"{widget.Top}");
 			expression = expression.Replace("this.left", $"{widget.Left}");
 			expression = expression.Replace("this.top", $"{widget.Top}");
-			///add this.size
+			// Add this size
 			expression = expression.Replace("this.w", $"{widget.Width ?? 0}");
 			expression = expression.Replace("this.h", $"{widget.Height ?? 0}");
 			expression = expression.Replace("this.width", $"{widget.Width ?? 0}");
 			expression = expression.Replace("this.height", $"{widget.Height ?? 0}");
 			if (widget.Parent != null)
 			{
-				///add parent values pos
+				// Add parent values position
 				expression = expression.Replace("&.X", GerParrentValue(widget, "&.X"));
 				expression = expression.Replace("&.Y", GerParrentValue(widget, "&.Y"));
 				expression = expression.Replace("&.l", GerParrentValue(widget, "&.X"));
 				expression = expression.Replace("&.t", GerParrentValue(widget, "&.Y"));
 				expression = expression.Replace("&.left", GerParrentValue(widget, "&.X"));
 				expression = expression.Replace("&.top", GerParrentValue(widget, "&.Y"));
-				///add parent values size
+				// Add parent values size
 				expression = expression.Replace("&.w", GerParrentValue(widget, "&.w"));
 				expression = expression.Replace("&.h", GerParrentValue(widget, "&.h"));
 				expression = expression.Replace("&.width", GerParrentValue(widget, "&.w"));
 				expression = expression.Replace("&.height", GerParrentValue(widget, "&.h"));
 			}
-			///add window walues
+			// Add window values
 			expression = expression.Replace("W.h", $"{CrossEngineStuff.ViewSize.Y}");
 			expression = expression.Replace("W.height", $"{CrossEngineStuff.ViewSize.Y}");
 			expression = expression.Replace("W.w", $"{CrossEngineStuff.ViewSize.X}");
 			expression = expression.Replace("W.width", $"{CrossEngineStuff.ViewSize.X}");
-			///
 			if (expression.Contains("["))
 			{
 				Regex regex = new Regex(@"\[.+].\w*");

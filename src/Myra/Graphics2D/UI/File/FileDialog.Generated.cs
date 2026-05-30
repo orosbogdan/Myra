@@ -22,7 +22,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Myra.Graphics2D.UI.File
 {
-	partial class FileDialog: Dialog
+	partial class FileDialog : Dialog
 	{
 		private void BuildUI()
 		{
@@ -113,7 +113,7 @@ namespace Myra.Graphics2D.UI.File
 			verticalStackPanel1.Widgets.Add(_splitPane);
 			verticalStackPanel1.Widgets.Add(horizontalStackPanel2);
 
-			
+
 			Title = "Open File...";
 			Left = 658;
 			Top = 131;
@@ -122,16 +122,54 @@ namespace Myra.Graphics2D.UI.File
 			Content = verticalStackPanel1;
 		}
 
-		
+		/// <summary>
+		/// The back navigation button.
+		/// </summary>
 		public Button _buttonBack;
+
+		/// <summary>
+		/// The forward navigation button.
+		/// </summary>
 		public Button _buttonForward;
+
+		/// <summary>
+		/// The text field displaying the current folder path.
+		/// </summary>
 		public TextBox _textFieldPath;
+
+		/// <summary>
+		/// The button to navigate to the parent folder.
+		/// </summary>
 		public Button _buttonParent;
+
+		/// <summary>
+		/// The list view displaying available places (drives and folders).
+		/// </summary>
 		public ListView _listPlaces;
+
+		/// <summary>
+		/// The grid displaying files and folders in the current folder.
+		/// </summary>
 		public Grid _gridFiles;
+
+		/// <summary>
+		/// The scroll viewer for the file grid.
+		/// </summary>
 		public ScrollViewer _scrollPane;
+
+		/// <summary>
+		/// The split pane dividing the places list and file grid.
+		/// </summary>
 		public HorizontalSplitPane _splitPane;
+
+		/// <summary>
+		/// The label for the file name input field.
+		/// </summary>
 		public Label _textBlockFileName;
+
+		/// <summary>
+		/// The text field for entering the file name.
+		/// </summary>
 		public TextBox _textFieldFileName;
 	}
 }

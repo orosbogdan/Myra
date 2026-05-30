@@ -38,12 +38,15 @@ namespace Myra.Graphics2D.UI.Properties
          this.t = ...
          this.l = ...
              */
-    public class Layout2D
+	/// <summary>
+	/// Defines layout expressions for position and size of widgets.
+	/// </summary>
+	public class Layout2D
     {
         /// <summary>
-        /// Set default layout
+        /// Gets the default null layout.
         /// </summary>
-        /// <returns>Default layout</returns>
+        /// <returns>A layout with no expressions set.</returns>
         static public Layout2D NullLayout { get { return new Layout2D() { Nullable = true, Calculated = false };} }
 
         #region Data

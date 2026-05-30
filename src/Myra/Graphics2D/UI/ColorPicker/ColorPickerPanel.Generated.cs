@@ -194,17 +194,29 @@ namespace Myra.Graphics2D.UI.ColorPicker
 		}
 
 		
+		/// <summary>The color wheel image control.</summary>
 		public Image _colorWheel;
+		/// <summary>The hue/saturation picker image control.</summary>
 		public Image _hsPicker;
+		/// <summary>The vertical value picker slider.</summary>
 		public VerticalSlider _vPicker;
+		/// <summary>The color background image control.</summary>
 		public Image _colorBackground;
+		/// <summary>The color display image control.</summary>
 		public Image _colorDisplay;
+		/// <summary>The RGB input text box.</summary>
 		public TextBox _inputRGB;
+		/// <summary>The HSV input text box.</summary>
 		public TextBox _inputHSV;
+		/// <summary>The hexadecimal color input text box.</summary>
 		public TextBox _inputHEX;
+		/// <summary>The alpha input text box.</summary>
 		public TextBox _inputAlpha;
+		/// <summary>The alpha channel slider.</summary>
 		public HorizontalSlider _sliderAlpha;
+		/// <summary>The save color button.</summary>
 		public Button _saveColor;
+		/// <summary>The user colors grid.</summary>
 		public Grid _userColors;
 	}
 }

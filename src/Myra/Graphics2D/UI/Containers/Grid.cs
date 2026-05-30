@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.MML;
+using Myra.Events;
+using Myra.Attributes;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -17,24 +19,57 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// Specifies the selection mode for a grid widget.
+	/// </summary>
 	public enum GridSelectionMode
 	{
+		/// <summary>No selection is allowed.</summary>
 		None,
+		/// <summary>Entire rows can be selected.</summary>
 		Row,
+		/// <summary>Entire columns can be selected.</summary>
 		Column,
+		/// <summary>Individual cells can be selected.</summary>
 		Cell
 	}
 
+	/// <summary>
+	/// A grid widget that displays content in a table layout with support for rows, columns, spanning, and selection.
+	/// </summary>
 	public class Grid : Container
 	{
-		public static readonly AttachedPropertyInfo<int> ColumnProperty = 
-			AttachedPropertiesRegistry.Create(typeof(Grid), "Column", 0, AttachedPropertyOption.AffectsArrange);
-		public static readonly AttachedPropertyInfo<int> RowProperty = 
-			AttachedPropertiesRegistry.Create(typeof(Grid), "Row", 0, AttachedPropertyOption.AffectsArrange);
-		public static readonly AttachedPropertyInfo<int> ColumnSpanProperty = 
-			AttachedPropertiesRegistry.Create(typeof(Grid), "ColumnSpan", 1, AttachedPropertyOption.AffectsArrange);
-		public static readonly AttachedPropertyInfo<int> RowSpanProperty = 
-			AttachedPropertiesRegistry.Create(typeof(Grid), "RowSpan", 1, AttachedPropertyOption.AffectsArrange);
+		/// <summary>
+		/// Attached property that specifies the column index of a child widget within the grid.
+		/// </summary>
+		public static readonly AttachedPropertyInfo<int> ColumnProperty =
+			AttachedPropertiesRegistry.Create(typeof(Grid), "Column", 0,
+				AttachedPropertyOption.AffectsArrange,
+				new Attribute[] { new RangeAttribute(0) });
+
+		/// <summary>
+		/// Attached property that specifies the row index of a child widget within the grid.
+		/// </summary>
+		public static readonly AttachedPropertyInfo<int> RowProperty =
+			AttachedPropertiesRegistry.Create(typeof(Grid), "Row", 0,
+				AttachedPropertyOption.AffectsArrange,
+				new Attribute[] { new RangeAttribute(0) });
+
+		/// <summary>
+		/// Attached property that specifies the number of columns a child widget spans.
+		/// </summary>
+		public static readonly AttachedPropertyInfo<int> ColumnSpanProperty =
+			AttachedPropertiesRegistry.Create(typeof(Grid), "ColumnSpan", 1,
+				AttachedPropertyOption.AffectsArrange,
+				new Attribute[] { new RangeAttribute(1) });
+
+		/// <summary>
+		/// Attached property that specifies the number of rows a child widget spans.
+		/// </summary>
+		public static readonly AttachedPropertyInfo<int> RowSpanProperty =
+			AttachedPropertiesRegistry.Create(typeof(Grid), "RowSpan", 1,
+				AttachedPropertyOption.AffectsArrange,
+				new Attribute[] { new RangeAttribute(1) });
 
 		private readonly GridLayout _layout = new GridLayout();
 
@@ -43,14 +78,23 @@ namespace Myra.Graphics2D.UI
 		private int? _selectedRowIndex = null;
 		private int? _selectedColumnIndex = null;
 
+		/// <summary>
+		/// Gets or sets a value indicating whether grid lines are displayed for debugging purposes.
+		/// </summary>
 		[Category("Debug")]
 		[DefaultValue(false)]
 		public bool ShowGridLines { get; set; }
 
+		/// <summary>
+		/// Gets or sets the color of the grid lines when displayed.
+		/// </summary>
 		[Category("Debug")]
 		[DefaultValue("White")]
 		public Color GridLinesColor { get; set; }
 
+		/// <summary>
+		/// Gets or sets the spacing in pixels between grid columns.
+		/// </summary>
 		[Category("Grid")]
 		[DefaultValue(0)]
 		public int ColumnSpacing
@@ -68,6 +112,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the spacing in pixels between grid rows.
+		/// </summary>
 		[Category("Grid")]
 		[DefaultValue(0)]
 		public int RowSpacing
@@ -85,6 +132,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the default proportion used for columns when not explicitly specified.
+		/// </summary>
 		[Browsable(false)]
 		public Proportion DefaultColumnProportion
 		{
@@ -92,6 +142,9 @@ namespace Myra.Graphics2D.UI
 			set => _layout.DefaultColumnProportion = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the default proportion used for rows when not explicitly specified.
+		/// </summary>
 		[Browsable(false)]
 		public Proportion DefaultRowProportion
 		{
@@ -100,55 +153,97 @@ namespace Myra.Graphics2D.UI
 		}
 
 
+		/// <summary>
+		/// Gets the collection of column proportions that define how columns divide available space.
+		/// </summary>
 		[Browsable(false)]
 		public ObservableCollection<Proportion> ColumnsProportions => _layout.ColumnsProportions;
 
+		/// <summary>
+		/// Gets the collection of row proportions that define how rows divide available space.
+		/// </summary>
 		[Browsable(false)]
 		public ObservableCollection<Proportion> RowsProportions => _layout.RowsProportions;
 
 
+		/// <summary>
+		/// Gets or sets the brush used to draw the background of selected rows, columns, or cells.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush SelectionBackground { get; set; }
 
+		/// <summary>
+		/// Gets or sets the brush used to draw the background of rows, columns, or cells being hovered over.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush SelectionHoverBackground { get; set; }
 
+		/// <summary>
+		/// Gets or sets the selection mode for the grid (rows, columns, cells, or none).
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(GridSelectionMode.None)]
 		public GridSelectionMode GridSelectionMode { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the hover index can be null when the mouse is outside the grid.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(true)]
 		public bool HoverIndexCanBeNull { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether nothing can be selected by clicking an already-selected item.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(false)]
 		public bool CanSelectNothing { get; set; }
 
+		/// <summary>
+		/// Gets the X coordinates of the vertical grid lines.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> GridLinesX => _layout.GridLinesX;
 
+		/// <summary>
+		/// Gets the Y coordinates of the horizontal grid lines.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> GridLinesY => _layout.GridLinesY;
 
+		/// <summary>
+		/// Gets the widths of each column in pixels.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> ColWidths => _layout.ColWidths;
 
+		/// <summary>
+		/// Gets the heights of each row in pixels.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> RowHeights => _layout.RowHeights;
 
+		/// <summary>
+		/// Gets the X coordinates of each cell's left edge.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> CellLocationsX => _layout.CellLocationsX;
 
+		/// <summary>
+		/// Gets the Y coordinates of each cell's top edge.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public List<int> CellLocationsY => _layout.CellLocationsY;
 
+		/// <summary>
+		/// Gets or sets the index of the row currently being hovered over, or null if no row is hovered.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public int? HoverRowIndex
@@ -170,11 +265,14 @@ namespace Myra.Graphics2D.UI
 				var ev = HoverIndexChanged;
 				if (ev != null)
 				{
-					ev(this, EventArgs.Empty);
+					ev(this, new MyraEventArgs(InputEventType.HoverIndexChanged));
 				}
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the index of the column currently being hovered over, or null if no column is hovered.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public int? HoverColumnIndex
@@ -196,11 +294,14 @@ namespace Myra.Graphics2D.UI
 				var ev = HoverIndexChanged;
 				if (ev != null)
 				{
-					ev(this, EventArgs.Empty);
+					ev(this, new MyraEventArgs(InputEventType.HoverIndexChanged));
 				}
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the index of the currently selected row, or null if no row is selected.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public int? SelectedRowIndex
@@ -219,11 +320,14 @@ namespace Myra.Graphics2D.UI
 				var ev = SelectedIndexChanged;
 				if (ev != null)
 				{
-					ev(this, EventArgs.Empty);
+					ev(this, new MyraEventArgs(InputEventType.SelectedIndexChanged));
 				}
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the index of the currently selected column, or null if no column is selected.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public int? SelectedColumnIndex
@@ -242,14 +346,24 @@ namespace Myra.Graphics2D.UI
 				var ev = SelectedIndexChanged;
 				if (ev != null)
 				{
-					ev(this, EventArgs.Empty);
+					ev(this, new MyraEventArgs(InputEventType.SelectedIndexChanged));
 				}
 			}
 		}
 
-		public event EventHandler SelectedIndexChanged = null;
-		public event EventHandler HoverIndexChanged = null;
+		/// <summary>
+		/// Occurs when the selected row or column changes.
+		/// </summary>
+		public event MyraEventHandler SelectedIndexChanged = null;
 
+		/// <summary>
+		/// Occurs when the hovered row or column changes.
+		/// </summary>
+		public event MyraEventHandler HoverIndexChanged = null;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Grid"/> class.
+		/// </summary>
 		public Grid()
 		{
 			ChildrenLayout = _layout;
@@ -262,63 +376,99 @@ namespace Myra.Graphics2D.UI
 			CanSelectNothing = false;
 		}
 
+		/// <summary>
+		/// Gets the width of the column at the specified index.
+		/// </summary>
+		/// <param name="index">The column index.</param>
+		/// <returns>The column width in pixels.</returns>
 		public int GetColumnWidth(int index) => _layout.GetColumnWidth(index);
-		
+
+		/// <summary>
+		/// Gets the height of the row at the specified index.
+		/// </summary>
+		/// <param name="index">The row index.</param>
+		/// <returns>The row height in pixels.</returns>
 		public int GetRowHeight(int index) => _layout.GetRowHeight(index);
 
+		/// <summary>
+		/// Gets the X coordinate of the cell at the specified column.
+		/// </summary>
+		/// <param name="col">The column index.</param>
+		/// <returns>The X coordinate in pixels.</returns>
 		public int GetCellLocationX(int col) => _layout.GetCellLocationX(col);
 
+		/// <summary>
+		/// Gets the Y coordinate of the cell at the specified row.
+		/// </summary>
+		/// <param name="row">The row index.</param>
+		/// <returns>The Y coordinate in pixels.</returns>
 		public int GetCellLocationY(int row) => _layout.GetCellLocationY(row);
 
+		/// <summary>
+		/// Gets the bounds rectangle of the cell at the specified column and row.
+		/// </summary>
+		/// <param name="col">The column index.</param>
+		/// <param name="row">The row index.</param>
+		/// <returns>The cell bounds as a rectangle.</returns>
 		public Rectangle GetCellRectangle(int col, int row) => _layout.GetCellRectangle(col, row);
 
-        private List<Proportion> _proportions = new List<Proportion>();
-        public void CleanProportions()
+    private List<Proportion> _proportions = new List<Proportion>();
+    public void CleanProportions()
+    {
+        _layout.ColumnsProportions.Clear();
+        _layout.RowsProportions.Clear();
+
+        _layout.ColumnsProportions.CollectionChanged -= OnProportionsChanged;
+        _layout.RowsProportions.CollectionChanged -= OnProportionsChanged;
+
+        foreach (var i in _proportions)
         {
-            _layout.ColumnsProportions.Clear();
-            _layout.RowsProportions.Clear();
-
-            _layout.ColumnsProportions.CollectionChanged -= OnProportionsChanged;
-            _layout.RowsProportions.CollectionChanged -= OnProportionsChanged;
-
-            foreach (var i in _proportions)
-            {
-                i.Changed -= OnProportionsChanged; // unsubscribe
-            }
-            _proportions.Clear();
+            i.Changed -= OnProportionsChanged; // unsubscribe
         }
-        private void OnProportionsChanged(object sender, NotifyCollectionChangedEventArgs args)
+        _proportions.Clear();
+    }
+    private void OnProportionsChanged(object sender, NotifyCollectionChangedEventArgs args)
+    {
+        if (args.Action == NotifyCollectionChangedAction.Add)
         {
-            if (args.Action == NotifyCollectionChangedAction.Add)
+            foreach (var i in args.NewItems)
             {
-                foreach (var i in args.NewItems)
-                {
-                    _proportions.Add(((Proportion)i));
-                    ((Proportion)i).Changed += OnProportionsChanged;
-                }
+                _proportions.Add(((Proportion)i));
+                ((Proportion)i).Changed += OnProportionsChanged;
             }
-            else if (args.Action == NotifyCollectionChangedAction.Remove)
+        }
+        else if (args.Action == NotifyCollectionChangedAction.Remove)
+        {
+            foreach (var i in args.OldItems)
             {
-                foreach (var i in args.OldItems)
-                {
-                    ((Proportion)i).Changed -= OnProportionsChanged;
-                }
+                ((Proportion)i).Changed -= OnProportionsChanged;
             }
-
-
-            HoverRowIndex = null;
-            SelectedRowIndex = null;
-
-            InvalidateMeasure();
         }
 
-        private void OnProportionsChanged(object sender, EventArgs args)
+
+        HoverRowIndex = null;
+        SelectedRowIndex = null;
+
+        InvalidateMeasure();
+    }
+
+    private void OnProportionsChanged(object sender, EventArgs args)
 		{
 			InvalidateMeasure();
 		}
 
+		/// <summary>
+		/// Gets the proportion for the column at the specified index.
+		/// </summary>
+		/// <param name="col">The column index.</param>
+		/// <returns>The column proportion.</returns>
 		public Proportion GetColumnProportion(int col) => _layout.GetColumnProportion(col);
 
+		/// <summary>
+		/// Gets the proportion for the row at the specified index.
+		/// </summary>
+		/// <param name="row">The row index.</param>
+		/// <returns>The row proportion, or the default if the index is out of range.</returns>
 		public Proportion GetRowProportion(int row)
 		{
 			if (row < 0 || row >= RowsProportions.Count)
@@ -411,6 +561,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Renders the grid content, selection, and grid lines.
+		/// </summary>
+		/// <param name="context">The render context used for drawing.</param>
 		public override void InternalRender(RenderContext context)
 		{
 			var bounds = ActualBounds;
@@ -486,6 +640,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Handles the event when the mouse leaves the grid.
+		/// </summary>
 		public override void OnMouseLeft()
 		{
 			base.OnMouseLeft();
@@ -493,6 +650,9 @@ namespace Myra.Graphics2D.UI
 			UpdateHoverPosition(null);
 		}
 
+		/// <summary>
+		/// Handles the event when the mouse enters the grid.
+		/// </summary>
 		public override void OnMouseEntered()
 		{
 			base.OnMouseEntered();
@@ -505,6 +665,9 @@ namespace Myra.Graphics2D.UI
 			UpdateHoverPosition(Desktop.MousePosition);
 		}
 
+		/// <summary>
+		/// Handles the event when the mouse moves within the grid.
+		/// </summary>
 		public override void OnMouseMoved()
 		{
 			base.OnMouseMoved();
@@ -517,6 +680,9 @@ namespace Myra.Graphics2D.UI
 			UpdateHoverPosition(Desktop.MousePosition);
 		}
 
+		/// <summary>
+		/// Handles touch down events on the grid, including row/column/cell selection.
+		/// </summary>
 		public override void OnTouchDown()
 		{
 			base.OnTouchDown();
@@ -551,6 +717,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Copies the grid properties and column/row proportions from another grid.
+		/// </summary>
+		/// <param name="w">The source grid to copy from.</param>
 		protected internal override void CopyFrom(Widget w)
 		{
 			base.CopyFrom(w);
@@ -580,13 +750,60 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets the column index for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to query.</param>
+		/// <returns>The column index.</returns>
 		public static int GetColumn(Widget widget) => ColumnProperty.GetValue(widget);
+
+		/// <summary>
+		/// Sets the column index for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to modify.</param>
+		/// <param name="value">The column index to set.</param>
 		public static void SetColumn(Widget widget, int value) => ColumnProperty.SetValue(widget, value);
+
+		/// <summary>
+		/// Gets the row index for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to query.</param>
+		/// <returns>The row index.</returns>
 		public static int GetRow(Widget widget) => RowProperty.GetValue(widget);
+
+		/// <summary>
+		/// Sets the row index for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to modify.</param>
+		/// <param name="value">The row index to set.</param>
 		public static void SetRow(Widget widget, int value) => RowProperty.SetValue(widget, value);
+
+		/// <summary>
+		/// Gets the column span for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to query.</param>
+		/// <returns>The column span value.</returns>
 		public static int GetColumnSpan(Widget widget) => ColumnSpanProperty.GetValue(widget);
+
+		/// <summary>
+		/// Sets the column span for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to modify.</param>
+		/// <param name="value">The column span to set.</param>
 		public static void SetColumnSpan(Widget widget, int value) => ColumnSpanProperty.SetValue(widget, value);
+
+		/// <summary>
+		/// Gets the row span for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to query.</param>
+		/// <returns>The row span value.</returns>
 		public static int GetRowSpan(Widget widget) => RowSpanProperty.GetValue(widget);
+
+		/// <summary>
+		/// Sets the row span for the specified widget within the grid.
+		/// </summary>
+		/// <param name="widget">The widget to modify.</param>
+		/// <param name="value">The row span to set.</param>
 		public static void SetRowSpan(Widget widget, int value) => RowSpanProperty.SetValue(widget, value);
 	}
 }

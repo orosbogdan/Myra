@@ -10,8 +10,14 @@ using System.Drawing;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// A container that arranges all of its children at the same location, allowing them to overlap.
+	/// </summary>
 	public class Panel : Container
 	{
+		/// <summary>
+		/// Arranges child controls at the same location in the panel bounds.
+		/// </summary>
 		protected override void InternalArrange()
 		{
 			foreach (var control in ChildrenCopy)
@@ -30,6 +36,11 @@ namespace Myra.Graphics2D.UI
 			control.Arrange(ActualBounds);
 		}
 
+		/// <summary>
+		/// Measures the size required for all child controls in the panel.
+		/// </summary>
+		/// <param name="availableSize">The available size for measurement.</param>
+		/// <returns>The largest size required by any child control.</returns>
 		protected override Point InternalMeasure(Point availableSize)
 		{
 			Point result = Mathematics.PointZero;

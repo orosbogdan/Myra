@@ -4,6 +4,9 @@ using System;
 
 namespace Myra
 {
+	/// <summary>
+	/// Provides access to the default stylesheets and assets included with Myra.
+	/// </summary>
 	public static class DefaultAssets
 	{
 		private static AssetManager _assetManager;
@@ -22,9 +25,9 @@ namespace Myra
 			}
 		}
 
-		[Obsolete("Use DefaultStylesheet")]
-		public static Stylesheet UIStylesheet => DefaultStylesheet;
-
+		/// <summary>
+		/// Gets the default stylesheet for UI widgets at normal scale.
+		/// </summary>
 		public static Stylesheet DefaultStylesheet
 		{
 			get
@@ -39,6 +42,9 @@ namespace Myra
 			}
 		}
 
+		/// <summary>
+		/// Gets the default stylesheet for UI widgets at 2x scale.
+		/// </summary>
 		public static Stylesheet DefaultStylesheet2X
 		{
 			get

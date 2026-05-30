@@ -10,22 +10,57 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI.Styles
 {
+	/// <summary>
+	/// Style class that defines the visual appearance of text box widgets.
+	/// </summary>
 	public class TextBoxStyle: WidgetStyle
 	{
+		/// <summary>
+		/// Gets or sets the color of the text box's text.
+		/// </summary>
 		public Color TextColor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the color of the text box's text when disabled, or null to use the default.
+		/// </summary>
 		public Color? DisabledTextColor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the color of the text box's text when the widget has focus, or null to use the default.
+		/// </summary>
 		public Color? FocusedTextColor { get; set; }
 
+		/// <summary>
+		/// Gets or sets the font used to render the text box's text.
+		/// </summary>
 		public SpriteFontBase Font { get; set; }
+
+		/// <summary>
+		/// Gets or sets the font used to render the hint/placeholder text.
+		/// </summary>
 		public SpriteFontBase MessageFont { get; set; }
 
+		/// <summary>
+		/// Gets or sets the image used to draw the text cursor.
+		/// </summary>
 		public IImage Cursor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the brush used to highlight selected text.
+		/// </summary>
 		public IBrush Selection { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextBoxStyle"/> class.
+		/// </summary>
 		public TextBoxStyle()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextBoxStyle"/> class by copying properties from another style.
+		/// </summary>
+		/// <param name="style">The source text box style to copy from.</param>
 		public TextBoxStyle(TextBoxStyle style) : base(style)
 		{
 			TextColor = style.TextColor;
@@ -39,6 +74,10 @@ namespace Myra.Graphics2D.UI.Styles
 			Selection = style.Selection;
 		}
 
+		/// <summary>
+		/// Creates a deep copy of this text box style.
+		/// </summary>
+		/// <returns>A new TextBoxStyle instance with the same properties.</returns>
 		public override WidgetStyle Clone()
 		{
 			return new TextBoxStyle(this);

@@ -21,16 +21,38 @@ using Matrix = System.Numerics.Matrix3x2;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// Represents the state of the mouse input including position and button states.
+	/// </summary>
 	public struct MouseInfo
 	{
+		/// <summary>
+		/// Gets the current mouse position in screen coordinates.
+		/// </summary>
 		public Point Position;
+
+		/// <summary>
+		/// Gets a value indicating whether the left mouse button is currently pressed.
+		/// </summary>
 		public bool IsLeftButtonDown;
+
+		/// <summary>
+		/// Gets a value indicating whether the middle mouse button is currently pressed.
+		/// </summary>
 		public bool IsMiddleButtonDown;
+
+		/// <summary>
+		/// Gets a value indicating whether the right mouse button is currently pressed.
+		/// </summary>
 		public bool IsRightButtonDown;
+
+		/// <summary>
+		/// Gets the accumulated mouse wheel delta for the current frame.
+		/// </summary>
 		public float Wheel;
 	}
 
-	partial class Desktop: IInputEventsProcessor
+	partial class Desktop : IInputEventsProcessor
 	{
 		private MouseInfo _lastMouseInfo;
 		private DateTime? _lastKeyDown;
@@ -40,9 +62,20 @@ namespace Myra.Graphics2D.UI
 		private Point? _touchPosition;
 		private float _mouseWheelDelta;
 
+		/// <summary>
+		/// Previous mouse position in the global coordinates
+		/// </summary>
 		public Point PreviousMousePosition { get; private set; }
+
+		/// <summary>
+		/// Previous touch position in the global coordinates
+		/// Null if there was no touch
+		/// </summary>
 		public Point? PreviousTouchPosition { get; private set; }
 
+		/// <summary>
+		/// Current mouse position in the global coordinates
+		/// </summary>
 		public Point MousePosition
 		{
 			get => _mousePosition;
@@ -58,6 +91,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Current touch position in the global coordinates
+		/// Null if there is no touch
+		/// </summary>
 		public Point? TouchPosition
 		{
 			get => _touchPosition;
@@ -88,8 +125,14 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the touch is currently down.
+		/// </summary>
 		public bool IsTouchDown => TouchPosition != null;
 
+		/// <summary>
+		/// Gets or sets the mouse wheel delta for the current frame.
+		/// </summary>
 		public float MouseWheelDelta
 		{
 			get => _mouseWheelDelta;
@@ -105,11 +148,24 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets an array indicating which keys are currently pressed down.
+		/// </summary>
 		public bool[] DownKeys => _downKeys;
+
+		/// <summary>
+		/// Gets or sets the delay in milliseconds before key repeat starts.
+		/// </summary>
 		public int RepeatKeyDownStartInMs { get; set; } = 500;
 
+		/// <summary>
+		/// Gets or sets the interval in milliseconds between key repeat events.
+		/// </summary>
 		public int RepeatKeyDownInternalInMs { get; set; } = 50;
 
+		/// <summary>
+		/// Gets a value indicating whether the current platform is a mobile platform.
+		/// </summary>
 		public static bool IsMobile
 		{
 			get
@@ -123,19 +179,54 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		public event EventHandler MouseMoved;
+		/// <summary>
+		/// Occurs when the mouse moves.
+		/// </summary>
+		public event MyraEventHandler MouseMoved;
 
-		public event EventHandler TouchMoved;
-		public event EventHandler TouchDown;
-		public event EventHandler TouchUp;
-		public event EventHandler TouchDoubleClick;
+		/// <summary>
+		/// Occurs when a touch point moves on the screen.
+		/// </summary>
+		public event MyraEventHandler TouchMoved;
 
-		public event EventHandler<GenericEventArgs<float>> MouseWheelChanged;
+		/// <summary>
+		/// Occurs when a touch point is pressed on the screen.
+		/// </summary>
+		public event MyraEventHandler TouchDown;
 
-		public event EventHandler<GenericEventArgs<Keys>> KeyUp;
-		public event EventHandler<GenericEventArgs<Keys>> KeyDown;
-		public event EventHandler<GenericEventArgs<char>> Char;
+		/// <summary>
+		/// Occurs when a touch point is released from the screen.
+		/// </summary>
+		public event MyraEventHandler TouchUp;
 
+		/// <summary>
+		/// Occurs when a touch point is double-clicked on the screen.
+		/// </summary>
+		public event MyraEventHandler TouchDoubleClick;
+
+		/// <summary>
+		/// Occurs when the mouse wheel is scrolled. The event args contain the wheel delta value.
+		/// </summary>
+		public event MyraEventHandler<GenericEventArgs<float>> MouseWheelChanged;
+
+		/// <summary>
+		/// Occurs when a key is released. The event args contain the key code.
+		/// </summary>
+		public event MyraEventHandler<GenericEventArgs<Keys>> KeyUp;
+
+		/// <summary>
+		/// Occurs when a key is pressed. The event args contain the key code.
+		/// </summary>
+		public event MyraEventHandler<GenericEventArgs<Keys>> KeyDown;
+
+		/// <summary>
+		/// Occurs when a character is input from the keyboard. The event args contain the character value.
+		/// </summary>
+		public event MyraEventHandler<GenericEventArgs<char>> Char;
+
+		/// <summary>
+		/// Updates the mouse input state based on the current mouse information.
+		/// </summary>
 		public void UpdateMouseInput()
 		{
 			if (MyraEnvironment.MouseInfoGetter == null)
@@ -145,8 +236,10 @@ namespace Myra.Graphics2D.UI
 
 			var mouseInfo = MyraEnvironment.MouseInfoGetter();
 
+			var mousePos = mouseInfo.Position;
+
 			// Mouse Position
-			MousePosition = mouseInfo.Position;
+			MousePosition = mousePos;
 
 			// Touch Position
 			Point? touchPosition = null;
@@ -181,6 +274,9 @@ namespace Myra.Graphics2D.UI
 		}
 
 #if MONOGAME || FNA || PLATFORM_AGNOSTIC
+		/// <summary>
+		/// Updates the touch input state based on the current touch information from the platform.
+		/// </summary>
 		public void UpdateTouchInput()
 		{
 #if MONOGAME || FNA
@@ -201,6 +297,9 @@ namespace Myra.Graphics2D.UI
 		}
 #endif
 
+		/// <summary>
+		/// Updates the keyboard input state based on the current keyboard information.
+		/// </summary>
 		public void UpdateKeyboardInput()
 		{
 			if (MyraEnvironment.DownKeysGetter == null)
@@ -229,7 +328,7 @@ namespace Myra.Graphics2D.UI
 				else if (!_downKeys[i] && _lastDownKeys[i])
 				{
 					// Key had been released
-					KeyUp.Invoke(key);
+					KeyUp.Invoke(key, InputEventType.KeyUp);
 					if (_focusedKeyboardWidget != null)
 					{
 						_focusedKeyboardWidget.OnKeyUp(key);
@@ -255,6 +354,9 @@ namespace Myra.Graphics2D.UI
 			Array.Copy(_downKeys, _lastDownKeys, _downKeys.Length);
 		}
 
+		/// <summary>
+		/// Updates all input states (keyboard, mouse, and touch) for the current frame.
+		/// </summary>
 		public void UpdateInput()
 		{
 			UpdateKeyboardInput();
@@ -289,27 +391,27 @@ namespace Myra.Graphics2D.UI
 				case InputEventType.MouseEntered:
 					break;
 				case InputEventType.MouseMoved:
-					MouseMoved.Invoke(this);
+					MouseMoved.Invoke(this, InputEventType.MouseMoved);
 					break;
 				case InputEventType.MouseWheel:
-					MouseWheelChanged.Invoke(this, MouseWheelDelta);
+					MouseWheelChanged.Invoke(this, MouseWheelDelta, InputEventType.MouseWheel);
 					break;
 				case InputEventType.TouchLeft:
 					break;
 				case InputEventType.TouchEntered:
 					break;
 				case InputEventType.TouchMoved:
-					TouchMoved.Invoke(this);
+					TouchMoved.Invoke(this, eventType);
 					break;
 				case InputEventType.TouchDown:
 					InputOnTouchDown();
-					TouchDown.Invoke(this);
+					TouchDown.Invoke(this, eventType);
 					break;
 				case InputEventType.TouchUp:
-					TouchUp.Invoke(this);
+					TouchUp.Invoke(this, eventType);
 					break;
 				case InputEventType.TouchDoubleClick:
-					TouchDoubleClick.Invoke(this);
+					TouchDoubleClick.Invoke(this, eventType);
 					break;
 			}
 		}

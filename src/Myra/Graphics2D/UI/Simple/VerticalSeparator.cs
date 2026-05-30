@@ -3,8 +3,14 @@ using System.ComponentModel;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// A vertical separator widget that visually divides UI sections.
+	/// </summary>
 	public class VerticalSeparator : SeparatorWidget
 	{
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the separator.
+		/// </summary>
 		[DefaultValue(HorizontalAlignment.Center)]
 		public override HorizontalAlignment HorizontalAlignment
 		{
@@ -18,6 +24,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the vertical alignment of the separator.
+		/// </summary>
 		[DefaultValue(VerticalAlignment.Stretch)]
 		public override VerticalAlignment VerticalAlignment
 		{
@@ -31,14 +40,26 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets the orientation of the separator, which is always vertical.
+		/// </summary>
 		public override Orientation Orientation => Orientation.Vertical;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VerticalSeparator"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public VerticalSeparator(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
 		{
 			HorizontalAlignment = HorizontalAlignment.Center;
 			VerticalAlignment = VerticalAlignment.Stretch;
 		}
 
+		/// <summary>
+		/// Applies a named vertical separator style from the stylesheet to the vertical separator.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style.</param>
+		/// <param name="name">The name of the vertical separator style to apply.</param>
 		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
 		{
 			ApplySeparatorStyle(stylesheet.VerticalSeparatorStyles.SafelyGetStyle(name));

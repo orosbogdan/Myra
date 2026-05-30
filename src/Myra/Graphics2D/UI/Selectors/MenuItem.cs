@@ -5,6 +5,8 @@ using System;
 using Myra.Attributes;
 using Myra.MML;
 using FontStashSharp.RichText;
+using Myra.Events;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -16,6 +18,9 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// Represents a single item in a menu that can have sub-items, an image, and an optional shortcut text.
+	/// </summary>
 	public class MenuItem : BaseObject, IMenuItem
 	{
 		private string _shortcutText;
@@ -44,12 +49,11 @@ namespace Myra.Graphics2D.UI
 
 		internal readonly Menu SubMenu = new VerticalMenu();
 
-
-
-        public void Cleanup()
-        {
-			SubMenu.Cleanup();
-        }
+    public void Cleanup()
+    {
+       SubMenu.Cleanup();
+    }
+        
 		[DefaultValue(null)]
 		public string Text
 		{
@@ -96,6 +100,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the menu item text.
+		/// </summary>
 		[DefaultValue(null)]
 		public Color? Color
 		{
@@ -116,6 +123,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets arbitrary user data associated with this menu item.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public object Tag
@@ -123,6 +133,9 @@ namespace Myra.Graphics2D.UI
 			get; set;
 		}
 
+		/// <summary>
+		/// Gets or sets the image displayed next to the menu item text.
+		/// </summary>
 		public IImage Image
 		{
 			get
@@ -142,6 +155,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the text displayed as a keyboard shortcut hint next to the menu item.
+		/// </summary>
 		[DefaultValue(null)]
 		public string ShortcutText
 		{
@@ -162,6 +178,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the shortcut text.
+		/// </summary>
 		[DefaultValue(null)]
 		public Color? ShortcutColor
 		{
@@ -182,10 +201,16 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the parent menu of this item.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public Menu Menu { get; set; }
 
+		/// <summary>
+		/// Gets the collection of submenu items nested under this menu item.
+		/// </summary>
 		[Browsable(false)]
 		[Content]
 		public ObservableCollection<IMenuItem> Items
@@ -193,6 +218,9 @@ namespace Myra.Graphics2D.UI
 			get { return SubMenu.Items; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this menu item is enabled.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public bool Enabled
@@ -205,10 +233,16 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets the mnemonic character for this menu item (the character after the ampersand in Text).
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public char? UnderscoreChar { get; private set; }
 
+		/// <summary>
+		/// Gets a value indicating whether this menu item can be opened (has submenu items).
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public bool CanOpen
@@ -219,13 +253,30 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the zero-based index of this menu item within its parent menu.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public int Index { get; set; }
 
-		public event EventHandler Selected;
-		public event EventHandler Changed;
+		/// <summary>
+		/// Occurs when this menu item is selected.
+		/// </summary>
+		public event MyraEventHandler Selected;
 
+		/// <summary>
+		/// Occurs when any property of this menu item changes.
+		/// </summary>
+		public event MyraEventHandler Changed;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MenuItem"/> class with the specified id, text, color, and tag.
+		/// </summary>
+		/// <param name="id">The unique identifier for this menu item.</param>
+		/// <param name="text">The display text for this menu item.</param>
+		/// <param name="color">The color of the menu item text, or null to use the style default.</param>
+		/// <param name="tag">Arbitrary user data to associate with this menu item.</param>
 		public MenuItem(string id, string text, Color? color, object tag)
 		{
 			Id = id;
@@ -234,18 +285,36 @@ namespace Myra.Graphics2D.UI
 			Tag = tag;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MenuItem"/> class with the specified id, text, and color.
+		/// </summary>
+		/// <param name="id">The unique identifier for this menu item.</param>
+		/// <param name="text">The display text for this menu item.</param>
+		/// <param name="color">The color of the menu item text, or null to use the style default.</param>
 		public MenuItem(string id, string text, Color? color) : this(id, text, color, null)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MenuItem"/> class with the specified id and text.
+		/// </summary>
+		/// <param name="id">The unique identifier for this menu item.</param>
+		/// <param name="text">The display text for this menu item.</param>
 		public MenuItem(string id, string text) : this(id, text, null)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MenuItem"/> class with the specified id.
+		/// </summary>
+		/// <param name="id">The unique identifier for this menu item.</param>
 		public MenuItem(string id) : this(id, string.Empty)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MenuItem"/> class with default values.
+		/// </summary>
 		public MenuItem() : this(string.Empty)
 		{
 		}
@@ -318,16 +387,22 @@ namespace Myra.Graphics2D.UI
 			return null;
 		}
 
+		/// <summary>
+		/// Raises the Selected event to indicate that this menu item has been selected.
+		/// </summary>
 		public void FireSelected()
 		{
 			var ev = Selected;
 
 			if (ev != null)
 			{
-				ev(this, EventArgs.Empty);
+				ev(this, new MyraEventArgs(InputEventType.SelectionChanged));
 			}
 		}
 
+		/// <summary>
+		/// Called when the Id property changes, and fires the Changed event.
+		/// </summary>
 		protected internal override void OnIdChanged()
 		{
 			base.OnIdChanged();
@@ -335,12 +410,15 @@ namespace Myra.Graphics2D.UI
 			FireChanged();
 		}
 
+		/// <summary>
+		/// Fires the Changed event to notify listeners that this item has changed.
+		/// </summary>
 		protected void FireChanged()
 		{
 			var ev = Changed;
 			if (ev != null)
 			{
-				ev(this, EventArgs.Empty);
+				ev(this, new MyraEventArgs(InputEventType.ValueChanged));
 			}
 		}
 	}

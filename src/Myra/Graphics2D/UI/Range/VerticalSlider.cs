@@ -3,8 +3,14 @@ using Myra.Graphics2D.UI.Styles;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// A slider control that allows users to select a value from a vertical range.
+	/// </summary>
 	public class VerticalSlider : Slider
 	{
+		/// <summary>
+		/// Gets the orientation of the slider, which is always vertical.
+		/// </summary>
 		public override Orientation Orientation
 		{
 			get
@@ -13,6 +19,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the slider.
+		/// </summary>
 		[DefaultValue(HorizontalAlignment.Left)]
 		public override HorizontalAlignment HorizontalAlignment
 		{
@@ -26,6 +35,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the vertical alignment of the slider.
+		/// </summary>
 		[DefaultValue(VerticalAlignment.Stretch)]
 		public override VerticalAlignment VerticalAlignment
 		{
@@ -39,12 +51,21 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VerticalSlider"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public VerticalSlider(string styleName = Stylesheet.DefaultStyleName): base(styleName)
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Stretch;
 		}
 
+		/// <summary>
+		/// Applies the style with the specified name from the stylesheet to this vertical slider.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
+		/// <param name="name">The name of the vertical slider style to apply.</param>
 		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
 		{
 			ApplySliderStyle(stylesheet.VerticalSliderStyles.SafelyGetStyle(name));

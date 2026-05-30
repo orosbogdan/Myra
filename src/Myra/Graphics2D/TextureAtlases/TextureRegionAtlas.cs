@@ -16,6 +16,9 @@ using Texture2D = System.Object;
 
 namespace Myra.Graphics2D.TextureAtlases
 {
+	/// <summary>
+	/// Represents a collection of texture regions derived from a single texture, with support for both LibGDX and Myra XML formats.
+	/// </summary>
 	public partial class TextureRegionAtlas
 	{
 		private const string TextureAtlasName = "TextureAtlas";
@@ -31,12 +34,26 @@ namespace Myra.Graphics2D.TextureAtlases
 		private const string NinePatchRightName = "NinePatchRight";
 		private const string NinePatchBottomName = "NinePatchBottom";
 
+		/// <summary>
+		/// Gets or sets the image file name or path for this texture atlas.
+		/// </summary>
 		public string Image { get; set; }
 
+		/// <summary>
+		/// Gets the dictionary of texture regions keyed by their identifiers.
+		/// </summary>
 		public Dictionary<string, TextureRegion> Regions { get; } = new Dictionary<string, TextureRegion>();
 
+		/// <summary>
+		/// Gets the texture associated with this atlas.
+		/// </summary>
 		public Texture2D Texture { get; private set; }
 
+		/// <summary>
+		/// Gets or sets a texture region by its identifier.
+		/// </summary>
+		/// <param name="name">The identifier of the region.</param>
+		/// <returns>The texture region with the specified identifier.</returns>
 		public TextureRegion this[string name]
 		{
 			get
@@ -49,6 +66,12 @@ namespace Myra.Graphics2D.TextureAtlases
 			}
 		}
 
+		/// <summary>
+		/// Gets a texture region by its identifier, throwing an exception if not found.
+		/// </summary>
+		/// <param name="id">The identifier of the region.</param>
+		/// <returns>The texture region with the specified identifier.</returns>
+		/// <exception cref="ArgumentNullException">The region with the specified identifier is not found.</exception>
 		public TextureRegion EnsureRegion(string id)
 		{
 			TextureRegion result;
@@ -60,6 +83,10 @@ namespace Myra.Graphics2D.TextureAtlases
 			return result;
 		}
 
+		/// <summary>
+		/// Converts the texture atlas to an XML string representation.
+		/// </summary>
+		/// <returns>An XML string containing all regions in this atlas.</returns>
 		public string ToXml()
 		{
 			var doc = new XDocument();
@@ -95,32 +122,11 @@ namespace Myra.Graphics2D.TextureAtlases
 		}
 
 		/// <summary>
-		/// Loads TextureAtlas from either LibGDX .atlas or Myra .xml format
+		/// Loads a texture atlas from Myra XML format.
 		/// </summary>
-		/// <param name="data"></param>
-		/// <param name="textureGetter"></param>
-		/// <returns></returns>
-		public static TextureRegionAtlas Load(string data, Func<string, Texture2D> textureGetter)
-		{
-			bool isXml;
-			try
-			{
-				var xDoc = XDocument.Parse(data);
-				isXml = true;
-			}
-			catch (Exception)
-			{
-				isXml = false;
-			}
-
-			if (isXml)
-			{
-				return FromXml(data, textureGetter);
-			}
-
-			return Gdx.FromGDX(data, textureGetter);
-		}
-
+		/// <param name="xml">The atlas data in Myra XML format.</param>
+		/// <param name="textureGetter">A function that retrieves the texture given its filename.</param>
+		/// <returns>A new TextureRegionAtlas loaded from the provided XML.</returns>
 		public static TextureRegionAtlas FromXml(string xml, Func<string, Texture2D> textureGetter)
 		{
 			var doc = XDocument.Parse(xml);

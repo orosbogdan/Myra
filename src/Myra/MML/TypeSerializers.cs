@@ -12,19 +12,58 @@ using System.Numerics;
 
 namespace Myra.MML
 {
+	/// <summary>
+	/// Defines the interface for serializing and deserializing types to and from strings.
+	/// </summary>
 	public interface ITypeSerializer
 	{
+		/// <summary>
+		/// Serializes an object to a string.
+		/// </summary>
+		/// <param name="obj">The object to serialize.</param>
+		/// <returns>The serialized string representation.</returns>
 		string Serialize(object obj);
+
+		/// <summary>
+		/// Deserializes a string to an object.
+		/// </summary>
+		/// <param name="str">The string to deserialize.</param>
+		/// <returns>The deserialized object.</returns>
 		object Deserialize(string str);
 	}
 
+	/// <summary>
+	/// Abstract base class for type serializers that serialize and deserialize generic types.
+	/// </summary>
+	/// <typeparam name="T">The type being serialized/deserialized.</typeparam>
 	public abstract class TypeSerializer<T> : ITypeSerializer
 	{
+		/// <summary>
+		/// Deserializes a string to an object.
+		/// </summary>
+		/// <param name="str">The string to deserialize.</param>
+		/// <returns>The deserialized object.</returns>
 		public object Deserialize(string str) => DeserializeT(str);
 
+		/// <summary>
+		/// Serializes an object to a string.
+		/// </summary>
+		/// <param name="obj">The object to serialize.</param>
+		/// <returns>The serialized string representation.</returns>
 		public string Serialize(object obj) => SerializeT((T)obj);
 
+		/// <summary>
+		/// Deserializes a string to a typed value.
+		/// </summary>
+		/// <param name="str">The string to deserialize.</param>
+		/// <returns>The deserialized typed value.</returns>
 		public abstract T DeserializeT(string str);
+
+		/// <summary>
+		/// Serializes a typed value to a string.
+		/// </summary>
+		/// <param name="obj">The typed value to serialize.</param>
+		/// <returns>The serialized string representation.</returns>
 		public abstract string SerializeT(T obj);
 	}
 

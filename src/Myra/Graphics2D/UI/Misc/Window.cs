@@ -21,6 +21,9 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// A draggable window widget with a title bar and optional close button.
+	/// </summary>
 	public class Window : ContentControl
 	{
 		private readonly StackPanelLayout _layout = new StackPanelLayout(Orientation.Vertical);
@@ -28,6 +31,9 @@ namespace Myra.Graphics2D.UI
 		private Widget _content;
 		private Widget _previousKeyboardFocus;
 
+		/// <summary>
+		/// Gets or sets the title text displayed in the window's title bar.
+		/// </summary>
 		[Category("Appearance")]
 		public string Title
 		{
@@ -42,6 +48,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the title text.
+		/// </summary>
 		[Category("Appearance")]
 		[StylePropertyPath("TitleStyle/TextColor")]
 		public Color TitleTextColor
@@ -56,6 +65,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the font used to render the title text.
+		/// </summary>
 		[Category("Appearance")]
 		public SpriteFontBase TitleFont
 		{
@@ -69,14 +81,23 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets the panel containing the title and close button.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public HorizontalStackPanel TitlePanel { get; private set; }
 
+		/// <summary>
+		/// Gets the close button displayed in the window's title bar.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public Button CloseButton { get; private set; }
 
+		/// <summary>
+		/// Gets or sets the widget displayed as the window's content.
+		/// </summary>
 		[Browsable(false)]
 		[Content]
 		public override Widget Content
@@ -109,10 +130,16 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a boolean result value for modal dialog operations.
+		/// </summary>
 		[Browsable(false)]
 		[XmlIgnore]
 		public bool Result { get; set; }
 
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the window.
+		/// </summary>
 		[DefaultValue(HorizontalAlignment.Left)]
 		public override HorizontalAlignment HorizontalAlignment
 		{
@@ -126,6 +153,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the vertical alignment of the window.
+		/// </summary>
 		[DefaultValue(VerticalAlignment.Top)]
 		public override VerticalAlignment VerticalAlignment
 		{
@@ -139,18 +169,35 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the direction in which the window can be dragged.
+		/// </summary>
 		[DefaultValue(DragDirection.Both)]
 		public override DragDirection DragDirection { get => base.DragDirection; set => base.DragDirection = value; }
 
+		/// <summary>
+		/// Gets or sets the key that closes the window, or null for no key-based close.
+		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(Keys.Escape)]
 		public Keys? CloseKey { get; set; }
 
 		private bool IsWindowPlaced { get; set; }
 
-		public event EventHandler<CancellableEventArgs> Closing;
-		public event EventHandler Closed;
+		/// <summary>
+		/// Occurs before the window is closed. Set Cancel to true to prevent closing.
+		/// </summary>
+		public event MyraEventHandler<CancellableEventArgs> Closing;
 
+		/// <summary>
+		/// Occurs after the window has been closed.
+		/// </summary>
+		public event MyraEventHandler Closed;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Window"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public Window(string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout.Spacing = 8;
@@ -192,6 +239,9 @@ namespace Myra.Graphics2D.UI
 			SetStyle(styleName);
 		}
 
+		/// <summary>
+		/// Arranges the window and centers it on the desktop if it hasn't been manually placed.
+		/// </summary>
 		protected override void InternalArrange()
 		{
 			base.InternalArrange();
@@ -203,6 +253,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Centers the window on the desktop.
+		/// </summary>
 		public void CenterOnDesktop()
 		{
 			var size = Bounds.Size();
@@ -210,12 +263,19 @@ namespace Myra.Graphics2D.UI
 			Top = (ContainerBounds.Height - size.Y) / 2;
 		}
 
+		/// <summary>
+		/// Handles touch down events and brings the window to the front.
+		/// </summary>
 		public override void OnTouchDown()
 		{
 			BringToFront();
 			base.OnTouchDown();
 		}
 
+		/// <summary>
+		/// Handles keyboard input, closing the window if the CloseKey is pressed.
+		/// </summary>
+		/// <param name="k">The key being pressed.</param>
 		public override void OnKeyDown(Keys k)
 		{
 			base.OnKeyDown(k);
@@ -226,6 +286,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Applies the specified window style to the window and its components.
+		/// </summary>
+		/// <param name="style">The style to apply.</param>
 		public void ApplyWindowStyle(WindowStyle style)
 		{
 			ApplyWidgetStyle(style);
@@ -260,12 +324,22 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Shows the window on the specified desktop as a non-modal window.
+		/// </summary>
+		/// <param name="desktop">The desktop to display the window on.</param>
+		/// <param name="position">Optional position for the window. If null, the window will be centered.</param>
 		public void Show(Desktop desktop, Point? position = null)
 		{
 			IsModal = false;
 			InternalShow(desktop, position);
 		}
 
+		/// <summary>
+		/// Shows the window on the specified desktop as a modal dialog that blocks interaction with other widgets.
+		/// </summary>
+		/// <param name="desktop">The desktop to display the window on.</param>
+		/// <param name="position">Optional position for the window. If null, the window will be centered.</param>
 		public void ShowModal(Desktop desktop, Point? position = null)
 		{
 			IsModal = true;
@@ -280,6 +354,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Closes the window and raises the Closing and Closed events.
+		/// </summary>
 		public virtual void Close()
 		{
 			if (Desktop == null)
@@ -291,7 +368,7 @@ namespace Myra.Graphics2D.UI
 			var ev = Closing;
 			if (ev != null)
 			{
-				var args = new CancellableEventArgs();
+				var args = new CancellableEventArgs(InputEventType.Closing);
 				ev(this, args);
 				if (args.Cancel)
 				{
@@ -314,14 +391,23 @@ namespace Myra.Graphics2D.UI
 				RemoveFromParent();
 			}
 
-			Closed.Invoke(this);
+			Closed.Invoke(this, InputEventType.Closing);
 		}
 
+		/// <summary>
+		/// Applies the style with the specified name from the stylesheet to this window.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
+		/// <param name="name">The name of the window style to apply.</param>
 		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
 		{
 			ApplyWindowStyle(stylesheet.WindowStyles.SafelyGetStyle(name));
 		}
 
+		/// <summary>
+		/// Copies the properties from another window widget.
+		/// </summary>
+		/// <param name="w">The source window widget to copy from.</param>
 		protected internal override void CopyFrom(Widget w)
 		{
 			base.CopyFrom(w);

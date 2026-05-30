@@ -17,6 +17,9 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI
 {
+	/// <summary>
+	/// A text label widget that displays formatted text with support for rich text formatting.
+	/// </summary>
 	public class Label : Widget
 	{
 		private readonly RichTextLayout _richText = new RichTextLayout
@@ -31,9 +34,12 @@ namespace Myra.Graphics2D.UI
 			SupportsCommands = false
 		};
 
-        private bool _singleLine = false;
+		private bool _singleLine = false;
 
-        [Category("Appearance")]
+		/// <summary>
+		/// Gets or sets the vertical spacing in pixels between lines of text.
+		/// </summary>
+		[Category("Appearance")]
 		[DefaultValue(0)]
 		public int VerticalSpacing
 		{
@@ -48,6 +54,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the text to display, with optional rich text formatting commands.
+		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(null)]
 		public string Text
@@ -68,6 +77,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the font used to render the label text.
+		/// </summary>
 		[Category("Appearance")]
 		public SpriteFontBase Font
 		{
@@ -82,6 +94,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the text wraps to multiple lines.
+		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(false)]
 		public bool Wrap
@@ -103,31 +118,34 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-        [Category("Appearance")]
-        [DefaultValue(false)]
-        public bool SingleLine
-        {
-            get
-            {
-                return _singleLine;
-            }
+		/// <summary>
+		/// Gets or sets a value indicating whether the text is constrained to a single line.
+		/// </summary>
+		[Category("Appearance")]
+		[DefaultValue(false)]
+		public bool SingleLine
+		{
+			get
+			{
+				return _singleLine;
+			}
 
-            set
-            {
-                if (value == _singleLine)
-                {
-                    return;
-                }
+			set
+			{
+				if (value == _singleLine)
+				{
+					return;
+				}
 
-                _singleLine = value;
-                InvalidateMeasure();
-            }
-        }
+				_singleLine = value;
+				InvalidateMeasure();
+			}
+		}
 
-        /// <summary>
-        /// The method used to abbreviate overflowing text.
-        /// </summary>
-        [Category("Appearance")]
+		/// <summary>
+		/// The method used to abbreviate overflowing text.
+		/// </summary>
+		[Category("Appearance")]
 		[DefaultValue(AutoEllipsisMethod.None)]
 		public AutoEllipsisMethod AutoEllipsisMethod
 		{
@@ -146,6 +164,9 @@ namespace Myra.Graphics2D.UI
 			set => _richText.AutoEllipsisString = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the text.
+		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(TextHorizontalAlignment.Left)]
 		public TextHorizontalAlignment TextAlign
@@ -153,22 +174,42 @@ namespace Myra.Graphics2D.UI
 			get; set;
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
 		[Category("Appearance")]
 		public Color TextColor
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text when the label is disabled.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? DisabledTextColor
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text when the cursor is over the label.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? OverTextColor
 		{
 			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the text supports rich text formatting commands.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool SupportsCommands
+		{
+			get => _richText.SupportsCommands;
+
+			set => _richText.SupportsCommands = value;
 		}
 
 		internal Color? PressedTextColor
@@ -181,11 +222,19 @@ namespace Myra.Graphics2D.UI
 			get; set;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Label"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public Label(string styleName = Stylesheet.DefaultStyleName)
 		{
 			SetStyle(styleName);
 		}
 
+		/// <summary>
+		/// Renders the label's text with appropriate color based on its state.
+		/// </summary>
+		/// <param name="context">The render context to draw with.</param>
 		public override void InternalRender(RenderContext context)
 		{
 			if (_richText.Font == null)
@@ -244,6 +293,11 @@ namespace Myra.Graphics2D.UI
 			return "RTL Error: " + ex.Message;
 		}
 
+		/// <summary>
+		/// Measures the size required to display the label text.
+		/// </summary>
+		/// <param name="availableSize">The available size for the label.</param>
+		/// <returns>The measured size needed for the label.</returns>
 		protected override Point InternalMeasure(Point availableSize)
 		{
 			if (Font == null)
@@ -274,28 +328,35 @@ namespace Myra.Graphics2D.UI
 			return result;
 		}
 
+		/// <summary>
+		/// Arranges the label's text layout within the label's bounds.
+		/// </summary>
 		protected override void InternalArrange()
 		{
 			base.InternalArrange();
 
-            if (_singleLine)
-            {
-                _richText.Width = ActualBounds.Width;
-                _richText.Height = Font.LineHeight;
-            }
-            else if (_wrap)
-            {
-                _richText.Width = ActualBounds.Width;
-                _richText.Height = ActualBounds.Height;
-            }
-            else
-            {
-                _richText.Width = default(int?);
-                _richText.Height = default(int?);
-            }
-        }
+			if (_singleLine)
+			{
+				_richText.Width = ActualBounds.Width;
+				_richText.Height = Font.LineHeight;
+			}
+			else if (_wrap)
+			{
+				_richText.Width = ActualBounds.Width;
+				_richText.Height = ActualBounds.Height;
+			}
+			else
+			{
+				_richText.Width = default(int?);
+				_richText.Height = default(int?);
+			}
+		}
 
-        public void ApplyLabelStyle(LabelStyle style)
+		/// <summary>
+		/// Applies the specified label style to the label.
+		/// </summary>
+		/// <param name="style">The style to apply.</param>
+		public void ApplyLabelStyle(LabelStyle style)
 		{
 			ApplyWidgetStyle(style);
 
@@ -306,11 +367,20 @@ namespace Myra.Graphics2D.UI
 			Font = style.Font;
 		}
 
+		/// <summary>
+		/// Applies a named label style from the stylesheet to the label.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style.</param>
+		/// <param name="name">The name of the label style to apply.</param>
 		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
 		{
 			ApplyLabelStyle(stylesheet.LabelStyles.SafelyGetStyle(name));
 		}
 
+		/// <summary>
+		/// Copies all properties from another widget to this label.
+		/// </summary>
+		/// <param name="w">The widget to copy properties from.</param>
 		protected internal override void CopyFrom(Widget w)
 		{
 			base.CopyFrom(w);
@@ -326,8 +396,8 @@ namespace Myra.Graphics2D.UI
 			TextAlign = label.TextAlign;
 			TextColor = label.TextColor;
 			DisabledTextColor = label.DisabledTextColor;
-			OverTextColor= label.OverTextColor;
-			PressedTextColor= label.PressedTextColor;
+			OverTextColor = label.OverTextColor;
+			PressedTextColor = label.PressedTextColor;
 		}
 	}
 }
