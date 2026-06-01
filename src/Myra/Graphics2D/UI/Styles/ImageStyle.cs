@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using Microsoft.Xna.Framework;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image widgets.
@@ -16,6 +18,11 @@
 		public IImage OverImage { get; set; }
 
 		/// <summary>
+		/// Gets or sets the color tint applied to the image.
+		/// </summary>
+		public Color Color { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageStyle"/> class.
 		/// </summary>
 		public ImageStyle()
@@ -30,6 +37,7 @@
 		{
 			Image = style.Image;
 			OverImage = style.OverImage;
+			Color = style.Color;
 		}
 
 		/// <summary>
