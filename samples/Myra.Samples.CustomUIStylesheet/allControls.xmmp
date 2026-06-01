@@ -11,7 +11,7 @@
         <Label Text="Button:" />
         <Button Id="_button" Grid.Column="1">
           <HorizontalStackPanel>
-            <Image Id="_image" />
+            <Image Renderable="*:music-off" Id="_image" />
             <Label Text="Button" />
           </HorizontalStackPanel>
         </Button>
@@ -21,7 +21,7 @@
         </Button>
         <Label Text="Image Button:" Grid.Row="2" />
         <Button Id="_imageButton" Grid.Column="1" Grid.Row="2">
-          <Image />
+          <Image Renderable="*:sound-off" />
         </Button>
         <CheckButton Grid.Row="3" Grid.ColumnSpan="2">
           <Label Text="This is checkbox" />

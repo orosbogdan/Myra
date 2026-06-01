@@ -21,8 +21,8 @@ namespace Myra.Graphics2D.UI
 	{
 		private readonly SingleItemLayout<Button> _layout;
 
-		private float _value, _wheelStep;
-		private bool _wheelAdjustment, _acceptWheelInput;
+		private float _value, _wheelStep = 1.0f;
+		private bool _wheelAdjustment;
 
 		/// <summary>
 		/// Gets the orientation of the slider (horizontal or vertical).
@@ -98,7 +98,6 @@ namespace Myra.Graphics2D.UI
 			set
 			{
 				_wheelAdjustment = value;
-				_acceptWheelInput = value;
 			}
 		}
 
@@ -122,10 +121,11 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets a value indicating whether the slider accepts mouse wheel input.
 		/// </summary>
-		protected internal override bool AcceptsMouseWheel {
+		protected internal override bool AcceptsMouseWheel
+		{
 			get
 			{
-				return _acceptWheelInput;
+				return _wheelAdjustment;
 			}
 		}
 
@@ -295,15 +295,15 @@ namespace Myra.Graphics2D.UI
 		public override void OnMouseWheel(float delta)
 		{
 			base.OnMouseWheel(delta);
-			
-			if(_wheelAdjustment)
+
+			if (_wheelAdjustment)
 			{
 				var prevValue = _value;
-				
+
 				if (delta < 0)
 				{
 					Value -= WheelStep;
-				}				
+				}
 				else
 				{
 					Value += WheelStep;

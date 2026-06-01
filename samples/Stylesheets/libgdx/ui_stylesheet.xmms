@@ -3,18 +3,18 @@
   <Fonts>
     <Font Id="ui_font" File="ui_font.fnt"/>
   </Fonts>
-  <TextBlockStyles>
-    <TextBlockStyle Font="ui_font" TextColor="white" DisabledTextColor="gray" />
-  </TextBlockStyles>
-  <TextFieldStyles>
-    <TextFieldStyle Background="textfield" TextColor="white" DisabledTextColor="gray" Font="ui_font" Cursor="cursor" Selection="selection" />
-  </TextFieldStyles>
-  <ScrollPaneStyles>
-    <ScrollPaneStyle Background="default-rect" HorizontalScrollBackground="default-scroll" HorizontalScrollKnob="default-round-large" VerticalScrollBackground="default-scroll" VerticalScrollKnob="default-round-large" />
-  </ScrollPaneStyles>
+  <LabelStyles>
+    <LabelStyle Font="ui_font" TextColor="white" DisabledTextColor="gray" />
+  </LabelStyles>
+  <TextBoxStyles>
+    <TextBoxStyle Background="textfield" TextColor="white" DisabledTextColor="gray" Font="ui_font" Cursor="cursor" Selection="selection" />
+  </TextBoxStyles>
+  <ScrollViewerStyles>
+    <ScrollViewerStyle HorizontalScrollBackground="default-scroll" HorizontalScrollKnob="default-round-large" VerticalScrollBackground="default-scroll" VerticalScrollKnob="default-round-large" />
+  </ScrollViewerStyles>
   <ButtonStyles>
     <ButtonStyle Background="default-round" Padding="5, 0" PressedBackground="default-round-down">
-      <TextBlockStyle Font="ui_font" TextColor="white" DisabledTextColor="gray" />
+      <LabelStyle Font="ui_font" TextColor="white" DisabledTextColor="gray" />
     </ButtonStyle>
   </ButtonStyles>
   <CheckBoxStyles>
@@ -25,7 +25,7 @@
   </CheckBoxStyles>
   <SpinButtonStyles>
     <SpinButtonStyle Background="textfield">
-      <TextFieldStyle TextColor="white" DisabledTextColor="gray" Font="ui_font" Cursor="cursor" Selection="selection" />
+      <TextBoxStyle TextColor="white" DisabledTextColor="gray" Font="ui_font" Cursor="cursor" Selection="selection" />
       <UpButtonStyle Background="default-round" PressedBackground="default-round-down">
         <ImageStyle Image="tree-plus" />
       </UpButtonStyle>

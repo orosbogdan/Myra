@@ -4,8 +4,8 @@
     <VerticalStackPanel Spacing="8">
       <HorizontalMenu VerticalAlignment="Stretch" Id="_mainMenu">
         <MenuItem Text="&amp;File" Id="_menuFile">
-          <MenuItem Text="&amp;Open" ShortcutText="Ctrl+O" Id="_menuItemOpenFile" />
-          <MenuItem Text="&amp;Save" ShortcutText="Ctrl+S" Id="_menuItemSaveFile" />
+          <MenuItem Text="&amp;Open" Image="*:icon-folder" ShortcutText="Ctrl+O" Id="_menuItemOpenFile" />
+          <MenuItem Text="&amp;Save" Image="*:icon-folder-new" ShortcutText="Ctrl+S" Id="_menuItemSaveFile" />
           <MenuItem Text="Choose Fol&amp;der" ShortcutText="Ctrl+D" Id="_menuItemChooseFolder" />
           <MenuItem Text="Choose Co&amp;lor" ShortcutText="Ctrl+L" Id="_menuItemChooseColor" />
           <MenuSeparator />
@@ -34,7 +34,7 @@
             <Label Text="Button:" />
             <Button Padding="8, 0" Tooltip="E=mc/v[-8]2/n/vdMass–energy equivalence." Id="_buttonSaveFile" Grid.Column="1">
               <HorizontalStackPanel>
-                <Image Id="_imageSaveFile" />
+                <Image Renderable="*:icon-star" Id="_imageSaveFile" />
                 <Label Text="Save File" />
               </HorizontalStackPanel>
             </Button>
@@ -42,7 +42,7 @@
             <Label Text="Another Button:" Grid.Row="1" />
             <Button Padding="8, 0" Tooltip="Tooltip 2" Id="_buttonOpenFile" Grid.Column="1" Grid.Row="1">
               <HorizontalStackPanel>
-                <Image Id="_imageOpenFile" />
+                <Image Renderable="*:icon-star" Id="_imageOpenFile" />
                 <Label Text="Open File" />
               </HorizontalStackPanel>
             </Button>
@@ -50,7 +50,7 @@
             <Label Text="Blue Button:" Grid.Row="2" />
             <Button StyleName="blue" Padding="8, 0" Id="_buttonChooseFolder" Grid.Column="1" Grid.Row="2">
               <HorizontalStackPanel>
-                <Image Id="_imageChooseFolder" />
+                <Image Renderable="*:icon-star" Id="_imageChooseFolder" />
                 <Label Text="Choose Folder" />
               </HorizontalStackPanel>
             </Button>
@@ -61,7 +61,7 @@
             </Button>
             <Label Text="Image Button:" Grid.Row="4" />
             <Button Padding="8, 0" Id="_imageButton" Grid.Column="1" Grid.Row="4">
-              <Image />
+              <Image Renderable="*:icon-star-outline" />
             </Button>
             <CheckButton CheckContentSpacing="4" Grid.Row="5" Grid.ColumnSpan="2">
               <Label Text="This is checkbox" />
