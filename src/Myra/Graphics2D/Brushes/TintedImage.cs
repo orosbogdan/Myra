@@ -25,7 +25,7 @@ namespace Myra.Graphics2D.Brushes
 
 		public void Draw(RenderContext context, Rectangle dest, Color color)
 		{
-			if (color != Color.White)
+			if (Color != Color.White)
 			{
 				color = new Color((int)(Color.R * color.R / 255.0f),
 					(int)(Color.G * color.G / 255.0f),

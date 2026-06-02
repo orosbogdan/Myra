@@ -76,6 +76,7 @@ namespace Myra.Graphics2D.UI.Styles
 			if (parts.Length > 1)
 			{
 				color = ColorStorage.FromName(parts[1]);
+				assetName = parts[0];
 			}
 
 			var region = assetManager.LoadTextureRegion(assetName);

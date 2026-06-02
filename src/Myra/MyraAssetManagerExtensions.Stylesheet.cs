@@ -31,7 +31,6 @@ namespace AssetManagementBase
 				result.Atlas = manager.LoadTextureRegionAtlas(attr.Value);
 
 				// Load fonts
-				// Load fonts
 				var fonts = new Dictionary<string, SpriteFontBase>();
 				var fontsNode = xDoc.Root.Element("Fonts");
 

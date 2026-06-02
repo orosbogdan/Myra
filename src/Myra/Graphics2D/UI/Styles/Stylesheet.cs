@@ -111,6 +111,13 @@ namespace Myra.Graphics2D.UI.Styles
 		{
 			get
 			{
+				if (Atlas == null)
+				{
+					// Since we switch atlases sometimes
+					// In async context, Atlas could be null at the moment of access, so we need to check it every time
+					return DefaultAssets.WhiteRegion;
+				}
+
 				if (_whiteRegion == null)
 				{
 					if (!Atlas.Regions.TryGetValue("white", out _whiteRegion))
