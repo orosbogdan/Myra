@@ -4,11 +4,8 @@ using System.Xml.Serialization;
 using System.Xml.Linq;
 using Myra.MML;
 using System.Collections;
-using System.Reflection;
 using FontStashSharp;
 using Myra.Graphics2D.TextureAtlases;
-using FontStashSharp.RichText;
-using Myra.Graphics2D.Brushes;
 using System.ComponentModel;
 using Myra.Attributes;
 

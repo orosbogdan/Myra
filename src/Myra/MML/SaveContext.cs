@@ -7,12 +7,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using Myra.Attributes;
 using System.Linq;
-using Myra.Graphics2D;
 using FontStashSharp;
-using FontStashSharp.RichText;
-using info.lundin.math;
-using Myra.Graphics2D.TextureAtlases;
-
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;

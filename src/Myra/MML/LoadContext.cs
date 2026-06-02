@@ -12,7 +12,7 @@ using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
 using AssetManagementBase;
-
+using Myra.Graphics2D.UI.Styles;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;

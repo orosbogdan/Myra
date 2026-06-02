@@ -16,13 +16,9 @@ namespace AssetManagementBase
 		private static AssetLoader<Stylesheet> _stylesheetLoader = (manager, assetName, settings, tag) =>
 		{
 			var result = new Stylesheet();
-			using (var stylesheetChanger = new StylesheetChanger(result))
+
+			using (var changer = new StylesheetChanger(result))
 			{
-
-				// Temporarily set the loaded stylesheet to current
-				// So all assets would be loaded through it
-				Stylesheet.Current = result;
-
 				var xmlData = manager.ReadAsString(assetName);
 				var xDoc = XDocument.Parse(xmlData);
 
