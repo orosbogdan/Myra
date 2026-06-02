@@ -28,13 +28,13 @@ namespace Myra.Samples.AllWidgets
 		{
 			_menuItemOpenFile = new MenuItem();
 			_menuItemOpenFile.Text = "&Open";
-			_menuItemOpenFile.Image = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-folder");
+			_menuItemOpenFile.Image = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-folder");
 			_menuItemOpenFile.ShortcutText = "Ctrl+O";
 			_menuItemOpenFile.Id = "_menuItemOpenFile";
 
 			_menuItemSaveFile = new MenuItem();
 			_menuItemSaveFile.Text = "&Save";
-			_menuItemSaveFile.Image = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-folder-new");
+			_menuItemSaveFile.Image = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-folder-new");
 			_menuItemSaveFile.ShortcutText = "Ctrl+S";
 			_menuItemSaveFile.Id = "_menuItemSaveFile";
 
@@ -116,7 +116,7 @@ namespace Myra.Samples.AllWidgets
 			label1.Text = "Button:";
 
 			_imageSaveFile = new Image();
-			_imageSaveFile.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-star");
+			_imageSaveFile.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-star");
 			_imageSaveFile.Id = "_imageSaveFile";
 
 			var label2 = new Label();
@@ -142,7 +142,7 @@ namespace Myra.Samples.AllWidgets
 			Grid.SetRow(label3, 1);
 
 			_imageOpenFile = new Image();
-			_imageOpenFile.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-star");
+			_imageOpenFile.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-star");
 			_imageOpenFile.Id = "_imageOpenFile";
 
 			var label4 = new Label();
@@ -170,7 +170,7 @@ namespace Myra.Samples.AllWidgets
 			Grid.SetRow(label5, 2);
 
 			_imageChooseFolder = new Image();
-			_imageChooseFolder.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-star");
+			_imageChooseFolder.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-star");
 			_imageChooseFolder.Id = "_imageChooseFolder";
 
 			var label6 = new Label();
@@ -212,7 +212,7 @@ namespace Myra.Samples.AllWidgets
 			Grid.SetRow(label8, 4);
 
 			var image1 = new Image();
-			image1.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:icon-star-outline");
+			image1.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("icon-star-outline");
 
 			_imageButton = new Button();
 			_imageButton.Padding = new Thickness(8, 0);

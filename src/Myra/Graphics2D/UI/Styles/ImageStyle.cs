@@ -5,7 +5,7 @@ namespace Myra.Graphics2D.UI.Styles
 	/// <summary>
 	/// Style class that defines the visual appearance of image widgets.
 	/// </summary>
-	public class ImageStyle: WidgetStyle
+	public class ImageStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the image displayed by the image widget.
@@ -18,11 +18,6 @@ namespace Myra.Graphics2D.UI.Styles
 		public IImage OverImage { get; set; }
 
 		/// <summary>
-		/// Gets or sets the color tint applied to the image.
-		/// </summary>
-		public Color Color { get; set; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageStyle"/> class.
 		/// </summary>
 		public ImageStyle()
@@ -33,11 +28,10 @@ namespace Myra.Graphics2D.UI.Styles
 		/// Initializes a new instance of the <see cref="ImageStyle"/> class by copying properties from another style.
 		/// </summary>
 		/// <param name="style">The source image style to copy from.</param>
-		public ImageStyle(ImageStyle style): base(style)
+		public ImageStyle(ImageStyle style) : base(style)
 		{
 			Image = style.Image;
 			OverImage = style.OverImage;
-			Color = style.Color;
 		}
 
 		/// <summary>

@@ -30,7 +30,7 @@ namespace Myra.Samples.CustomUIStylesheet
 			label1.Text = "Button:";
 
 			_image = new Image();
-			_image.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:music-off");
+			_image.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("music-off");
 			_image.Id = "_image";
 
 			var label2 = new Label();
@@ -64,7 +64,7 @@ namespace Myra.Samples.CustomUIStylesheet
 			Grid.SetRow(label4, 2);
 
 			var image1 = new Image();
-			image1.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("*:sound-off");
+			image1.Renderable = MyraEnvironment.DefaultAssetManager.LoadTextureRegion("sound-off");
 
 			_imageButton = new Button();
 			_imageButton.Id = "_imageButton";

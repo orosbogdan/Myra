@@ -236,7 +236,6 @@ namespace Myra.Graphics2D.UI
 			Renderable = imageStyle.Image;
 			OverRenderable = imageStyle.OverImage;
 			PressedRenderable = imageStyle.PressedImage;
-			Color = imageStyle.Color;
 		}
 
 		/// <summary>
