@@ -17,7 +17,7 @@ namespace Myra.Graphics2D.TextureAtlases
 	/// <summary>
 	/// Represents a rectangular region within a texture.
 	/// </summary>
-	public class TextureRegion: IImage
+	public class TextureRegion : IImage
 	{
 		private readonly Rectangle _bounds;
 

@@ -3,6 +3,7 @@ using GdxSkinImport.MonoGdx;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI.Styles;
 using System;
@@ -15,14 +16,6 @@ namespace GdxSkinImport;
 
 public class Converter
 {
-	private class TintedDrawable
-	{
-		public string Name { get; set; }
-		public Color Color { get; set; }
-
-		public override string ToString() => $"{Name}:{Color}";
-	}
-
 	private readonly GraphicsDevice _device;
 	private readonly string _path;
 	private readonly string _folder;
@@ -30,7 +23,7 @@ public class Converter
 	private TextureRegionAtlas _atlas;
 	private readonly ColorsCache _colors = new ColorsCache();
 	private readonly Dictionary<string, SpriteFontBase> _fonts = new Dictionary<string, SpriteFontBase>();
-	private readonly Dictionary<string, TintedDrawable> _tintedDrawables = new Dictionary<string, TintedDrawable>();
+	private readonly Dictionary<string, TintedImage> _tintedDrawables = new Dictionary<string, TintedImage>();
 
 	public Converter(GraphicsDevice device, string path)
 	{
@@ -80,7 +73,7 @@ public class Converter
 		return result;
 	}
 
-	private TextureRegion GetDrawable(string name)
+	private IImage GetDrawable(string name)
 	{
 		if (_atlas.Regions.TryGetValue(name, out var region))
 		{
@@ -89,8 +82,7 @@ public class Converter
 
 		if (_tintedDrawables.TryGetValue(name, out var tinted))
 		{
-			var baseRegion = _atlas.Regions[tinted.Name];
-			return baseRegion;
+			return tinted;
 		}
 
 		throw new Exception($"Could not find drawable '{name}'");
@@ -261,11 +253,10 @@ public class Converter
 			{
 				var v = (Dictionary<string, object>)pair.Value;
 
-				var td = new TintedDrawable
-				{
-					Name = (string)v["name"],
-					Color = GetColor(v, "color")
-				};
+				var region = _atlas.Regions[(string)v["name"]];
+
+				var td = new TintedImage(region, GetColor(v, "color"));
+
 
 				_tintedDrawables[pair.Key] = td;
 			}
