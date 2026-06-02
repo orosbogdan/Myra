@@ -248,7 +248,7 @@ public class Converter
 					return new TextureWithOffset(region.Texture, region.Bounds.Location);
 				});
 
-				font.Name = pair.Key;
+				font.Name = file;
 
 				_fonts[pair.Key] = font;
 			}

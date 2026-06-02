@@ -9,6 +9,10 @@ using FontStashSharp;
 using Myra.Graphics2D.TextureAtlases;
 using FontStashSharp.RichText;
 using Myra.Graphics2D.Brushes;
+using System.ComponentModel;
+using Myra.Attributes;
+
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -96,11 +100,14 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets the texture atlas containing all texture regions used in the stylesheet.
 		/// </summary>
+		[SimpleProperty]
 		public TextureRegionAtlas Atlas { get; internal set; }
 
 		/// <summary>
 		/// Gets a white texture region from the atlas, used for solid color rendering.
 		/// </summary>
+		[Browsable(false)]
+		[XmlIgnore]
 		public TextureRegion WhiteRegion
 		{
 			get
@@ -607,6 +614,16 @@ namespace Myra.Graphics2D.UI.Styles
 			loadContext.Load<object>(result, xDoc.Root, null);
 
 			return result;
+		}
+
+		public string ToXml()
+		{
+			var saveContext = new SaveContext();
+			var root = saveContext.Save(this);
+
+			var xDoc = new XDocument(root);
+
+			return xDoc.ToString();
 		}
 
 		/// <summary>

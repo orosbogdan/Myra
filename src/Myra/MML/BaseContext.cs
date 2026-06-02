@@ -39,7 +39,7 @@ namespace Myra.MML
 		}
 
 		protected static void ParseProperties(Type type, bool checkSkipSave,
-			out List<PropertyInfo> complexProperties, 
+			out List<PropertyInfo> complexProperties,
 			out List<PropertyInfo> simpleProperties)
 		{
 			complexProperties = new List<PropertyInfo>();
@@ -70,10 +70,13 @@ namespace Myra.MML
 					}
 				}
 
+				attr = property.FindAttribute<SimplePropertyAttribute>();
+
 				var propertyType = property.PropertyType;
-				if (propertyType.IsPrimitive || 
+				if (attr != null ||
+					propertyType.IsPrimitive ||
 					propertyType.IsNullablePrimitive() ||
-					propertyType.IsEnum || 
+					propertyType.IsEnum ||
 					propertyType.IsNullableEnum() ||
 					propertyType == typeof(string) ||
 					propertyType == typeof(Vector2) ||
@@ -84,7 +87,8 @@ namespace Myra.MML
 					propertyType == typeof(Thickness))
 				{
 					simpleProperties.Add(property);
-				} else
+				}
+				else
 				{
 					complexProperties.Add(property);
 				}

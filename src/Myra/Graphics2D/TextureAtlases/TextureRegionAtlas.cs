@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Myra.MML;
+using System.Xml.Serialization;
+using System.ComponentModel;
+
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -33,6 +37,11 @@ namespace Myra.Graphics2D.TextureAtlases
 		private const string NinePatchTopName = "NinePatchTop";
 		private const string NinePatchRightName = "NinePatchRight";
 		private const string NinePatchBottomName = "NinePatchBottom";
+
+		/// <summary>
+		/// User-specified name
+		/// </summary>
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image file name or path for this texture atlas.
@@ -181,5 +190,7 @@ namespace Myra.Graphics2D.TextureAtlases
 
 			return result;
 		}
+
+		public override string ToString() => Name;
 	}
 }

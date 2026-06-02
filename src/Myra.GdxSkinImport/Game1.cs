@@ -10,6 +10,9 @@ namespace GdxSkinImport;
 
 public class Game1 : Game
 {
+	private const string TextureAtlasFile = "ui_stylesheet.xmat";
+	private const string StylesheetFile = "ui_stylesheet.xmms";
+
 	private readonly GraphicsDeviceManager _graphics;
 	private readonly string _inputFile;
 
@@ -56,8 +59,9 @@ public class Game1 : Game
 	private void SaveStylesheet(Stylesheet stylesheet, string outputDir, string sourceDir, Converter converter)
 	{
 		// Save texture atlas as .xmat
+		stylesheet.Atlas.Name = TextureAtlasFile;
 		var atlasXml = stylesheet.Atlas.ToXml();
-		var atlasPath = Path.Combine(outputDir, "ui_stylesheet.xmat");
+		var atlasPath = Path.Combine(outputDir, TextureAtlasFile);
 		File.WriteAllText(atlasPath, atlasXml);
 		Console.WriteLine($"Saved atlas: {atlasPath}");
 
@@ -83,7 +87,7 @@ public class Game1 : Game
 				var fntContent = File.ReadAllText(fntFile);
 
 				var regex = new Regex(@"file=""([^\.]+)\.([^""]+)""");
-				fntContent = regex.Replace(fntContent, $"file=\":$1\"");
+				fntContent = regex.Replace(fntContent, $"file=\"{TextureAtlasFile}:$1\"");
 
 				// Save the font file
 				File.WriteAllText(destFntPath, fntContent);
@@ -92,9 +96,9 @@ public class Game1 : Game
 		}
 
 		// Save stylesheet as .xmms
-		// var stylesheetXml = SerializeStylesheet(stylesheet);
-		var stylesheetPath = Path.Combine(outputDir, "ui_stylesheet.xmms");
-		// File.WriteAllText(stylesheetPath, stylesheetXml);
+		var stylesheetXml = stylesheet.ToXml();
+		var stylesheetPath = Path.Combine(outputDir, StylesheetFile);
+		File.WriteAllText(stylesheetPath, stylesheetXml);
 		Console.WriteLine($"Saved stylesheet: {stylesheetPath}");
 	}
 

@@ -11,6 +11,8 @@ using Myra.Graphics2D;
 using FontStashSharp;
 using FontStashSharp.RichText;
 using info.lundin.math;
+using Myra.Graphics2D.TextureAtlases;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -25,12 +27,12 @@ namespace Myra.MML
 	// Serializes .NET objects to XML elements.
 	// Mirror of LoadContext: converts objects back to XML for saving UI projects.
 	// Omits properties with default values to minimize file size.
-	internal class SaveContext: BaseContext
+	internal class SaveContext : BaseContext
 	{
 		// Predicate to determine if a property should be serialized.
 		// Defaults to HasDefaultValue: skips properties with default values.
 		// Can be overridden per context (e.g., Project.ShouldSerializeProperty for stylesheet filtering).
-		public Func<object, PropertyInfo, bool> ShouldSerializeProperty = HasDefaultValue;
+		public Func<object, PropertyInfo, bool> ShouldSerializeProperty = (o, p) => !HasDefaultValue(o, p);
 
 		// Converts property value to string for XML serialization.
 		// Handles custom serializers, colors, resources, and primitives.
@@ -47,20 +49,12 @@ namespace Myra.MML
 			else if (propertyType == typeof(Color?))
 			{
 				// Nullable color: convert to hex string
-				str = ((Color?)value).Value.ToHexString();
+				str = ((Color?)value).Value.ToColorString();
 			}
 			else if (propertyType == typeof(Color))
 			{
 				// Non-nullable color: convert to hex string
-				str = ((Color)value).ToHexString();
-			}
-			else if (typeof(IBrush).IsAssignableFrom(propertyType) || propertyType == typeof(SpriteFontBase))
-			{
-				// Resource (brush or font): use resource name tracked during load
-				if (baseObject != null)
-				{
-					baseObject.Resources.TryGetValue(propertyName, out str);
-				}
+				str = ((Color)value).ToColorString();
 			}
 			else
 			{
@@ -75,16 +69,15 @@ namespace Myra.MML
 		// Only includes properties that pass ShouldSerializeProperty filter (typically non-default values).
 		public XElement Save(object obj, bool skipComplex = false, string tagName = null, Type parentType = null)
 		{
+			// Create root element with tag name or type name
 			var type = obj.GetType();
 
+			var el = new XElement(tagName ?? type.Name);
 			var baseObject = obj as BaseObject;
 
 			// Separate properties into simple (attributes) and complex (child elements)
 			List<PropertyInfo> complexProperties, simpleProperties;
 			ParseProperties(type, true, out complexProperties, out simpleProperties);
-
-			// Create root element with tag name or type name
-			var el = new XElement(tagName ?? type.Name);
 
 			// Phase 1: Serialize simple properties as XML attributes
 			foreach (var property in simpleProperties)
@@ -159,33 +152,75 @@ namespace Myra.MML
 
 					var propertyName = type.Name + "." + property.Name;
 					var isContent = property == contentProperty;
-					var asList = value as IList;
 
-					if (asList == null)
+					do
 					{
+						var asDict = value as IDictionary;
+						if (asDict != null)
+						{
+							if (asDict.Count > 0)
+							{
+								// Serialize each key-value pair in dictionary, preserving parent type context
+								var dictRoot = new XElement(propertyName);
+								el.Add(dictRoot);
+
+								foreach (DictionaryEntry entry in asDict)
+								{
+									var asFont = entry.Value as SpriteFontBase;
+
+									XElement el2;
+									if (asFont != null)
+									{
+										// Special case
+										el2 = new XElement("Font");
+
+										el2.SetAttributeValue("Id", entry.Key.ToString());
+										el2.SetAttributeValue("File", asFont.ToString());
+									}
+									else
+									{
+										el2 = Save(entry.Value);
+									}
+
+									dictRoot.Add(el2);
+								}
+							}
+
+							break;
+						}
+
+						var asList = value as IList;
+						if (asList != null)
+						{
+							if (asList.Count > 0)
+							{
+								// Collection property: each item is a child element
+								var collectionRoot = el;
+
+								// If not a [Content] property and non-empty, create wrapper element for collection
+								if (property.FindAttribute<ContentAttribute>() == null && asList.Count > 0)
+								{
+									collectionRoot = new XElement(propertyName);
+									el.Add(collectionRoot);
+								}
+
+								// Serialize each item in collection, preserving parent type context
+								foreach (var comp in asList)
+								{
+									collectionRoot.Add(Save(comp, parentType: obj.GetType()));
+								}
+							}
+
+							break;
+						}
+
 						// Single object property: recursively serialize as child element
 						// If it's the content property, serialize directly into element
 						// Otherwise, use full property name as tag
-						el.Add(isContent?Save(value):Save(value, false, propertyName));
-					}
-					else
-					{
-						// Collection property: each item is a child element
-						var collectionRoot = el;
+						el.Add(isContent ? Save(value) : Save(value, false, propertyName));
 
-						// If not a [Content] property and non-empty, create wrapper element for collection
-						if (property.FindAttribute<ContentAttribute>() == null && asList.Count > 0)
-						{
-							collectionRoot = new XElement(propertyName);
-							el.Add(collectionRoot);
-						}
-
-						// Serialize each item in collection, preserving parent type context
-						foreach (var comp in asList)
-						{
-							collectionRoot.Add(Save(comp, parentType: obj.GetType()));
-						}
 					}
+					while (false);
 				}
 			}
 

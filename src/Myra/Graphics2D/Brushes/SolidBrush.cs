@@ -1,7 +1,7 @@
 ﻿using FontStashSharp.RichText;
 using System;
 using Myra.Graphics2D.UI.Styles;
-
+using Myra.Utility;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -87,15 +87,6 @@ namespace Myra.Graphics2D.Brushes
 			}
 		}
 
-		public override string ToString()
-		{
-			var name = ColorStorage.GetColorName(Color);
-			if (!string.IsNullOrEmpty(name))
-			{
-				return name;
-			}
-
-			return Color.ToHexString();
-		}
+		public override string ToString() => Color.ToColorString();
 	}
 }
