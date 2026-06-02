@@ -288,10 +288,8 @@ public class Converter
 		if (data.TryGetValue("handle", out var handleObj))
 		{
 			var handleStyle = new SplitPanelButtonStyle();
-			var buttonStyle = LoadButtonStyle(data);
 
-			handleStyle.Background = buttonStyle.Background;
-			handleStyle.PressedBackground = buttonStyle.PressedBackground;
+			handleStyle.Background = GetDrawable(handleObj.ToString());
 
 			style.HandleStyle = handleStyle;
 		}
@@ -372,7 +370,7 @@ public class Converter
 
 	private static string ResolveId(string id)
 	{
-		if (id == "default")
+		if (id.StartsWith("default"))
 		{
 			return Stylesheet.DefaultStyleName;
 		}

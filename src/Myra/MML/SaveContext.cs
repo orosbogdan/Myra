@@ -29,6 +29,8 @@ namespace Myra.MML
 		// Can be overridden per context (e.g., Project.ShouldSerializeProperty for stylesheet filtering).
 		public Func<object, PropertyInfo, bool> ShouldSerializeProperty = (o, p) => !HasDefaultValue(o, p);
 
+		public bool PrependNamespace { get; set; } = true;
+
 		// Converts property value to string for XML serialization.
 		// Handles custom serializers, colors, resources, and primitives.
 		private static string SaveSimpleProperty(BaseObject baseObject, object value, Type propertyType, string propertyName)
@@ -138,7 +140,16 @@ namespace Myra.MML
 						continue;
 					}
 
-					var propertyName = type.Name + "." + property.Name();
+					string propertyName;
+
+					if (PrependNamespace)
+					{
+						propertyName = type.Name + "." + property.Name();
+					} else
+					{
+						propertyName = property.Name();
+					}
+					
 					var isContent = property == contentProperty;
 
 					do
@@ -149,7 +160,7 @@ namespace Myra.MML
 							if (asDict.Count > 0)
 							{
 								// Serialize each key-value pair in dictionary, preserving parent type context
-								var dictRoot = new XElement(property.Name());
+								var dictRoot = new XElement(propertyName);
 								el.Add(dictRoot);
 
 								foreach (DictionaryEntry entry in asDict)

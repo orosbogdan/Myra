@@ -550,6 +550,8 @@ namespace Myra.Graphics2D.UI.Styles
 		public string ToXml()
 		{
 			var saveContext = new SaveContext();
+			saveContext.PrependNamespace = false;
+
 			var root = saveContext.Save(this);
 
 			var xDoc = new XDocument(root);

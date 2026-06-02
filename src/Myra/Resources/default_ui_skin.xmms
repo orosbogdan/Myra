@@ -17,22 +17,16 @@
 		<ScrollViewerStyle HorizontalScrollBackground="scroll-horizontal" HorizontalScrollKnob="scroll-knob-horizontal" VerticalScrollBackground="scroll" VerticalScrollKnob="scroll-knob-vertical" />
 	</ScrollViewerStyles>
 	<ButtonStyles>
-		<ButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down">
-			<LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-		</ButtonStyle>
-		<ButtonStyle Id="blue" Background="button-blue" OverBackground="button-blue-down" PressedBackground="button-blue-down">
-			<LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-		</ButtonStyle>
+		<ButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down"/>
+		<ButtonStyle Id="blue" Background="button-blue" OverBackground="button-blue-down" PressedBackground="button-blue-down"/>
 	</ButtonStyles>
 	<CheckBoxStyles>
 		<CheckBoxStyle>
-			<LabelStyle Font="default-font" TextColor="white" />
 			<ImageStyle Background="vis-check" OverBackground="vis-check-over" PressedImage="vis-check-tick" />
 		</CheckBoxStyle>
 	</CheckBoxStyles>
 	<RadioButtonStyles>
 		<RadioButtonStyle>
-			<LabelStyle Font="default-font" TextColor="white" />
 			<ImageStyle Image="vis-radio-tick-disabled" PressedImage="vis-radio-tick" />
 		</RadioButtonStyle>
 	</RadioButtonStyles>
@@ -75,20 +69,15 @@
 	</VerticalSeparatorStyles>
 	<ComboBoxStyles>
 		<ComboBoxStyle Background="default-select">
-			<LabelStyle Font="default-font" TextColor="white" />
 			<ListBoxStyle Background="select-box-list-bg">
-				<ListItemStyle OverBackground="button-over" PressedBackground="button-down">
-					<LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-				</ListItemStyle>
+				<ListItemStyle OverBackground="button-over" PressedBackground="button-down"/>
 				<SeparatorStyle Padding="0, 2" Image="separator-menu" Thickness="4" />
 			</ListBoxStyle>
 		</ComboBoxStyle>
 	</ComboBoxStyles>
 	<ListBoxStyles>
 		<ListBoxStyle Background="button">
-			<ListItemStyle OverBackground="button-over" Padding="5, 0" PressedBackground="list-selection">
-				<LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-			</ListItemStyle>
+			<ListItemStyle OverBackground="button-over" Padding="5, 0" PressedBackground="list-selection"/>
 			<SeparatorStyle Padding="0, 2" Image="separator-menu" Thickness="4" />
 		</ListBoxStyle>
 	</ListBoxStyles>
