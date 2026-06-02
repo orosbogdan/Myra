@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myra.Samples.CustomWidgets.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myra.Samples.CustomWidgets.Scene3D", "..\samples\Myra.Samples.CustomWidgets.Scene3D\Myra.Samples.CustomWidgets.Scene3D.csproj", "{27B545C3-942F-0E69-1438-C30B4859EFA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myra.GdxSkinImport", "..\src\Myra.GdxSkinImport\Myra.GdxSkinImport.csproj", "{D51F8D7C-BB67-E4AC-0037-7DA5C6156E2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,10 @@ Global
 		{27B545C3-942F-0E69-1438-C30B4859EFA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27B545C3-942F-0E69-1438-C30B4859EFA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27B545C3-942F-0E69-1438-C30B4859EFA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D51F8D7C-BB67-E4AC-0037-7DA5C6156E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D51F8D7C-BB67-E4AC-0037-7DA5C6156E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D51F8D7C-BB67-E4AC-0037-7DA5C6156E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D51F8D7C-BB67-E4AC-0037-7DA5C6156E2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

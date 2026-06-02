@@ -21,6 +21,8 @@ namespace Myra.Graphics2D.TextureAtlases
 	{
 		private readonly Rectangle _bounds;
 
+		public string Name { get; set; }
+
 #if MONOGAME || FNA || STRIDE
 		private readonly Texture2D _texture;
 		/// <summary>
@@ -116,5 +118,7 @@ namespace Myra.Graphics2D.TextureAtlases
 		{
 			context.Draw(Texture, dest, Bounds, color);
 		}
+
+		public override string ToString() => Name;
 	}
 }

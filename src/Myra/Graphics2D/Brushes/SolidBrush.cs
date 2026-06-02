@@ -86,5 +86,16 @@ namespace Myra.Graphics2D.Brushes
 				white.Draw(context, dest, c);
 			}
 		}
+
+		public override string ToString()
+		{
+			var name = ColorStorage.GetColorName(Color);
+			if (!string.IsNullOrEmpty(name))
+			{
+				return name;
+			}
+
+			return Color.ToHexString();
+		}
 	}
 }

@@ -94,14 +94,14 @@ namespace Myra.Graphics2D.TextureAtlases
 			root.SetAttributeValue(ImageName, Image);
 			doc.Add(root);
 
-			foreach(var pair in Regions)
+			foreach (var pair in Regions)
 			{
 				var region = pair.Value;
 				var asNinePatch = region as NinePatchRegion;
 
 				var entry = new XElement(asNinePatch != null ? NinePatchRegionName : TextureRegionName);
 
-				entry.SetAttributeValue(BaseContext.IdName, pair.Key);
+				entry.SetAttributeValue(BaseContext.IdName, region.Name);
 				entry.SetAttributeValue(LeftName, region.Bounds.Left);
 				entry.SetAttributeValue(TopName, region.Bounds.Top);
 				entry.SetAttributeValue(WidthName, region.Bounds.Width);
@@ -143,7 +143,7 @@ namespace Myra.Graphics2D.TextureAtlases
 
 			var texture = textureGetter(result.Image);
 			result.Texture = texture;
-			foreach(XElement entry in root.Elements())
+			foreach (XElement entry in root.Elements())
 			{
 				var id = entry.Attribute(BaseContext.IdName).Value;
 
@@ -160,7 +160,8 @@ namespace Myra.Graphics2D.TextureAtlases
 				if (!isNinePatch)
 				{
 					region = new TextureRegion(texture, bounds);
-				} else
+				}
+				else
 				{
 					var padding = new Thickness
 					{
@@ -172,6 +173,8 @@ namespace Myra.Graphics2D.TextureAtlases
 
 					region = new NinePatchRegion(texture, bounds, padding);
 				}
+
+				region.Name = id;
 
 				result[id] = region;
 			}

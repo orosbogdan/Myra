@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Style class for images that can display different images when pressed or hovered.
 	/// </summary>
-	public class PressableImageStyle: ImageStyle
+	public class PressableImageStyle : ImageStyle
 	{
 		/// <summary>
 		/// Gets or sets the image displayed when the widget is pressed.

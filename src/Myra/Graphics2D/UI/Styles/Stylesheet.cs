@@ -96,7 +96,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets the texture atlas containing all texture regions used in the stylesheet.
 		/// </summary>
-		public TextureRegionAtlas Atlas { get; private set; }
+		public TextureRegionAtlas Atlas { get; internal set; }
 
 		/// <summary>
 		/// Gets a white texture region from the atlas, used for solid color rendering.
@@ -117,7 +117,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets the dictionary of fonts available in this stylesheet, keyed by font name.
 		/// </summary>
-		public Dictionary<string, SpriteFontBase> Fonts { get; private set; }
+		public Dictionary<string, SpriteFontBase> Fonts { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the desktop background.
