@@ -161,7 +161,7 @@ namespace Myra.MML
 							if (asDict.Count > 0)
 							{
 								// Serialize each key-value pair in dictionary, preserving parent type context
-								var dictRoot = new XElement(propertyName);
+								var dictRoot = new XElement(property.Name);
 								el.Add(dictRoot);
 
 								foreach (DictionaryEntry entry in asDict)

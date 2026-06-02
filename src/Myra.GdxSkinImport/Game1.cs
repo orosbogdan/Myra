@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
 using Myra.Graphics2D.UI.Styles;
+using Myra.MML;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -40,8 +41,9 @@ public class Game1 : Game
 			var converter = new Converter(GraphicsDevice, _inputFile);
 			var stylesheet = converter.Process();
 
-			var inputDir = Path.GetDirectoryName(_inputFile);
-			var outputDir = "output";
+			var absoluteInputPath = Path.GetFullPath(_inputFile);
+			var inputDir = Path.GetDirectoryName(absoluteInputPath);
+			var outputDir = ".";
 			Directory.CreateDirectory(outputDir);
 
 			SaveStylesheet(stylesheet, outputDir, inputDir, converter);

@@ -98,9 +98,14 @@ public class Converter
 			if (font != null)
 				style.Font = font;
 		}
+
 		if (data.TryGetValue("fontColor", out var colorObj))
 		{
 			style.TextColor = GetColor(data, "fontColor");
+		}
+		else
+		{
+			style.TextColor = Color.White;
 		}
 	}
 
@@ -269,6 +274,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var labelStyle = new LabelStyle();
+				labelStyle.Id = pair.Key;
 				LoadLabelStyle((Dictionary<string, object>)pair.Value, labelStyle);
 				_result.LabelStyles[pair.Key] = labelStyle;
 			}
@@ -281,6 +287,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var buttonStyle = LoadButtonStyle((Dictionary<string, object>)pair.Value);
+				buttonStyle.Id = pair.Key;
 				_result.ButtonStyles[pair.Key] = buttonStyle;
 			}
 		}
@@ -293,6 +300,7 @@ public class Converter
 			{
 				var styleData = (Dictionary<string, object>)pair.Value;
 				var buttonStyle = LoadButtonStyle(styleData);
+				buttonStyle.Id = pair.Key;
 
 				var labelStyle = new LabelStyle();
 				LoadLabelStyle(styleData, labelStyle);
@@ -309,6 +317,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var checkBoxStyle = LoadCheckBoxStyle((Dictionary<string, object>)pair.Value);
+				checkBoxStyle.Id = pair.Key;
 				_result.CheckBoxStyles[pair.Key] = checkBoxStyle;
 			}
 		}
@@ -320,6 +329,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var textFieldStyle = LoadTextFieldStyle((Dictionary<string, object>)pair.Value);
+				textFieldStyle.Id = pair.Key;
 				_result.TextBoxStyles[pair.Key] = textFieldStyle;
 			}
 		}
@@ -331,6 +341,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var sliderStyle = LoadSliderStyle((Dictionary<string, object>)pair.Value);
+				sliderStyle.Id = pair.Key;
 
 				if (pair.Key.Contains("horizontal"))
 				{
@@ -350,6 +361,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var pbStyle = new ProgressBarStyle();
+				pbStyle.Id = pair.Key;
 				var styleData = (Dictionary<string, object>)pair.Value;
 
 				if (styleData.TryGetValue("background", out var bgObj))
@@ -380,6 +392,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var svStyle = new ScrollViewerStyle();
+				svStyle.Id = pair.Key;
 				var styleData = (Dictionary<string, object>)pair.Value;
 
 				if (styleData.TryGetValue("hScrollKnob", out var hKnobObj))

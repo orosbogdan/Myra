@@ -153,17 +153,16 @@ namespace AssetManagementBase
 				// Second part is texture region name
 				var parts = assetName.Split(':');
 
-				TextureRegionAtlas textureRegionAtlas;
-				if (parts[0] == "*")
-				{
-					textureRegionAtlas = Stylesheet.Current.Atlas;
-				}
-				else
-				{
-					textureRegionAtlas = assetManager.LoadTextureRegionAtlas(parts[0]);
-				}
+				var textureRegionAtlas = assetManager.LoadTextureRegionAtlas(parts[0]);
 
 				return textureRegionAtlas[parts[1]];
+			}
+
+			if (!assetName.Contains("."))
+			{
+				// If there's no extension, assume it's a texture region atlas with id equal to the asset name
+				var textureRegionAtlas = Stylesheet.Current.Atlas;
+				return textureRegionAtlas[assetName];
 			}
 
 			// Ordinary texture
