@@ -1,8 +1,15 @@
-﻿using Myra;
+﻿using FontStashSharp;
+using FontStashSharp.RichText;
+using Myra;
+using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Myra.Graphics2D.UI.Styles;
+using System;
 
 #if MONOGAME || FNA
+using Microsoft.Xna.Framework;
 #elif STRIDE
 using Stride.Core.Mathematics;
 using Texture2D = Stride.Graphics.Texture;
@@ -51,5 +58,116 @@ namespace AssetManagementBase
 		/// <param name="assetName">The name of the project asset to load.</param>
 		/// <returns>The loaded project.</returns>
 		public static Project LoadProject(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_projectLoader, assetName);
+
+		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName)
+		{
+			if (assetName.Contains(":"))
+			{
+				// First part is texture region atlas name
+				// Second part is texture region name
+				var parts = assetName.Split(':');
+
+				var textureRegionAtlas = assetManager.LoadTextureRegionAtlas(parts[0]);
+				return textureRegionAtlas[parts[1]];
+			}
+
+			if (!assetName.Contains("."))
+			{
+				// If there's no extension, assume it's a texture region atlas with id equal to the asset name
+				var textureRegionAtlas = Stylesheet.Current.Atlas;
+				return textureRegionAtlas[assetName];
+			}
+
+			// Ordinary texture
+#if MONOGAME || FNA || STRIDE
+			var texture = assetManager.LoadTexture2D(MyraEnvironment.GraphicsDevice, assetName);
+			return new TextureRegion(texture, new Rectangle(0, 0, texture.Width, texture.Height));
+#else
+			var texture = assetManager.LoadTexture2D(assetName);
+			return new TextureRegion(texture.Texture, new Rectangle(0, 0, texture.Width, texture.Height));
+#endif
+		}
+
+		public static IImage LoadImage(this AssetManager assetManager, string assetName)
+		{
+			var parts = assetName.Split(TintedImage.Separator);
+			Color? color = null;
+			if (parts.Length > 1)
+			{
+				color = ColorStorage.FromName(parts[1]);
+				assetName = parts[0];
+			}
+
+			var region = assetManager.LoadTextureRegion(assetName);
+			if (color == null)
+			{
+				return region;
+			}
+
+			return new TintedImage(region, color.Value);
+		}
+
+		public static IBrush LoadBrush(this AssetManager assetManager, string assetName)
+		{
+			if (!assetName.Contains(".") && assetName.IndexOf(TintedImage.Separator) == -1 && !assetName.Contains(":"))
+			{
+				// It's either a default stylesheet texture atlas region or color name
+				if (!Stylesheet.Current.Atlas.Regions.TryGetValue(assetName, out var region))
+				{
+					// Color
+					var color = ColorStorage.FromName(assetName);
+					if (color == null)
+					{
+						throw new Exception($"Could not parse brush name '{assetName}'");
+					}
+
+					return new SolidBrush(color.Value);
+				}
+			}
+
+			return assetManager.LoadImage(assetName);
+		}
+
+		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName)
+		{
+			var fontData = assetManager.ReadAsString(assetName);
+
+			return StaticSpriteFont.FromBMFont(fontData,
+						name =>
+						{
+							var region = assetManager.LoadTextureRegion(name);
+							return new TextureWithOffset(region.Texture, region.Bounds.Location);
+						});
+		}
+
+		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName)
+		{
+			if (!assetName.Contains("."))
+			{
+				// If there's no extension, assume it's a current stylesheet font
+				return Stylesheet.Current.Fonts[assetName];
+			}
+
+			if (assetName.Contains(".fnt"))
+			{
+				return assetManager.MyraLoadStaticSpriteFont(assetName);
+			}
+			else if (assetName.Contains(".ttf"))
+			{
+
+				var parts = assetName.Split(':');
+				if (parts.Length < 2)
+				{
+					throw new Exception("Missing font size");
+				}
+
+				var fontSize = int.Parse(parts[1].Trim());
+				var fontSystem = assetManager.LoadFontSystem(parts[0].Trim());
+
+				return fontSystem.GetFont(fontSize);
+			}
+
+			throw new Exception(string.Format("Can't load font '{0}'", assetName));
+		}
 	}
 }

@@ -11,11 +11,6 @@
 		public IBrush PressedBackground { get; set; }
 
 		/// <summary>
-		/// Gets or sets the style applied to the button's text label.
-		/// </summary>
-		public LabelStyle LabelStyle { get; set; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ButtonStyle"/> class.
 		/// </summary>
 		public ButtonStyle()
@@ -29,7 +24,6 @@
 		public ButtonStyle(ButtonStyle style): base(style)
 		{
 			PressedBackground = style.PressedBackground;
-			LabelStyle = style.LabelStyle != null ? new LabelStyle(style.LabelStyle) : null;
 		}
 
 		/// <summary>

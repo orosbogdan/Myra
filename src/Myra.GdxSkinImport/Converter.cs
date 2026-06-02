@@ -126,6 +126,37 @@ public class Converter
 		return style;
 	}
 
+	private ImageButtonStyle LoadImageButtonStyle(Dictionary<string, object> data)
+	{
+		var style = new ImageButtonStyle();
+
+		if (data.TryGetValue("imageUp", out var upObj))
+		{
+			var d = GetDrawable(upObj.ToString());
+			style.Background = d;
+			style.Width = d.Size.X;
+			style.Height = d.Size.Y;
+		}
+
+		if (data.TryGetValue("imageDown", out var downObj))
+		{
+			var d = GetDrawable(downObj.ToString());
+			style.PressedBackground = d;
+			style.Width = d.Size.X;
+			style.Height = d.Size.Y;
+		}
+
+		if (data.TryGetValue("imageOver", out var overObj))
+		{
+			var d = GetDrawable(overObj.ToString());
+			style.OverBackground = d;
+			style.Width = d.Size.X;
+			style.Height = d.Size.Y;
+		}
+
+		return style;
+	}
+
 	private ImageTextButtonStyle LoadCheckBoxStyle(Dictionary<string, object> data)
 	{
 		var style = new ImageTextButtonStyle();
@@ -212,6 +243,143 @@ public class Converter
 		return style;
 	}
 
+	private WindowStyle LoadWindowStyle(Dictionary<string, object> data)
+	{
+		var style = new WindowStyle();
+
+		if (data.TryGetValue("background", out var bgObj))
+		{
+			style.Background = GetDrawable(bgObj.ToString());
+		}
+
+		if (data.TryGetValue("titleFont", out var fontObj) || data.TryGetValue("title", out fontObj))
+		{
+			var labelStyle = new LabelStyle();
+			labelStyle.Font = GetFont(fontObj.ToString());
+
+			if (data.TryGetValue("titleFontColor", out var colorObj))
+			{
+				labelStyle.TextColor = GetColor(data, "titleFontColor");
+			}
+			else if (data.TryGetValue("fontColor", out colorObj))
+			{
+				labelStyle.TextColor = GetColor(data, "fontColor");
+			}
+
+			style.TitleStyle = labelStyle;
+		}
+
+		if (data.TryGetValue("closeButton", out var closeButtonObj))
+		{
+			var closeButtonStyle = new ImageButtonStyle();
+			var imageStyle = new PressableImageStyle();
+			imageStyle.Image = GetDrawable(closeButtonObj.ToString());
+			closeButtonStyle.ImageStyle = imageStyle;
+			style.CloseButtonStyle = closeButtonStyle;
+		}
+
+		return style;
+	}
+
+	private SplitPaneStyle LoadSplitPaneStyle(Dictionary<string, object> data)
+	{
+		var style = new SplitPaneStyle();
+
+		if (data.TryGetValue("handle", out var handleObj))
+		{
+			var handleStyle = new SplitPanelButtonStyle();
+			var buttonStyle = LoadButtonStyle(data);
+
+			handleStyle.Background = buttonStyle.Background;
+			handleStyle.PressedBackground = buttonStyle.PressedBackground;
+
+			style.HandleStyle = handleStyle;
+		}
+
+		return style;
+	}
+
+	private ListBoxStyle LoadListStyle(Dictionary<string, object> data)
+	{
+		var style = new ListBoxStyle();
+
+		// Load list item style
+		var listItemStyle = new ImageTextButtonStyle();
+
+		if (data.TryGetValue("selection", out var selectionObj))
+		{
+			listItemStyle.PressedBackground = GetDrawable(selectionObj.ToString());
+		}
+
+		if (data.TryGetValue("over", out var overObj))
+		{
+			listItemStyle.Background = GetDrawable(overObj.ToString());
+		}
+
+		if (data.TryGetValue("down", out var downObj))
+		{
+			listItemStyle.PressedBackground = GetDrawable(downObj.ToString());
+		}
+
+		if (data.TryGetValue("up", out var upObj))
+		{
+			listItemStyle.Background = GetDrawable(upObj.ToString());
+		}
+
+		if (data.TryGetValue("font", out var fontObj))
+		{
+			var itemLabelStyle = new LabelStyle();
+			itemLabelStyle.Font = GetFont(fontObj.ToString());
+
+			if (data.TryGetValue("fontColor", out var colorObj))
+			{
+				itemLabelStyle.TextColor = GetColor(data, "fontColor");
+			}
+
+			listItemStyle.LabelStyle = itemLabelStyle;
+		}
+
+		style.ListItemStyle = listItemStyle;
+		return style;
+	}
+
+	private ComboBoxStyle LoadComboBoxStyle(Dictionary<string, object> data)
+	{
+		var style = new ComboBoxStyle();
+
+		// Load button properties (up, down, over states)
+		var buttonStyle = LoadButtonStyle(data);
+		style.Background = buttonStyle.Background;
+		style.PressedBackground = buttonStyle.PressedBackground;
+
+		// Load label properties (font, fontColor)
+		var labelStyle = new LabelStyle();
+		LoadLabelStyle(data, labelStyle);
+		style.LabelStyle = labelStyle;
+
+		// Load list style reference - listStyle is a string ID, not a nested object
+		if (data.TryGetValue("listStyle", out var listStyleIdObj))
+		{
+			var listStyleId = listStyleIdObj.ToString();
+			if (_result.ListBoxStyles.TryGetValue(listStyleId, out var listBoxStyle))
+			{
+				style.ListBoxStyle = listBoxStyle;
+			}
+		}
+
+		return style;
+	}
+
+	private static string ResolveId(string id)
+	{
+		if (id == "default")
+		{
+			return Stylesheet.DefaultStyleName;
+		}
+
+		return id;
+	}
+
 	private Stylesheet ToMyraStylesheet(Dictionary<string, object> data)
 	{
 		object obj;
@@ -274,7 +442,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var labelStyle = new LabelStyle();
-				labelStyle.Id = pair.Key;
+				labelStyle.Id = ResolveId(pair.Key);
 				LoadLabelStyle((Dictionary<string, object>)pair.Value, labelStyle);
 				_result.LabelStyles[pair.Key] = labelStyle;
 			}
@@ -287,7 +455,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var buttonStyle = LoadButtonStyle((Dictionary<string, object>)pair.Value);
-				buttonStyle.Id = pair.Key;
+				buttonStyle.Id = ResolveId(pair.Key);
 				_result.ButtonStyles[pair.Key] = buttonStyle;
 			}
 		}
@@ -300,11 +468,21 @@ public class Converter
 			{
 				var styleData = (Dictionary<string, object>)pair.Value;
 				var buttonStyle = LoadButtonStyle(styleData);
-				buttonStyle.Id = pair.Key;
+				buttonStyle.Id = ResolveId(pair.Key);
 
-				var labelStyle = new LabelStyle();
-				LoadLabelStyle(styleData, labelStyle);
-				buttonStyle.LabelStyle = labelStyle;
+				_result.ButtonStyles[pair.Key] = buttonStyle;
+			}
+		}
+
+		// ImageTextButton styles
+		if (data.TryGetValue("com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle", out obj))
+		{
+			var widgetData = (Dictionary<string, object>)obj;
+			foreach (var pair in widgetData)
+			{
+				var styleData = (Dictionary<string, object>)pair.Value;
+				var buttonStyle = LoadImageButtonStyle(styleData);
+				buttonStyle.Id = ResolveId(pair.Key);
 
 				_result.ButtonStyles[pair.Key] = buttonStyle;
 			}
@@ -317,7 +495,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var checkBoxStyle = LoadCheckBoxStyle((Dictionary<string, object>)pair.Value);
-				checkBoxStyle.Id = pair.Key;
+				checkBoxStyle.Id = ResolveId(pair.Key);
 				_result.CheckBoxStyles[pair.Key] = checkBoxStyle;
 			}
 		}
@@ -329,7 +507,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var textFieldStyle = LoadTextFieldStyle((Dictionary<string, object>)pair.Value);
-				textFieldStyle.Id = pair.Key;
+				textFieldStyle.Id = ResolveId(pair.Key);
 				_result.TextBoxStyles[pair.Key] = textFieldStyle;
 			}
 		}
@@ -341,7 +519,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var sliderStyle = LoadSliderStyle((Dictionary<string, object>)pair.Value);
-				sliderStyle.Id = pair.Key;
+				sliderStyle.Id = ResolveId(pair.Key);
 
 				if (pair.Key.Contains("horizontal"))
 				{
@@ -361,7 +539,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var pbStyle = new ProgressBarStyle();
-				pbStyle.Id = pair.Key;
+				pbStyle.Id = ResolveId(pair.Key);
 				var styleData = (Dictionary<string, object>)pair.Value;
 
 				if (styleData.TryGetValue("background", out var bgObj))
@@ -392,7 +570,7 @@ public class Converter
 			foreach (var pair in widgetData)
 			{
 				var svStyle = new ScrollViewerStyle();
-				svStyle.Id = pair.Key;
+				svStyle.Id = ResolveId(pair.Key);
 				var styleData = (Dictionary<string, object>)pair.Value;
 
 				if (styleData.TryGetValue("hScrollKnob", out var hKnobObj))
@@ -416,6 +594,62 @@ public class Converter
 				}
 
 				_result.ScrollViewerStyles[pair.Key] = svStyle;
+			}
+		}
+
+		// Window styles
+		if (data.TryGetValue("com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle", out obj))
+		{
+			var widgetData = (Dictionary<string, object>)obj;
+			foreach (var pair in widgetData)
+			{
+				var windowStyle = LoadWindowStyle((Dictionary<string, object>)pair.Value);
+				windowStyle.Id = ResolveId(pair.Key);
+				_result.WindowStyles[pair.Key] = windowStyle;
+			}
+		}
+
+		// SplitPane styles
+		if (data.TryGetValue("com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle", out obj))
+		{
+			var widgetData = (Dictionary<string, object>)obj;
+			foreach (var pair in widgetData)
+			{
+				var splitPaneStyle = LoadSplitPaneStyle((Dictionary<string, object>)pair.Value);
+				splitPaneStyle.Id = ResolveId(pair.Key);
+
+				if (pair.Key.Contains("horizontal"))
+				{
+					_result.HorizontalSplitPaneStyles[pair.Key] = splitPaneStyle;
+				}
+				else
+				{
+					_result.VerticalSplitPaneStyles[pair.Key] = splitPaneStyle;
+				}
+			}
+		}
+
+		// List styles (must be loaded before ComboBox styles since they reference ListStyle)
+		if (data.TryGetValue("com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle", out obj))
+		{
+			var widgetData = (Dictionary<string, object>)obj;
+			foreach (var pair in widgetData)
+			{
+				var listBoxStyle = LoadListStyle((Dictionary<string, object>)pair.Value);
+				listBoxStyle.Id = ResolveId(pair.Key);
+				_result.ListBoxStyles[pair.Key] = listBoxStyle;
+			}
+		}
+
+		// ComboBox (SelectBox in libGDX) styles
+		if (data.TryGetValue("com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle", out obj))
+		{
+			var widgetData = (Dictionary<string, object>)obj;
+			foreach (var pair in widgetData)
+			{
+				var comboBoxStyle = LoadComboBoxStyle((Dictionary<string, object>)pair.Value);
+				comboBoxStyle.Id = ResolveId(pair.Key);
+				_result.ComboBoxStyles[pair.Key] = comboBoxStyle;
 			}
 		}
 

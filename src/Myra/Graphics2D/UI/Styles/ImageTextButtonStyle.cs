@@ -8,18 +8,18 @@
 		/// <summary>
 		/// Gets or sets the style applied to the button's image display.
 		/// </summary>
-		public PressableImageStyle ImageStyle
-		{
-			get; set;
-		}
+		public PressableImageStyle ImageStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the spacing in pixels between the button's image and text.
 		/// </summary>
-		public int ImageTextSpacing
-		{
-			get; set;
-		}
+		public int ImageTextSpacing { get; set; }
+
+		/// <summary>
+		/// Gets or sets the style applied to the button's text label.
+		/// </summary>
+		public LabelStyle LabelStyle { get; set; }
+
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageTextButtonStyle"/> class.
@@ -35,6 +35,7 @@
 		public ImageTextButtonStyle(ImageTextButtonStyle style) : base(style)
 		{
 			ImageStyle = style.ImageStyle != null ? new PressableImageStyle(style.ImageStyle) : null;
+			LabelStyle = style.LabelStyle != null ? new LabelStyle(style.LabelStyle) : null;
 		}
 
 		/// <summary>
