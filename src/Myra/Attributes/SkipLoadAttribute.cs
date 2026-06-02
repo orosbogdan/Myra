@@ -3,7 +3,7 @@
 namespace Myra.Attributes
 {
 	[AttributeUsage(AttributeTargets.Property)]
-	public class SimplePropertyAttribute: Attribute
+	public class SkipLoadAttribute: Attribute
 	{
 	}
 }

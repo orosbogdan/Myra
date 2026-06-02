@@ -1,6 +1,8 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using AssetManagementBase;
-using System;
+using Myra.Graphics2D.TextureAtlases;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Myra
 {
@@ -11,6 +13,7 @@ namespace Myra
 	{
 		private static AssetManager _assetManager;
 		private static Stylesheet _defaultStylesheet, _defaultStylesheet2x;
+		private static TextureRegion _whiteRegion;
 
 		private static AssetManager AssetManager
 		{
@@ -56,6 +59,21 @@ namespace Myra
 
 				_defaultStylesheet2x = AssetManager.LoadStylesheet("default_ui_skin_2x.xmms");
 				return _defaultStylesheet2x;
+			}
+		}
+
+		public static TextureRegion WhiteRegion
+		{
+			get
+			{
+				if (_whiteRegion == null)
+				{
+					var whiteTexture = new Texture2D(MyraEnvironment.GraphicsDevice, 1, 1);
+					whiteTexture.SetData(new Color[] { Color.White });
+					_whiteRegion = new TextureRegion(whiteTexture);
+				}
+
+				return _whiteRegion;
 			}
 		}
 

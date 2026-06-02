@@ -89,24 +89,6 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Project
 	{
-		// RAII pattern utility: temporarily changes stylesheet and restores on Dispose
-		// Used to apply a specific stylesheet during loading/saving without permanently changing global stylesheet
-		private struct StylesheetChanger: IDisposable
-		{
-			private readonly Stylesheet _oldStylesheet;
-
-			public StylesheetChanger(Stylesheet newStylesheet)
-			{
-				_oldStylesheet = Stylesheet.Current;
-				Stylesheet.Current = newStylesheet;
-			}
-
-			public void Dispose()
-			{
-				Stylesheet.Current = _oldStylesheet;
-			}
-		}
-
 		/// <summary>Constant name for proportion values.</summary>
 		public const string ProportionName = "Proportion";
 		/// <summary>Constant name for default proportion values.</summary>
@@ -284,30 +266,11 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the extra widget assemblies and namespaces to include during project loading and saving.
 		/// </summary>
 		public static Dictionary<Assembly, string[]> ExtraWidgetAssembliesAndNamespaces = new Dictionary<Assembly, string[]>();
-		
+
 		// Creates a load context for deserializing UI projects from XML.
 		// Sets up asset loading, widget type resolution, and legacy name mapping.
 		internal static LoadContext CreateLoadContext(AssetManager assetManager)
 		{
-			// Creates resource instances (brushes, textures, fonts) by name using asset manager
-			Func<Type, string, object> resourceGetter = (t, name) =>
-			{
-				if (t == typeof(IBrush))
-				{
-					return new SolidBrush(name);
-				}
-				else if (t == typeof(IImage))
-				{
-					return assetManager.LoadTextureRegion(name);
-				}
-				else if (t == typeof(SpriteFontBase))
-				{
-					return assetManager.LoadFont(name);
-				}
-
-				throw new Exception(string.Format("Type {0} isn't supported", t.Name));
-			};
-
 			// Collect widget assemblies: both Myra core types and user-supplied custom widgets
 			Dictionary<Assembly, string[]> assemblies = new Dictionary<Assembly, string[]>(ExtraWidgetAssembliesAndNamespaces);
 			assemblies.Add(typeof(Widget).Assembly, new string[] { typeof(Widget).Namespace, typeof(PropertyGrid).Namespace });
@@ -317,7 +280,7 @@ namespace Myra.Graphics2D.UI
 				Assemblies = assemblies,
 				LegacyClassNames = LegacyClassNames,
 				ObjectCreator = (t, el) => CreateItem(t, el),
-				ResourceGetter = resourceGetter
+				AssetManager = assetManager
 			};
 		}
 
@@ -365,7 +328,7 @@ namespace Myra.Graphics2D.UI
 				}
 
 				result.Stylesheet = stylesheet;
-				using(var stylesheetChanger = new StylesheetChanger(stylesheet))
+				using (var stylesheetChanger = new StylesheetChanger(stylesheet))
 				{
 					var loadContext = CreateLoadContext(assetManager);
 					loadContext.Load(result, xDoc.Root, handler);

@@ -11,6 +11,8 @@ using Myra.Attributes;
 using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
+using AssetManagementBase;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -24,7 +26,7 @@ namespace Myra.MML
 {
 	// Deserializes objects from XML elements to .NET objects.
 	// Handles properties, events, resources, enums, colors, and complex nested structures.
-	internal class LoadContext: BaseContext
+	internal class LoadContext : BaseContext
 	{
 		// Wrapper for either regular property or attached property with unified interface
 		struct SimplePropertyInfo
@@ -58,7 +60,8 @@ namespace Myra.MML
 				if (Property != null)
 				{
 					Property.SetValue(obj, value);
-				} else if (AttachedProperty != null && obj is BaseObject)
+				}
+				else if (AttachedProperty != null && obj is BaseObject)
 				{
 					AttachedProperty.SetValueObject((BaseObject)obj, value);
 				}
@@ -71,9 +74,6 @@ namespace Myra.MML
 		// Backward compatibility: maps old property names to new names
 		public Dictionary<string, string> LegacyPropertyNames = null;
 
-		// Named color palette for resolving color names in XML (e.g., "Red", "Blue")
-		public Dictionary<string, Color> Colors;
-
 		// XML element names to skip during deserialization
 		public HashSet<string> NodesToIgnore = null;
 
@@ -84,7 +84,7 @@ namespace Myra.MML
 		public Dictionary<Assembly, string[]> Assemblies;
 
 		// Loads external resources (brushes, fonts, textures) by name using asset manager
-		public Func<Type, string, object> ResourceGetter = null;
+		public AssetManager AssetManager = null;
 
 		// Mapping of deserialized objects to their source XML elements (for debugging/position tracking)
 		public readonly List<Tuple<object, XElement>> ObjectsNodes = new List<Tuple<object, XElement>>();
@@ -142,7 +142,8 @@ namespace Myra.MML
 					}
 
 					simplePropertyInfo = new SimplePropertyInfo(property);
-				} else
+				}
+				else
 				{
 					// Regular property
 					var property = (from p in simpleProperties where p.Name == propertyName select p).FirstOrDefault();
@@ -163,26 +164,19 @@ namespace Myra.MML
 					{
 						// Custom serializer (e.g., for Vector2, Rectangle)
 						value = serializer.Deserialize(attr.Value);
-					} else
-					if (propertyType.IsEnum ||
-						propertyType.IsNullableEnum())
-					{
-						// Enum parsing
-						if (propertyType.IsNullableEnum())
-						{
-							propertyType = propertyType.GetNullableType();
-						}
-						value = Enum.Parse(propertyType, attr.Value);
 					}
-					else if (propertyType == typeof(Color) || propertyType == typeof(Color?))
-					{
-						// Color parsing: named or built-in
-						Color color;
-						if (Colors != null && Colors.TryGetValue(attr.Value, out color))
+					else
+						if (propertyType.IsEnum ||
+							propertyType.IsNullableEnum())
 						{
-							value = color;
+							// Enum parsing
+							if (propertyType.IsNullableEnum())
+							{
+								propertyType = propertyType.GetNullableType();
+							}
+							value = Enum.Parse(propertyType, attr.Value);
 						}
-						else
+						else if (propertyType == typeof(Color) || propertyType == typeof(Color?))
 						{
 							value = ColorStorage.FromName(attr.Value);
 							if (value == null)
@@ -190,42 +184,25 @@ namespace Myra.MML
 								throw new Exception(string.Format("Could not find parse color '{0}'", attr.Value));
 							}
 						}
-					}
-					else if ((typeof(IBrush).IsAssignableFrom(propertyType) ||
-							 propertyType == typeof(SpriteFontBase)) &&
-							 !string.IsNullOrEmpty(attr.Value) &&
-							 ResourceGetter != null)
-					{
-						// Resource loading: brushes, fonts, textures
-						try
+						else if (typeof(IBrush).IsAssignableFrom(propertyType))
 						{
-							var texture = ResourceGetter(propertyType, attr.Value);
-							if (texture == null)
-							{
-								throw new Exception(string.Format("Could not find resource '{0}'", attr.Value));
-							}
-							value = texture;
+							value = AssetManager.LoadBrush(attr.Value);
+						}
+						else if (typeof(SpriteFontBase).IsAssignableFrom(propertyType))
+						{
+							value = AssetManager.LoadFont(attr.Value);
 
-							// Track resource name for serialization
-							if (baseObject != null)
+						}
+						else
+						{
+							// Primitive type conversion (int, float, string, etc.)
+							if (propertyType.IsNullablePrimitive())
 							{
-								baseObject.Resources[simplePropertyInfo.Value.Name] = attr.Value;
+								propertyType = propertyType.GetNullableType();
 							}
-						}
-						catch (Exception)
-						{
-						}
-					}
-					else
-					{
-						// Primitive type conversion (int, float, string, etc.)
-						if (propertyType.IsNullablePrimitive())
-						{
-							propertyType = propertyType.GetNullableType();
-						}
 
-						value = Convert.ChangeType(attr.Value, propertyType, CultureInfo.InvariantCulture);
-					}
+							value = Convert.ChangeType(attr.Value, propertyType, CultureInfo.InvariantCulture);
+						}
 
 					simplePropertyInfo.Value.SetValue(obj, value);
 				}
@@ -251,12 +228,13 @@ namespace Myra.MML
 					}
 				}
 			}
-			
+
 
 			// Find content property: [Content] marked property for implicit child addition
 			var contentProperty = (from p in complexProperties
 								   where p.FindAttribute<ContentAttribute>()
-								   != null select p).FirstOrDefault();
+								   != null
+								   select p).FirstOrDefault();
 
 			// Process XML child elements
 			foreach (var child in el.Elements())
@@ -393,7 +371,8 @@ namespace Myra.MML
 						{
 							// Content property is a list
 							asList.Add(item);
-						} else
+						}
+						else
 						{
 							// Content property is a single value
 							contentProperty.SetValue(obj, item);

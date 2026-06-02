@@ -31,15 +31,15 @@ namespace Myra.Graphics2D.UI.Styles
 	/// </summary>
 	public class Stylesheet
 	{
-		private static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
-		private static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
+		internal static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
+		internal static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
 
 		/// <summary>
 		/// The default style identifier used when no specific style name is provided.
 		/// </summary>
 		public const string DefaultStyleName = "";
 
-		private static Stylesheet _current;
+		internal static Stylesheet _current;
 
 		/// <summary>
 		/// Gets or sets the current active stylesheet used globally.
@@ -99,8 +99,10 @@ namespace Myra.Graphics2D.UI.Styles
 
 		/// <summary>
 		/// Gets the texture atlas containing all texture regions used in the stylesheet.
+		/// Skip load, since it is loaded manually
 		/// </summary>
-		[SimpleProperty]
+		[XmlName("TextureRegionAtlas")]
+		[SkipLoad]
 		public TextureRegionAtlas Atlas { get; internal set; }
 
 		/// <summary>
@@ -114,7 +116,10 @@ namespace Myra.Graphics2D.UI.Styles
 			{
 				if (_whiteRegion == null)
 				{
-					_whiteRegion = Atlas["white"];
+					if (!Atlas.Regions.TryGetValue("white", out _whiteRegion))
+					{
+						_whiteRegion = DefaultAssets.WhiteRegion;
+					}
 				}
 
 				return _whiteRegion;
@@ -123,7 +128,9 @@ namespace Myra.Graphics2D.UI.Styles
 
 		/// <summary>
 		/// Gets the dictionary of fonts available in this stylesheet, keyed by font name.
+		/// Skip load, since it is loaded manually
 		/// </summary>
+		[SkipLoad]
 		public Dictionary<string, SpriteFontBase> Fonts { get; internal set; }
 
 		/// <summary>
@@ -534,86 +541,6 @@ namespace Myra.Graphics2D.UI.Styles
 		private static void SetDefaultStyle<T>(Dictionary<string, T> styles, T value) where T : WidgetStyle
 		{
 			styles[DefaultStyleName] = value;
-		}
-
-		/// <summary>
-		/// Loads a stylesheet from XML source code.
-		/// </summary>
-		/// <param name="stylesheetXml">The XML string containing the stylesheet definition.</param>
-		/// <param name="textureRegionAtlas">The texture atlas containing textures referenced in the stylesheet.</param>
-		/// <param name="fonts">A dictionary of fonts available for use in the stylesheet.</param>
-		/// <returns>A new Stylesheet instance loaded from the provided XML source.</returns>
-		public static Stylesheet LoadFromSource(string stylesheetXml,
-			TextureRegionAtlas textureRegionAtlas,
-			Dictionary<string, SpriteFontBase> fonts)
-		{
-			var xDoc = XDocument.Parse(stylesheetXml);
-
-			var colors = new Dictionary<string, Color>();
-			var colorsNode = xDoc.Root.Element("Colors");
-			if (colorsNode != null)
-			{
-				foreach (var el in colorsNode.Elements())
-				{
-					var color = ColorStorage.FromName(el.Attribute("Value").Value);
-					if (color != null)
-					{
-						colors[el.Attribute(BaseContext.IdName).Value] = color.Value;
-					}
-				}
-			}
-
-			Func<Type, string, object> resourceGetter = (t, name) =>
-			{
-				if (typeof(IBrush).IsAssignableFrom(t))
-				{
-					TextureRegion region;
-
-					if (!textureRegionAtlas.Regions.TryGetValue(name, out region))
-					{
-						var color = ColorStorage.FromName(name);
-						if (color != null)
-						{
-							return new SolidBrush(color.Value);
-						}
-					}
-					else
-					{
-						return region;
-					}
-
-					throw new Exception(string.Format("Could not find parse IBrush '{0}'", name));
-				}
-				else if (t == typeof(SpriteFontBase))
-				{
-					return fonts[name];
-				}
-
-				throw new Exception(string.Format("Type {0} isn't supported", t.Name));
-			};
-
-			var result = new Stylesheet
-			{
-				Atlas = textureRegionAtlas,
-				Fonts = fonts
-			};
-
-			var loadContext = new LoadContext
-			{
-				Assemblies = new Dictionary<Assembly, string[]>()
-				{
-					{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
-				},
-				ResourceGetter = resourceGetter,
-				NodesToIgnore = new HashSet<string>(new[] { "Designer", "Colors", "Fonts" }),
-				LegacyClassNames = LegacyClassNames,
-				LegacyPropertyNames = LegacyPropertyNames,
-				Colors = colors
-			};
-
-			loadContext.Load<object>(result, xDoc.Root, null);
-
-			return result;
 		}
 
 		public string ToXml()

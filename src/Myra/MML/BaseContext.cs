@@ -6,6 +6,8 @@ using System.Xml.Serialization;
 using FontStashSharp;
 using Myra.Utility;
 using Myra.Attributes;
+using Myra.Graphics2D.TextureAtlases;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -38,7 +40,7 @@ namespace Myra.MML
 			return null;
 		}
 
-		protected static void ParseProperties(Type type, bool checkSkipSave,
+		protected static void ParseProperties(Type type, bool isSave,
 			out List<PropertyInfo> complexProperties,
 			out List<PropertyInfo> simpleProperties)
 		{
@@ -55,26 +57,15 @@ namespace Myra.MML
 					continue;
 				}
 
-				Attribute attr = property.FindAttribute<XmlIgnoreAttribute>();
-				if (attr != null)
+				if (property.HasAttribute<XmlIgnoreAttribute>() ||
+					(isSave && (property.HasAttribute<SkipSaveAttribute>() || property.HasAttribute<ObsoleteAttribute>())) ||
+					(!isSave && property.HasAttribute<SkipLoadAttribute>()))
 				{
 					continue;
 				}
 
-				if (checkSkipSave)
-				{
-					attr = property.FindAttribute<SkipSaveAttribute>();
-					if (attr != null)
-					{
-						continue;
-					}
-				}
-
-				attr = property.FindAttribute<SimplePropertyAttribute>();
-
 				var propertyType = property.PropertyType;
-				if (attr != null ||
-					propertyType.IsPrimitive ||
+				if (propertyType.IsPrimitive ||
 					propertyType.IsNullablePrimitive() ||
 					propertyType.IsEnum ||
 					propertyType.IsNullableEnum() ||
@@ -83,7 +74,8 @@ namespace Myra.MML
 					propertyType == typeof(Color) ||
 					propertyType == typeof(Color?) ||
 					typeof(IBrush).IsAssignableFrom(propertyType) ||
-					propertyType == typeof(SpriteFontBase) ||
+					typeof(SpriteFontBase).IsAssignableFrom(propertyType) ||
+					propertyType == typeof(TextureRegionAtlas) ||
 					propertyType == typeof(Thickness))
 				{
 					simpleProperties.Add(property);

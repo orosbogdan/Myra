@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Myra.Attributes;
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -24,6 +25,8 @@ namespace Myra.Utility
 
 			return result;
 		}
+
+		public static bool HasAttribute<T>(this MemberInfo property) where T : Attribute => FindAttribute<T>(property) != null;
 
 		public static bool IsNullablePrimitive(this Type type)
 		{
@@ -154,6 +157,17 @@ namespace Myra.Utility
 				default:
 					return false;
 			}
+		}
+
+		public static string Name(this PropertyInfo property)
+		{
+			var attr = property.FindAttribute<XmlNameAttribute>();
+			if (attr != null)
+			{
+				return attr.XmlName;
+			}
+
+			return property.Name;
 		}
 	}
 }

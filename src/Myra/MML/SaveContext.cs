@@ -88,20 +88,13 @@ namespace Myra.MML
 					continue;
 				}
 
-				// Skip obsolete properties (for backward compatibility: don't save old properties)
-				var attr = property.FindAttribute<ObsoleteAttribute>();
-				if (attr != null)
-				{
-					continue;
-				}
-
 				var value = property.GetValue(obj);
 				if (value != null)
 				{
-					string str = SaveSimpleProperty(baseObject, value, property.PropertyType, property.Name);
+					string str = SaveSimpleProperty(baseObject, value, property.PropertyType, property.Name());
 					if (!string.IsNullOrEmpty(str))
 					{
-						el.Add(new XAttribute(property.Name, str));
+						el.Add(new XAttribute(property.Name(), str));
 					}
 				}
 			}
@@ -150,7 +143,7 @@ namespace Myra.MML
 						continue;
 					}
 
-					var propertyName = type.Name + "." + property.Name;
+					var propertyName = type.Name + "." + property.Name();
 					var isContent = property == contentProperty;
 
 					do
@@ -161,7 +154,7 @@ namespace Myra.MML
 							if (asDict.Count > 0)
 							{
 								// Serialize each key-value pair in dictionary, preserving parent type context
-								var dictRoot = new XElement(property.Name);
+								var dictRoot = new XElement(property.Name());
 								el.Add(dictRoot);
 
 								foreach (DictionaryEntry entry in asDict)

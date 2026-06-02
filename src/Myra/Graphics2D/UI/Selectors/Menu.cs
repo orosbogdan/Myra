@@ -244,7 +244,6 @@ namespace Myra.Graphics2D.UI
 
 			set
 			{
-
 				if (Orientation == Orientation.Horizontal)
 				{
 					InternalChild.SelectedColumnIndex = value;
@@ -685,7 +684,7 @@ namespace Myra.Graphics2D.UI
 		private void InternalChild_TouchUp(object sender, MyraEventArgs e)
 		{
 			var menuItem = SelectedMenuItem;
-			if (menuItem != null && !menuItem.CanOpen)
+			if (menuItem != null && !menuItem.CanOpen && menuItem.Enabled)
 			{
 				Close();
 				menuItem.FireSelected();
