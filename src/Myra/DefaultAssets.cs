@@ -1,8 +1,7 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using AssetManagementBase;
 using Myra.Graphics2D.TextureAtlases;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
+using FontStashSharp;
 
 namespace Myra
 {
@@ -68,9 +67,11 @@ namespace Myra
 			{
 				if (_whiteRegion == null)
 				{
-					var whiteTexture = new Texture2D(MyraEnvironment.GraphicsDevice, 1, 1);
-					whiteTexture.SetData(new Color[] { Color.White });
-					_whiteRegion = new TextureRegion(whiteTexture);
+#if !PLATFORM_AGNOSTIC
+					_whiteRegion = new TextureRegion(SpriteFontBase.GetWhite(MyraEnvironment.GraphicsDevice));
+#else
+					_whiteRegion = new TextureRegion(SpriteFontBase.GetWhite(MyraEnvironment.Platform.Renderer.TextureManager));
+#endif
 				}
 
 				return _whiteRegion;

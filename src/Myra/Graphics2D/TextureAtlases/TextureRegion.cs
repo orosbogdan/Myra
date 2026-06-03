@@ -62,17 +62,6 @@ namespace Myra.Graphics2D.TextureAtlases
 			}
 		}
 
-#if MONOGAME || FNA || STRIDE
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
-		/// </summary>
-		/// <param name="texture">The texture to use.</param>
-		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0, texture.Width, texture.Height))
-		{
-		}
-
-#endif
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextureRegion"/> class with the specified texture and bounds.
 		/// </summary>
@@ -107,6 +96,26 @@ namespace Myra.Graphics2D.TextureAtlases
 			bounds.Offset(region.Bounds.Location);
 			_bounds = bounds;
 		}
+
+#if MONOGAME || FNA || STRIDE
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
+		/// </summary>
+		/// <param name="texture">The texture to use.</param>
+		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0, texture.Width, texture.Height))
+		{
+		}
+#else
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
+		/// </summary>
+		/// <param name="texture">The texture to use.</param>
+		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0,
+			MyraEnvironment.Platform.Renderer.TextureManager.GetTextureSize(texture).X,
+			MyraEnvironment.Platform.Renderer.TextureManager.GetTextureSize(texture).Y))
+		{
+		}
+#endif
 
 		/// <summary>
 		/// Draws the texture region to the specified render context at the given destination.

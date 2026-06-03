@@ -1,26 +1,30 @@
-﻿using Microsoft.Xna.Framework;
-using Myra.Utility;
+﻿using Myra.Utility;
 using System;
 
-namespace Myra.Graphics2D.Brushes
+#if MONOGAME || FNA
+using Microsoft.Xna.Framework;
+#elif STRIDE
+using Stride.Core.Mathematics;
+#else
+using System.Drawing;
+using Color = FontStashSharp.FSColor;
+#endif
+
+namespace Myra.Graphics2D.TextureAtlases
 {
 	public class TintedImage : IImage
 	{
 		internal const char Separator = '/';
 
-		public IImage Image { get; }
+		public TextureRegion Region { get; }
 		public Color Color { get; }
 
-		public Point Size => Image.Size;
+		public Point Size => Region.Size;
 
-		public TintedImage(IImage image, Color color)
+		public TintedImage(TextureRegion image, Color color)
 		{
-			Image = image ?? throw new ArgumentNullException(nameof(image));
+			Region = image ?? throw new ArgumentNullException(nameof(image));
 			Color = color;
-		}
-
-		public TintedImage(IImage image) : this(image, Color.White)
-		{
 		}
 
 		public void Draw(RenderContext context, Rectangle dest, Color color)
@@ -33,7 +37,7 @@ namespace Myra.Graphics2D.Brushes
 					(int)(Color.A * color.A / 255.0f));
 			}
 
-			Image.Draw(context, dest, color);
+			Region.Draw(context, dest, color);
 		}
 
 		public override bool Equals(object obj)
@@ -44,17 +48,17 @@ namespace Myra.Graphics2D.Brushes
 				return false;
 			}
 
-			return Image.Equals(asTinted.Image) && Color == asTinted.Color;
+			return Region.Equals(asTinted.Region) && Color == asTinted.Color;
 		}
 
 		public override string ToString()
 		{
 			if (Color == Color.White)
 			{
-				return Image.ToString();
+				return Region.ToString();
 			}
 
-			return Image.ToString() + Separator + Color.ToColorString();
+			return Region.ToString() + Separator + Color.ToColorString();
 		}
 	}
 }

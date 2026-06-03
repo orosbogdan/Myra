@@ -1405,7 +1405,6 @@ namespace MyraPad.UI
 						{
 							var result = "<" + menuItem.Text;
 							var skip = result.Length;
-							var needsClose = false;
 
 							// Simple widgets and proportions are self-closing
 							if (SimpleWidgets.Contains(menuItem.Text) ||
@@ -1437,7 +1436,6 @@ namespace MyraPad.UI
 								}
 								result += "</" + menuItem.Text + ">";
 								++skip;
-								needsClose = true;
 							}
 
 							// Replace the typed text with the completed widget tag

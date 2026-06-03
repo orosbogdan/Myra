@@ -69,6 +69,7 @@
 	</VerticalSeparatorStyles>
 	<ComboBoxStyles>
 		<ComboBoxStyle Background="default-select">
+			<LabelStyle Font="default-font" TextColor="white" />
 			<ListBoxStyle Background="select-box-list-bg">
 				<ListItemStyle OverBackground="button-over" PressedBackground="button-down"/>
 				<SeparatorStyle Padding="0, 4" Image="separator-menu" Thickness="4" />

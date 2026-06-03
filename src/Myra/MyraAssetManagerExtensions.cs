@@ -12,10 +12,9 @@ using System;
 using Microsoft.Xna.Framework;
 #elif STRIDE
 using Stride.Core.Mathematics;
-using Texture2D = Stride.Graphics.Texture;
 #else
 using System.Drawing;
-using Texture2D = System.Object;
+using Color = FontStashSharp.FSColor;
 #endif
 
 namespace AssetManagementBase
@@ -25,6 +24,22 @@ namespace AssetManagementBase
 	/// </summary>
 	public static partial class MyraAssetManagerExtensions
 	{
+		private static AssetLoader<StaticSpriteFont> _staticFontLoader = (manager, assetName, settings, tag) =>
+		{
+			var fontData = manager.ReadAsString(assetName);
+
+			var result = StaticSpriteFont.FromBMFont(fontData,
+						name =>
+						{
+							var region = LoadTextureRegion(manager, name);
+							return new TextureWithOffset(region.Texture, region.Bounds.Location);
+						});
+
+			result.Name = assetName;
+
+			return result;
+		};
+
 		private static AssetLoader<TextureRegionAtlas> _atlasLoader = (manager, assetName, settings, tag) =>
 		{
 			var data = manager.ReadAsString(assetName);
@@ -128,21 +143,7 @@ namespace AssetManagementBase
 			return assetManager.LoadImage(assetName);
 		}
 
-		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName)
-		{
-			var fontData = assetManager.ReadAsString(assetName);
-
-			var result = StaticSpriteFont.FromBMFont(fontData,
-						name =>
-						{
-							var region = assetManager.LoadTextureRegion(name);
-							return new TextureWithOffset(region.Texture, region.Bounds.Location);
-						});
-
-			result.Name = assetName;
-
-			return result;
-		}
+		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_staticFontLoader, assetName);
 
 		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName)
 		{

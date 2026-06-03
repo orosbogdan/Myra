@@ -1,6 +1,4 @@
 ﻿using FontStashSharp;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.UI.Styles;
 using Myra.MML;
 using Myra.Utility;
@@ -8,6 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Linq;
+
+#if MONOGAME || FNA
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+#elif STRIDE
+using Stride.Core.Mathematics;
+using Texture2D = Stride.Graphics.Texture;
+#else
+using System.Drawing;
+using Texture2D = System.Object;
+using Color = FontStashSharp.FSColor;
+#endif
 
 namespace AssetManagementBase
 {

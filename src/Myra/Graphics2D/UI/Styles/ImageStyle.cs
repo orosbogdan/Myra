@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace Myra.Graphics2D.UI.Styles
+﻿namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image widgets.

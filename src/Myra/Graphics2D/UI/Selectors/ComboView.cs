@@ -232,6 +232,11 @@ namespace Myra.Graphics2D.UI
 			}
 
 			_button.ApplyButtonStyle(style);
+
+			if (style.LabelStyle != null)
+			{
+				((Label)_button.Content).ApplyLabelStyle(style.LabelStyle);
+			}
 		}
 
 		/// <summary>

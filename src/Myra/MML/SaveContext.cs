@@ -33,7 +33,7 @@ namespace Myra.MML
 
 		// Converts property value to string for XML serialization.
 		// Handles custom serializers, colors, resources, and primitives.
-		private static string SaveSimpleProperty(BaseObject baseObject, object value, Type propertyType, string propertyName)
+		private static string GetSimplePropertyValue(BaseObject baseObject, object value, Type propertyType, string propertyName)
 		{
 			string str = null;
 
@@ -55,11 +55,116 @@ namespace Myra.MML
 			}
 			else
 			{
-				// Primitive type: use culture-invariant string conversion
-				str = Convert.ToString(value, CultureInfo.InvariantCulture);
+				if (baseObject != null && baseObject.Resources.TryGetValue(propertyName, out str))
+				{
+					// Resource: use resource name tracked during load
+					baseObject.Resources.TryGetValue(propertyName, out str);
+				}
+				else
+				{
+					// Primitive type: use culture-invariant string conversion
+					str = Convert.ToString(value, CultureInfo.InvariantCulture);
+				}
 			}
 
 			return str;
+		}
+
+		private void SaveComplexProperty(object obj, PropertyInfo property, XElement el, bool isContent)
+		{
+			// Skip if property shouldn't be serialized
+			if (!ShouldSerializeProperty(obj, property))
+			{
+				return;
+			}
+
+			var value = property.GetValue(obj);
+			if (value == null)
+			{
+				return;
+			}
+
+			var type = obj.GetType();
+
+			string propertyName;
+
+			if (PrependNamespace)
+			{
+				propertyName = type.Name + "." + property.Name();
+			}
+			else
+			{
+				propertyName = property.Name();
+			}
+
+			do
+			{
+				var asDict = value as IDictionary;
+				if (asDict != null)
+				{
+					if (asDict.Count > 0)
+					{
+						// Serialize each key-value pair in dictionary, preserving parent type context
+						var dictRoot = new XElement(propertyName);
+						el.Add(dictRoot);
+
+						foreach (DictionaryEntry entry in asDict)
+						{
+							var asFont = entry.Value as SpriteFontBase;
+
+							XElement el2;
+							if (asFont != null)
+							{
+								// Special case
+								el2 = new XElement("Font");
+
+								el2.SetAttributeValue("Id", entry.Key.ToString());
+								el2.SetAttributeValue("File", asFont.ToString());
+							}
+							else
+							{
+								el2 = Save(entry.Value);
+							}
+
+							dictRoot.Add(el2);
+						}
+					}
+
+					break;
+				}
+
+				var asList = value as IList;
+				if (asList != null)
+				{
+					if (asList.Count > 0)
+					{
+						// Collection property: each item is a child element
+						var collectionRoot = el;
+
+						// If not a [Content] property and non-empty, create wrapper element for collection
+						if (property.FindAttribute<ContentAttribute>() == null && asList.Count > 0)
+						{
+							collectionRoot = new XElement(propertyName);
+							el.Add(collectionRoot);
+						}
+
+						// Serialize each item in collection, preserving parent type context
+						foreach (var comp in asList)
+						{
+							collectionRoot.Add(Save(comp, parentType: obj.GetType()));
+						}
+					}
+
+					break;
+				}
+
+				// Single object property: recursively serialize as child element
+				// If it's the content property, serialize directly into element
+				// Otherwise, use full property name as tag
+				el.Add(isContent ? Save(value) : Save(value, false, propertyName));
+
+			}
+			while (false);
 		}
 
 		// Serializes an object to an XML element, recursively handling child objects.
@@ -88,7 +193,7 @@ namespace Myra.MML
 				var value = property.GetValue(obj);
 				if (value != null)
 				{
-					string str = SaveSimpleProperty(baseObject, value, property.PropertyType, property.Name());
+					string str = GetSimplePropertyValue(baseObject, value, property.PropertyType, property.Name());
 					if (!string.IsNullOrEmpty(str))
 					{
 						el.Add(new XAttribute(property.Name(), str));
@@ -103,12 +208,12 @@ namespace Myra.MML
 				foreach (var property in attachedProperties)
 				{
 					var value = property.GetValueObject(baseObject);
+
 					// Only serialize if non-default
 					if (value != null && !value.Equals(property.DefaultValueObject))
 					{
 						var propertyName = property.OwnerType.Name + "." + property.Name;
-						var str = SaveSimpleProperty(baseObject, value,
-							property.PropertyType, propertyName);
+						var str = GetSimplePropertyValue(baseObject, value, property.PropertyType, propertyName);
 						if (!string.IsNullOrEmpty(str))
 						{
 							el.Add(new XAttribute(propertyName, str));
@@ -128,98 +233,7 @@ namespace Myra.MML
 
 				foreach (var property in complexProperties)
 				{
-					// Skip if property shouldn't be serialized
-					if (!ShouldSerializeProperty(obj, property))
-					{
-						continue;
-					}
-
-					var value = property.GetValue(obj);
-					if (value == null)
-					{
-						continue;
-					}
-
-					string propertyName;
-
-					if (PrependNamespace)
-					{
-						propertyName = type.Name + "." + property.Name();
-					} else
-					{
-						propertyName = property.Name();
-					}
-					
-					var isContent = property == contentProperty;
-
-					do
-					{
-						var asDict = value as IDictionary;
-						if (asDict != null)
-						{
-							if (asDict.Count > 0)
-							{
-								// Serialize each key-value pair in dictionary, preserving parent type context
-								var dictRoot = new XElement(propertyName);
-								el.Add(dictRoot);
-
-								foreach (DictionaryEntry entry in asDict)
-								{
-									var asFont = entry.Value as SpriteFontBase;
-
-									XElement el2;
-									if (asFont != null)
-									{
-										// Special case
-										el2 = new XElement("Font");
-
-										el2.SetAttributeValue("Id", entry.Key.ToString());
-										el2.SetAttributeValue("File", asFont.ToString());
-									}
-									else
-									{
-										el2 = Save(entry.Value);
-									}
-
-									dictRoot.Add(el2);
-								}
-							}
-
-							break;
-						}
-
-						var asList = value as IList;
-						if (asList != null)
-						{
-							if (asList.Count > 0)
-							{
-								// Collection property: each item is a child element
-								var collectionRoot = el;
-
-								// If not a [Content] property and non-empty, create wrapper element for collection
-								if (property.FindAttribute<ContentAttribute>() == null && asList.Count > 0)
-								{
-									collectionRoot = new XElement(propertyName);
-									el.Add(collectionRoot);
-								}
-
-								// Serialize each item in collection, preserving parent type context
-								foreach (var comp in asList)
-								{
-									collectionRoot.Add(Save(comp, parentType: obj.GetType()));
-								}
-							}
-
-							break;
-						}
-
-						// Single object property: recursively serialize as child element
-						// If it's the content property, serialize directly into element
-						// Otherwise, use full property name as tag
-						el.Add(isContent ? Save(value) : Save(value, false, propertyName));
-
-					}
-					while (false);
+					SaveComplexProperty(obj, property, el, property == contentProperty);
 				}
 			}
 
