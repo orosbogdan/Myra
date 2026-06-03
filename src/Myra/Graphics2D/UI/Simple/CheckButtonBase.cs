@@ -208,7 +208,7 @@ namespace Myra.Graphics2D.UI
 		/// Applies the specified style to the check button and its images.
 		/// </summary>
 		/// <param name="style">The style to apply.</param>
-		public void ApplyCheckButtonStyle(ImageTextButtonStyle style)
+		public void ApplyCheckButtonStyle(CheckButtonStyle style)
 		{
 			ApplyButtonStyle(style);
 

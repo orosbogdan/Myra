@@ -1,28 +1,13 @@
-﻿using System.ComponentModel;
-
-namespace Myra.Graphics2D.UI.Styles
+﻿namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image-text button widgets (buttons with both icon and text).
 	/// </summary>
-	public class ImageTextButtonStyle : ButtonStyle
+	public class ImageTextButtonStyle : CheckButtonStyle
 	{
-		/// <summary>
-		/// Gets or sets the style applied to the button's image display.
-		/// </summary>
-		public PressableImageStyle ImageStyle { get; set; }
-
-		/// <summary>
-		/// Gets or sets the spacing in pixels between the button's image and text.
-		/// </summary>
-		[DefaultValue(0)]
-		public int ImageTextSpacing { get; set; }
-
-		/// <summary>
 		/// Gets or sets the style applied to the button's text label.
 		/// </summary>
 		public LabelStyle LabelStyle { get; set; }
-
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageTextButtonStyle"/> class.
@@ -37,16 +22,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <param name="style">The source image-text button style to copy from.</param>
 		public ImageTextButtonStyle(ImageTextButtonStyle style) : base(style)
 		{
-			ImageStyle = style.ImageStyle != null ? new PressableImageStyle(style.ImageStyle) : null;
 			LabelStyle = style.LabelStyle != null ? new LabelStyle(style.LabelStyle) : null;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageTextButtonStyle"/> class by copying properties from a button style.
-		/// </summary>
-		/// <param name="buttonStyle">The base button style to copy from.</param>
-		public ImageTextButtonStyle(ButtonStyle buttonStyle) : base(buttonStyle)
-		{
 		}
 
 		/// <summary>

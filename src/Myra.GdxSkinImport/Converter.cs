@@ -177,9 +177,9 @@ public class Converter
 		return style;
 	}
 
-	private ImageTextButtonStyle LoadCheckBoxStyle(Dictionary<string, object> data)
+	private CheckButtonStyle LoadCheckBoxStyle(Dictionary<string, object> data)
 	{
-		var style = new ImageTextButtonStyle();
+		var style = new CheckButtonStyle();
 
 		if (data.TryGetValue("checkboxOff", out var offObj))
 		{
@@ -316,7 +316,7 @@ public class Converter
 		}
 
 		// Load list item style
-		var listItemStyle = new ImageTextButtonStyle();
+		var listItemStyle = new ButtonStyle();
 
 		if (data.TryGetValue("selection", out var selectionObj))
 		{
@@ -331,19 +331,6 @@ public class Converter
 		if (data.TryGetValue("up", out var upObj))
 		{
 			listItemStyle.Background = GetDrawable(upObj.ToString());
-		}
-
-		if (data.TryGetValue("font", out var fontObj))
-		{
-			var itemLabelStyle = new LabelStyle();
-			itemLabelStyle.Font = GetFont(fontObj.ToString());
-
-			if (data.TryGetValue("fontColor", out var colorObj))
-			{
-				itemLabelStyle.TextColor = GetColor(data, "fontColor");
-			}
-
-			listItemStyle.LabelStyle = itemLabelStyle;
 		}
 
 		style.ListItemStyle = listItemStyle;

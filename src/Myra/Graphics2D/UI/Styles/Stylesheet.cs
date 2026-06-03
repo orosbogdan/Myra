@@ -160,7 +160,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// Gets or sets the default style for checkbox widgets.
 		/// </summary>
 		[XmlIgnore]
-		public ImageTextButtonStyle CheckBoxStyle
+		public CheckButtonStyle CheckBoxStyle
 		{
 			get => GetDefaultStyle(CheckBoxStyles);
 			set => SetDefaultStyle(CheckBoxStyles, value);
@@ -170,7 +170,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// Gets or sets the default style for radio button widgets.
 		/// </summary>
 		[XmlIgnore]
-		public ImageTextButtonStyle RadioButtonStyle
+		public CheckButtonStyle RadioButtonStyle
 		{
 			get => GetDefaultStyle(RadioButtonStyles);
 			set => SetDefaultStyle(RadioButtonStyles, value);
@@ -389,12 +389,12 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets the dictionary of named checkbox styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ImageTextButtonStyle> CheckBoxStyles { get; } = new Dictionary<string, ImageTextButtonStyle>();
+		public Dictionary<string, CheckButtonStyle> CheckBoxStyles { get; } = new Dictionary<string, CheckButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named radio button styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ImageTextButtonStyle> RadioButtonStyles { get; } = new Dictionary<string, ImageTextButtonStyle>();
+		public Dictionary<string, CheckButtonStyle> RadioButtonStyles { get; } = new Dictionary<string, CheckButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named spin button styles, keyed by style identifier.
