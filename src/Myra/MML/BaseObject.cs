@@ -52,13 +52,6 @@ namespace Myra.MML
 		public Dictionary<string, string> UserData { get; private set; } = new Dictionary<string, string>();
 
 		/// <summary>
-		/// Gets a dictionary of external files used by this object.
-		/// </summary>
-		[XmlIgnore]
-		[Browsable(false)]
-		public Dictionary<string, string> Resources { get; private set; } = new Dictionary<string, string>();
-
-		/// <summary>
 		/// Occurs when the Id property changes.
 		/// </summary>
 		public event MyraEventHandler IdChanged;

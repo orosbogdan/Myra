@@ -1,5 +1,6 @@
 ﻿using Myra.Utility;
 using System;
+using Myra.MML;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -12,7 +13,7 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.TextureAtlases
 {
-	public class TintedImage : IImage
+	public class TintedImage : IImage, IHasColor
 	{
 		internal const char Separator = '/';
 

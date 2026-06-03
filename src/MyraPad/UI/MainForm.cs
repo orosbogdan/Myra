@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra;
 using Myra.Attributes;
-using Myra.Events;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.File;
@@ -346,9 +345,10 @@ namespace MyraPad.UI
 
 			_textBoxFilter.TextChanged += _textBoxFilter_TextChanged;
 
-			PropertyGrid.PropertyChanged += PropertyGridOnPropertyChanged;
+			PropertyGrid.PropertyChanged += (s, e) => OnPropertyChanged();
 			PropertyGrid.CustomValuesProvider = RecordValuesProvider;
 			PropertyGrid.CustomSetter = RecordSetter;
+			PropertyGrid.CustomWidgetProvider = CreateCustomEditor;
 			PropertyGrid.Settings.AssetManager = MyraEnvironment.DefaultAssetManager;
 
 			_topSplitPane.SetSplitterPosition(0, state != null ? state.TopSplitterPosition1 : 0.2f);
@@ -860,6 +860,84 @@ namespace MyraPad.UI
 			return true;
 		}
 
+		private Widget CreateImageEditor(Record record, object obj)
+		{
+			var value = record.GetValue(obj) as IHasColor;
+
+			var panel = new HorizontalStackPanel
+			{
+				Spacing = 8
+			};
+
+			// Get brush color, or transparent if brush is null
+			var color = Color.Transparent;
+			if (value != null)
+			{
+				color = value.Color;
+			}
+
+			// Color preview swatch
+			var image = new Image
+			{
+				Renderable = Stylesheet.Current.WhiteRegion,
+				VerticalAlignment = VerticalAlignment.Center,
+				Width = 32,
+				Height = 16,
+				Color = color
+			};
+
+			panel.Widgets.Add(image);
+
+			// "Change..." button to open color picker
+			var button = new Button
+			{
+				Tag = value,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				Content = new Label
+				{
+					Text = "Change...",
+					HorizontalAlignment = HorizontalAlignment.Center,
+				}
+			};
+			StackPanel.SetProportionType(button, ProportionType.Fill);
+			panel.Widgets.Add(button);
+
+			button.Click += (s, a) =>
+			{
+				var value = (IBrush)record.GetValue(obj);
+				var dlg = new ImageEditorDialog
+				{
+					Image = value
+				};
+
+				dlg.Closed += (s, a) =>
+				{
+					if (!dlg.Result)
+					{
+						return;
+					}
+
+					record.SetValue(obj, dlg.Image);
+					_propertyGrid.Rebuild();
+					OnPropertyChanged();
+				};
+
+				dlg.ShowModal(Desktop);
+			};
+
+			return panel;
+		}
+
+		private Widget CreateCustomEditor(Record record, object obj)
+		{
+			if (typeof(IBrush).IsAssignableFrom(record.Type))
+			{
+				return CreateImageEditor(record, obj);
+			}
+
+			return null;
+		}
+
 		// Clears the auto-complete menu reference when it is closed
 		private void Desktop_ContextMenuClosed(object sender, GenericEventArgs<Widget> e)
 		{
@@ -912,144 +990,6 @@ namespace MyraPad.UI
 		private void _textSource_KeyDown(object sender, GenericEventArgs<Keys> e)
 		{
 			_applyAutoIndent = e.Data == Keys.Enter;
-		}
-
-		/// <summary>
-		/// Iterates through a widget's external resources and applies the given processor function to each
-		/// </summary>
-		private static void ProcessResourcesPaths(Widget w, Func<string, bool> resourceProcessor)
-		{
-			var type = w.GetType();
-			foreach (var res in w.Resources)
-			{
-				var propertyInfo = type.GetProperty(res.Key);
-				if (propertyInfo == null)
-				{
-					continue;
-				}
-
-				// Skip brushes for now
-				if (propertyInfo.PropertyType == typeof(IBrush))
-				{
-					continue;
-				}
-
-				var result = resourceProcessor(res.Key);
-				if (!result)
-				{
-					break;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Updates resource paths in widgets to be relative to the new project location; prompts user for confirmation
-		/// </summary>
-		private void UpdateResourcesPaths(string oldPath, string newPath, Action<bool> onFinished)
-		{
-			try
-			{
-				// Currently only support moving from no external assets to having project-relative paths
-				if (!string.IsNullOrEmpty(oldPath))
-				{
-					onFinished(false);
-					return;
-				}
-
-				// Check if the project contains any external resources (fonts, images, etc.)
-				var hasExternalResources = false;
-
-				Project.Root.ProcessWidgets(w =>
-				{
-					ProcessResourcesPaths(w, k =>
-					{
-						// Found at least one external resource
-						hasExternalResources = true;
-						return false;
-					});
-
-					// Stop iterating if we found resources
-					return !hasExternalResources;
-				});
-
-				if (!hasExternalResources)
-				{
-					onFinished(false);
-					return;
-				}
-
-				// Prompt the user to confirm resource path updates
-				var dialog = Dialog.CreateMessageBox("Resources Paths Update", "Would you like to update resources paths so it become relative to the project location?");
-				dialog.Closed += (s, a) =>
-				{
-					if (dialog.Result)
-					{
-						var updated = false;
-
-						var folder = Path.GetDirectoryName(newPath);
-						// Iterate through all widgets and update absolute paths to relative paths
-						UIUtils.ProcessWidgets(Project.Root, widget =>
-						{
-							var newResources = new Dictionary<string, string>();
-
-							ProcessResourcesPaths(widget, key =>
-							{
-								try
-								{
-									var path = widget.Resources[key];
-
-									// Only convert absolute paths to relative
-									if (Path.IsPathRooted(path))
-									{
-										path = PathUtils.TryToMakePathRelativeTo(path, folder);
-										newResources[key] = path;
-									}
-								}
-								catch (Exception)
-								{
-									// Skip resources that can't be converted
-								}
-
-								return true;
-							});
-
-							// Apply the converted paths to the widget
-							foreach (var pair in newResources)
-							{
-								if (widget.Resources[pair.Key] != pair.Value)
-								{
-									updated = true;
-									widget.Resources[pair.Key] = pair.Value;
-								}
-							}
-
-							return true;
-						});
-
-						// Sync the XML editor with the updated resources
-						if (updated)
-						{
-							try
-							{
-								_suppressProjectRefresh = true;
-								UpdateSource();
-							}
-							finally
-							{
-								_suppressProjectRefresh = false;
-							}
-						}
-					}
-
-					onFinished(true);
-				};
-
-				dialog.ShowModal(Desktop);
-			}
-			catch (Exception)
-			{
-				onFinished(false);
-			}
 		}
 
 		/// <summary>
@@ -1708,10 +1648,7 @@ namespace MyraPad.UI
 			}
 		}
 
-		/// <summary>
-		/// Updates the XML when a widget property is modified in the property grid
-		/// </summary>
-		private void PropertyGridOnPropertyChanged(object sender, GenericEventArgs<string> eventArgs)
+		private void OnPropertyChanged()
 		{
 			IsDirty = true;
 
@@ -2005,22 +1942,12 @@ namespace MyraPad.UI
 				return;
 			}
 
-			// Update resource paths to be relative to the new file location
-			UpdateResourcesPaths(FilePath, filePath, updated =>
-			{
-				// Write the XML content to the file
-				File.WriteAllText(filePath, _textSource.Text);
+			// Write the XML content to the file
+			File.WriteAllText(filePath, _textSource.Text);
 
-				// Update the project path and state
-				FilePath = filePath;
-				IsDirty = false;
-
-				// Refresh the project if resources were updated
-				if (updated)
-				{
-					QueueRefreshProject();
-				}
-			});
+			// Update the project path and state
+			FilePath = filePath;
+			IsDirty = false;
 		}
 
 		// Saves the current project to a file; prompts for a filename if this is a new project or Save As is selected

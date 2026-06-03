@@ -69,6 +69,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the font used to render the title text.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("TitleStyle/Font")]
 		public SpriteFontBase TitleFont
 		{
 			get

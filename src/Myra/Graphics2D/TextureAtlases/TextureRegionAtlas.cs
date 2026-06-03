@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Myra.MML;
-using System.Xml.Serialization;
-using System.ComponentModel;
-
-
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -23,7 +19,7 @@ namespace Myra.Graphics2D.TextureAtlases
 	/// <summary>
 	/// Represents a collection of texture regions derived from a single texture, with support for both LibGDX and Myra XML formats.
 	/// </summary>
-	public partial class TextureRegionAtlas
+	public class TextureRegionAtlas
 	{
 		private const string TextureAtlasName = "TextureAtlas";
 		private const string ImageName = "Image";

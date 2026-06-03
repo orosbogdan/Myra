@@ -8,7 +8,6 @@ using Myra.Utility;
 using Myra.Attributes;
 using Myra.Graphics2D.TextureAtlases;
 
-
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
 #elif STRIDE
@@ -23,6 +22,13 @@ namespace Myra.MML
 	internal class BaseContext
 	{
 		public const string IdName = "Id";
+
+		public static bool IsTypeExternalAsset(Type type)
+		{
+			return typeof(IBrush).IsAssignableFrom(type) ||
+					typeof(SpriteFontBase).IsAssignableFrom(type) ||
+					type == typeof(TextureRegionAtlas);
+		}
 
 		public static ITypeSerializer FindSerializer(Type type)
 		{
@@ -73,10 +79,8 @@ namespace Myra.MML
 					propertyType == typeof(Vector2) ||
 					propertyType == typeof(Color) ||
 					propertyType == typeof(Color?) ||
-					typeof(IBrush).IsAssignableFrom(propertyType) ||
-					typeof(SpriteFontBase).IsAssignableFrom(propertyType) ||
-					propertyType == typeof(TextureRegionAtlas) ||
-					propertyType == typeof(Thickness))
+					propertyType == typeof(Thickness) ||
+					IsTypeExternalAsset(propertyType))
 				{
 					simpleProperties.Add(property);
 				}

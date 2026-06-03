@@ -45,10 +45,14 @@ namespace AssetManagementBase
 			var data = manager.ReadAsString(assetName);
 
 #if !PLATFORM_AGNOSTIC
-			return TextureRegionAtlas.FromXml(data, name => manager.LoadTexture2D(MyraEnvironment.GraphicsDevice, name, true));
+			var result = TextureRegionAtlas.FromXml(data, name => manager.LoadTexture2D(MyraEnvironment.GraphicsDevice, name, true));
 #else
-			return TextureRegionAtlas.FromXml(data, name => manager.LoadTexture2D(name).Texture);
+			var result = TextureRegionAtlas.FromXml(data, name => manager.LoadTexture2D(name).Texture);
 #endif
+
+			result.Name = assetName;
+
+			return result;
 		};
 
 		private static AssetLoader<Project> _projectLoader = (manager, assetName, settings, tag) =>
@@ -96,11 +100,15 @@ namespace AssetManagementBase
 			// Ordinary texture
 #if MONOGAME || FNA || STRIDE
 			var texture = assetManager.LoadTexture2D(MyraEnvironment.GraphicsDevice, assetName);
-			return new TextureRegion(texture, new Rectangle(0, 0, texture.Width, texture.Height));
+			var result = new TextureRegion(texture, new Rectangle(0, 0, texture.Width, texture.Height));
 #else
 			var texture = assetManager.LoadTexture2D(assetName);
-			return new TextureRegion(texture.Texture, new Rectangle(0, 0, texture.Width, texture.Height));
+			var result = new TextureRegion(texture.Texture, new Rectangle(0, 0, texture.Width, texture.Height));
 #endif
+
+			result.Name = assetName;
+
+			return result;
 		}
 
 		public static IImage LoadImage(this AssetManager assetManager, string assetName)

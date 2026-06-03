@@ -645,20 +645,16 @@ namespace Myra.Graphics2D.UI.Properties
 		}
 
 		// Creates editor for SolidBrush properties: shows color swatch and opens color picker dialog
-		private Grid CreateBrushEditor(Record record, bool hasSetter)
+		private Widget CreateBrushEditor(Record record, bool hasSetter)
 		{
 			var propertyType = record.Type;
 
-			var value = record.GetValue(_object) as SolidBrush;
+			var value = record.GetValue(_object) as IHasColor;
 
-			var subGrid = new Grid
+			var panel = new HorizontalStackPanel
 			{
-				ColumnSpacing = 8,
-				HorizontalAlignment = HorizontalAlignment.Stretch
+				Spacing = 8
 			};
-
-			subGrid.ColumnsProportions.Add(new Proportion());
-			subGrid.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
 
 			// Get brush color, or transparent if brush is null
 			var color = Color.Transparent;
@@ -677,7 +673,7 @@ namespace Myra.Graphics2D.UI.Properties
 				Color = color
 			};
 
-			subGrid.Widgets.Add(image);
+			panel.Widgets.Add(image);
 
 			// "Change..." button to open color picker
 			var button = new Button
@@ -690,9 +686,8 @@ namespace Myra.Graphics2D.UI.Properties
 					HorizontalAlignment = HorizontalAlignment.Center,
 				}
 			};
-			Grid.SetColumn(button, 1);
-
-			subGrid.Widgets.Add(button);
+			StackPanel.SetProportionType(button, ProportionType.Fill);
+			panel.Widgets.Add(button);
 
 			if (hasSetter)
 			{
@@ -712,12 +707,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 						image.Color = dlg.Color;
 						SetValue(record, _object, new SolidBrush(dlg.Color));
-						// Store color in BaseObject resources if applicable
-						var baseObject = _object as BaseObject;
-						if (baseObject != null)
-						{
-							baseObject.Resources[record.Name] = dlg.Color.ToHexString();
-						}
+
 						FireChanged(propertyType.Name);
 					};
 
@@ -729,7 +719,7 @@ namespace Myra.Graphics2D.UI.Properties
 				button.Enabled = false;
 			}
 
-			return subGrid;
+			return panel;
 		}
 
 		// Creates a dropdown editor for enum properties with support for nullable enums
@@ -1029,13 +1019,8 @@ namespace Myra.Graphics2D.UI.Properties
 			subGrid.ColumnsProportions.Add(new Proportion());
 
 			// Retrieve current file path from BaseObject resources or custom getter
-			var baseObject = _object as BaseObject;
-			var path = string.Empty;
-			if (baseObject != null)
-			{
-				baseObject.Resources.TryGetValue(record.Name, out path);
-			}
-			else if (Settings.ImagePropertyValueGetter != null)
+			var path = _object.ToString();
+			if (Settings.ImagePropertyValueGetter != null)
 			{
 				path = Settings.ImagePropertyValueGetter(record.Name);
 			}
@@ -1106,12 +1091,7 @@ namespace Myra.Graphics2D.UI.Properties
 							var newValue = loader(filePath);
 							textBox.Text = filePath;
 							SetValue(record, _object, newValue);
-							// Store path in resources
-							if (baseObject != null)
-							{
-								baseObject.Resources[record.Name] = filePath;
-							}
-							else if (Settings.ImagePropertyValueSetter != null)
+							if (Settings.ImagePropertyValueSetter != null)
 							{
 								Settings.ImagePropertyValueSetter(record.Name, filePath);
 							}

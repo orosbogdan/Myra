@@ -55,16 +55,8 @@ namespace Myra.MML
 			}
 			else
 			{
-				if (baseObject != null && baseObject.Resources.TryGetValue(propertyName, out str))
-				{
-					// Resource: use resource name tracked during load
-					baseObject.Resources.TryGetValue(propertyName, out str);
-				}
-				else
-				{
-					// Primitive type: use culture-invariant string conversion
-					str = Convert.ToString(value, CultureInfo.InvariantCulture);
-				}
+				// Primitive type: use culture-invariant string conversion
+				str = Convert.ToString(value, CultureInfo.InvariantCulture);
 			}
 
 			return str;

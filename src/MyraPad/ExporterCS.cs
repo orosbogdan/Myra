@@ -13,6 +13,8 @@ using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Myra;
 using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.MML;
 using Myra.Utility;
@@ -392,34 +394,29 @@ namespace MyraPad
 				// Handle single value properties
 				string strValue = null;
 
-				// Special handling for resource-based properties (brushes, fonts)
-				if (typeof(IBrush).IsAssignableFrom(property.PropertyType) ||
-					property.PropertyType == typeof(SpriteFontBase))
+				// Special handling for resource-based properties (brushes, fonts, etc)
+				if (BaseContext.IsTypeExternalAsset(property.PropertyType))
 				{
-					var baseObject = o as BaseObject;
-					string s;
-					// Check if the resource path is stored in the widget's resources dictionary
-					if (baseObject != null && baseObject.Resources.TryGetValue(property.Name, out s))
+					var s = property.GetValue(o).ToString();
+
+					if (property.PropertyType == typeof(SolidBrush))
+					{
+						// Special type
+						strValue = "new SolidBrush(\"" + s + "\")";
+					}
+					else
 					{
 						var typeName = property.PropertyType.Name;
 						if (typeof(IImage).IsAssignableFrom(property.PropertyType))
 						{
 							typeName = "TextureRegion";
 						}
+						else if (typeof(SpriteFontBase).IsAssignableFrom(property.PropertyType))
+						{
+							typeName = "Font";
+						}
 
-						// Generate the asset manager load call
-						if (property.PropertyType != typeof(IBrush))
-						{
-							if (typeName == "SpriteFontBase")
-							{
-								typeName = "Font";
-							}
-							strValue = "MyraEnvironment.DefaultAssetManager.Load" + typeName + "(\"" + s + "\")";
-						}
-						else
-						{
-							strValue = "new SolidBrush(\"" + s + "\")";
-						}
+						strValue = "MyraEnvironment.DefaultAssetManager.Load" + typeName + "(\"" + s + "\")";
 					}
 				}
 				else if (property.PropertyType == typeof(Thickness))

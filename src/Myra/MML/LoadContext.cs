@@ -12,6 +12,8 @@ using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
 using AssetManagementBase;
+using Myra.Graphics2D.TextureAtlases;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -132,7 +134,6 @@ namespace Myra.MML
 		private void LoadSimpleProperty(object obj, SimplePropertyInfo simplePropertyInfo, XAttribute attr)
 		{
 			object value = null;
-			var setResource = false;
 
 			var propertyType = simplePropertyInfo.PropertyType;
 
@@ -172,15 +173,18 @@ namespace Myra.MML
 				if (typeof(IBrush).IsAssignableFrom(propertyType))
 				{
 					value = AssetManager.LoadBrush(attr.Value);
-					setResource = true;
 					break;
 				}
 
 				if (typeof(SpriteFontBase).IsAssignableFrom(propertyType))
 				{
 					value = AssetManager.LoadFont(attr.Value);
-					setResource = true;
 					break;
+				}
+
+				if (typeof(TextureRegionAtlas) == propertyType)
+				{
+					value = AssetManager.LoadTextureRegionAtlas(attr.Value);
 				}
 
 				// Primitive type conversion (int, float, string, etc.)
@@ -194,17 +198,9 @@ namespace Myra.MML
 			while (false);
 
 			simplePropertyInfo.SetValue(obj, value);
-			if (setResource)
-			{
-				var baseObject = obj as BaseObject;
-				if (baseObject != null)
-				{
-					baseObject.Resources[simplePropertyInfo.Name] = attr.Value;
-				}
-			}
 		}
 
-		private void ProcessComplexProperty<T>(object obj, PropertyInfo property, XElement child, T handler) where T : class
+		private void LoadComplexProperty<T>(object obj, PropertyInfo property, XElement child, T handler) where T : class
 		{
 			// Handle different property types: List, Dict, or single object
 			do
@@ -354,7 +350,7 @@ namespace Myra.MML
 				var property = (from p in complexProperties where p.Name == childName select p).FirstOrDefault();
 				if (property != null)
 				{
-					ProcessComplexProperty(obj, property, child, handler);
+					LoadComplexProperty(obj, property, child, handler);
 				}
 				else
 				{
