@@ -37,6 +37,14 @@ namespace Myra.Graphics2D.UI.Styles
 		internal static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
 		internal static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
 
+		internal static readonly Dictionary<string, string> LegacyStylesheetNames = new Dictionary<string, string>
+		{
+			["ComboView"] = "ComboBox",
+			["ListView"] = "ListBox",
+			["TreeView"] = "Tree",
+			["CheckButton"] = "CheckBox",
+		};
+
 		/// <summary>
 		/// The default style identifier used when no specific style name is provided.
 		/// </summary>

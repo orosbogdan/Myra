@@ -44,7 +44,7 @@
         <HorizontalSeparator />
         <Label Text="Reloading..." Id="_textStatus" />
       </VerticalStackPanel>
-      <VerticalStackPanel Background="#000000FF">
+      <VerticalStackPanel Background="Black">
         <HorizontalStackPanel Spacing="8">
           <Label Text="Filter:" />
           <TextBox Id="_textBoxFilter" StackPanel.ProportionType="Fill" />

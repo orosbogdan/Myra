@@ -239,6 +239,7 @@ namespace MyraPad
 				{
 					sbFields.Append("\n\t\t");
 				}
+
 				sbFields.Append("public " + w.GetType().Name + " " + w.Id + ";");
 			}
 
@@ -398,7 +399,7 @@ namespace MyraPad
 					if (value != null)
 					{
 						var s = value.ToString();
-						if (property.PropertyType == typeof(SolidBrush))
+						if (value.GetType() == typeof(SolidBrush))
 						{
 							// Special type
 							strValue = "new SolidBrush(\"" + s + "\")";
@@ -413,6 +414,11 @@ namespace MyraPad
 							else if (typeof(SpriteFontBase).IsAssignableFrom(property.PropertyType))
 							{
 								typeName = "Font";
+							}
+
+							if (typeName == "IBrush")
+							{
+								typeName = "Brush";
 							}
 
 							strValue = "MyraEnvironment.DefaultAssetManager.Load" + typeName + "(\"" + s + "\")";

@@ -140,7 +140,7 @@
 	</WindowStyles>
 	<FileDialogStyles>
 		<FileDialogStyle Background="window" Padding="5" SelectionBackground="tree-selection" SelectionHoverBackground="button-over"
-						 IconDrive="icon-drive" IconFolder="icon-folder" Width="600" Height="400">
+						 IconDrive="icon-drive" IconFolder="icon-folder" Width="650" Height="400">
 			<TitleStyle Font="default-font" TextColor="white" />
 			<CloseButtonStyle OverBackground="button-over" Padding="5, 0" PressedBackground="button-red">
 				<ImageStyle Image="icon-close" />

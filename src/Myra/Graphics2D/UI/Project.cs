@@ -9,10 +9,7 @@ using Myra.MML;
 using System.Collections.Generic;
 using Myra.Attributes;
 using System.Linq;
-using Myra.Graphics2D.TextureAtlases;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI.Properties;
-using FontStashSharp;
 using Myra.Utility;
 using Myra.Graphics2D.UI.File;
 using AssetManagementBase;
@@ -557,6 +554,12 @@ namespace Myra.Graphics2D.UI
 				typeName = styleTypeNameAttribute.Name;
 			}
 
+			string s;
+			if (Stylesheet.LegacyStylesheetNames.TryGetValue(typeName, out s))
+			{
+				typeName = s;
+			}
+
 			// Get the stylesheet's Styles collection for this widget type
 			var stylesDictPropertyName = typeName + "Styles";
 			var stylesDictProperty = stylesheet.GetType().GetRuntimeProperty(stylesDictPropertyName);
@@ -623,6 +626,21 @@ namespace Myra.Graphics2D.UI
 			// Compare values: if they match, property is inherited from stylesheet
 			var styleValue = styleProperty.GetValue(obj);
 			var value = property.GetValue(w);
+
+			if (styleValue == null && value == null)
+			{
+				return true;
+			}
+			else if (styleValue == null || value == null)
+			{
+				return false;
+			}
+
+			if (BaseContext.IsTypeExternalAsset(property.PropertyType))
+			{
+				// Just compare strings
+				return styleValue.ToString() == value.ToString();
+			}
 
 			return Equals(styleValue, value);
 		}

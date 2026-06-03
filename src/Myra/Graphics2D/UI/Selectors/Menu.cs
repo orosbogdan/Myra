@@ -78,6 +78,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the font used to render menu item text.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("LabelStyle/Font")]
 		public SpriteFontBase LabelFont
 		{
 			get
@@ -95,7 +96,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the color of menu item text.
 		/// </summary>
 		[Category("Appearance")]
-		[StylePropertyPath("/LabelStyle/TextColor")]
+		[StylePropertyPath("LabelStyle/TextColor")]
 		public Color LabelColor
 		{
 			get

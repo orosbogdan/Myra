@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -66,6 +68,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed by the widget.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("Image")]
 		public IImage Renderable
 		{
 			get
@@ -89,6 +92,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed when the cursor is over the widget.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("OverImage")]
 		public IImage OverRenderable
 		{
 			get
