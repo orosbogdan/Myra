@@ -17,6 +17,7 @@ namespace Myra.Graphics2D.UI.Styles
 
 		public string File { get; set; }
 
+		[DefaultValue(0)]
 		public int Size { get; set; }
 
 		public StylesheetFont Clone() => new StylesheetFont

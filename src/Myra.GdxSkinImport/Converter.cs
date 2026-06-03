@@ -196,17 +196,6 @@ public class Converter
 			style.ImageStyle.PressedImage = GetDrawable(onObj.ToString());
 		}
 
-		if (data.TryGetValue("font", out var fontObj))
-		{
-			var labelStyle = new LabelStyle();
-			labelStyle.Font = GetFont(fontObj.ToString());
-			if (data.TryGetValue("fontColor", out var colorObj))
-			{
-				labelStyle.TextColor = GetColor(data, "fontColor");
-			}
-			style.LabelStyle = labelStyle;
-		}
-
 		return style;
 	}
 
@@ -321,17 +310,17 @@ public class Converter
 	{
 		var style = new ListBoxStyle();
 
+		if (data.TryGetValue("background", out var overObj))
+		{
+			style.Background = GetDrawable(overObj.ToString());
+		}
+
 		// Load list item style
 		var listItemStyle = new ImageTextButtonStyle();
 
 		if (data.TryGetValue("selection", out var selectionObj))
 		{
 			listItemStyle.PressedBackground = GetDrawable(selectionObj.ToString());
-		}
-
-		if (data.TryGetValue("over", out var overObj))
-		{
-			listItemStyle.Background = GetDrawable(overObj.ToString());
 		}
 
 		if (data.TryGetValue("down", out var downObj))
@@ -366,9 +355,27 @@ public class Converter
 		var style = new ComboBoxStyle();
 
 		// Load button properties (up, down, over states)
-		var buttonStyle = LoadButtonStyle(data);
-		style.Background = buttonStyle.Background;
-		style.PressedBackground = buttonStyle.PressedBackground;
+		if (data.TryGetValue("background", out var bg))
+		{
+			style.Background = GetDrawable(bg.ToString());
+
+			var asImage = style.Background as IImage;
+			if (asImage != null)
+			{
+				style.Height = asImage.Size.Y;
+			}
+		}
+
+		if (data.TryGetValue("backgroundOpen", out var bgOpen))
+		{
+			style.PressedBackground = GetDrawable(bgOpen.ToString());
+
+			var asImage = style.PressedBackground as IImage;
+			if (asImage != null)
+			{
+				style.Height = asImage.Size.Y;
+			}
+		}
 
 		// Load label properties (font, fontColor)
 		var labelStyle = new LabelStyle();
@@ -381,7 +388,7 @@ public class Converter
 			var listStyleId = listStyleIdObj.ToString();
 			if (_result.ListBoxStyles.TryGetValue(listStyleId, out var listBoxStyle))
 			{
-				style.ListBoxStyle = listBoxStyle;
+				style.ListBoxStyle = (ListBoxStyle)listBoxStyle.Clone();
 			}
 		}
 
@@ -515,7 +522,16 @@ public class Converter
 			{
 				var checkBoxStyle = LoadCheckBoxStyle((Dictionary<string, object>)pair.Value);
 				checkBoxStyle.Id = ResolveId(pair.Key);
-				_result.CheckBoxStyles[pair.Key] = checkBoxStyle;
+
+				if (checkBoxStyle.Id != "radio")
+				{
+					_result.CheckBoxStyles[pair.Key] = checkBoxStyle;
+				}
+				else
+				{
+					checkBoxStyle.Id = string.Empty;
+					_result.RadioButtonStyles[pair.Key] = checkBoxStyle;
+				}
 			}
 		}
 
@@ -566,7 +582,7 @@ public class Converter
 					pbStyle.Background = GetDrawable(bgObj.ToString());
 				}
 
-				if (styleData.TryGetValue("knob", out var knobObj))
+				if (styleData.TryGetValue("knobBefore", out var knobObj))
 				{
 					pbStyle.Filler = GetDrawable(knobObj.ToString());
 				}

@@ -8,7 +8,7 @@
 		/// <summary>
 		/// Gets or sets the style applied to list box items.
 		/// </summary>
-		public ImageTextButtonStyle ListItemStyle { get; set; }
+		public ButtonStyle ListItemStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to separator lines between list items.
@@ -28,7 +28,7 @@
 		/// <param name="style">The source list box style to copy from.</param>
 		public ListBoxStyle(ListBoxStyle style) : base(style)
 		{
-			ListItemStyle = style.ListItemStyle != null ? new ImageTextButtonStyle(style.ListItemStyle) : null;
+			ListItemStyle = style.ListItemStyle != null ? new ButtonStyle(style.ListItemStyle) : null;
 			SeparatorStyle = style.SeparatorStyle != null ? new SeparatorStyle(style.SeparatorStyle) : null;
 		}
 

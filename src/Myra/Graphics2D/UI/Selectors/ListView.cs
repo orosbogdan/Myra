@@ -507,7 +507,7 @@ namespace Myra.Graphics2D.UI
 			var widget = SelectedItem;
 			var p = _box.ToLocal(widget.ToGlobal(widget.Bounds.Location));
 
-			var lineHeight = ListBoxStyle.ListItemStyle.LabelStyle.Font.LineHeight;
+			var lineHeight = widget.ActualBounds.Height;
 
 			var sp = _scrollViewer.ScrollPosition;
 
