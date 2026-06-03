@@ -89,6 +89,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed when the check button is unchecked.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("ImageStyle/Image")]
 		public IImage UncheckedImage
 		{
 			get => _uncheckedImage;
@@ -108,6 +109,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed when the check button is checked.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("ImageStyle/PressedImage")]
 		public IImage CheckedImage
 		{
 			get => _checkedImage;

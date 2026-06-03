@@ -619,6 +619,7 @@ namespace Myra.Graphics2D.UI
 			// Compare values: if they match, property is inherited from stylesheet
 			var styleValue = styleProperty.GetValue(obj);
 			var value = property.GetValue(w);
+
 			if (!Equals(styleValue, value))
 			{
 				return false;

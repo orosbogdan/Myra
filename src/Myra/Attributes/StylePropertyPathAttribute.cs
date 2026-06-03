@@ -8,15 +8,10 @@ namespace Myra.Attributes
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public class StylePropertyPathAttribute : Attribute
 	{
-		private readonly string _name;
-
 		/// <summary>
 		/// Gets the path to the style property.
 		/// </summary>
-		public string Name
-		{
-			get { return _name; }
-		}
+		public string Name { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StylePropertyPathAttribute"/> class.
@@ -24,7 +19,7 @@ namespace Myra.Attributes
 		/// <param name="name">The path to the style property.</param>
 		public StylePropertyPathAttribute(string name)
 		{
-			_name = name;
+			Name = name;
 		}
 	}
 }

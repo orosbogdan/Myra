@@ -36,6 +36,17 @@ namespace Myra.Graphics2D.Brushes
 			Image.Draw(context, dest, color);
 		}
 
+		public override bool Equals(object obj)
+		{
+			var asTinted = obj as TintedImage;
+			if (asTinted == null)
+			{
+				return false;
+			}
+
+			return Image.Equals(asTinted.Image) && Color == asTinted.Color;
+		}
+
 		public override string ToString()
 		{
 			if (Color == Color.White)
