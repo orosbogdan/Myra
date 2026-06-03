@@ -18,7 +18,7 @@ namespace MyraPad.UI
 
 			set
 			{
-				_image = value ?? throw new ArgumentNullException(nameof(value));
+				_image = value;
 				OnImageSet();
 			}
 		}
@@ -27,7 +27,7 @@ namespace MyraPad.UI
 		{
 			get
 			{
-				var color = Color.White;
+				var color = Color.Transparent;
 				var hasColor = _image as IHasColor;
 				if (hasColor != null)
 				{
@@ -44,6 +44,22 @@ namespace MyraPad.UI
 			BuildUI();
 
 			_buttonChangeColor.Click += _buttonChangeColor_Click;
+			_buttomSetFromStylesheet.Click += _buttomSetFromStylesheet_Click;
+		}
+
+		private void _buttomSetFromStylesheet_Click(object sender, MyraEventArgs e)
+		{
+			var dlg = new ChooseTextureRegionDialog();
+
+			dlg.Closed += (s, a) =>
+			{
+				if (!dlg.Result)
+				{
+					return;
+				}
+			};
+
+			dlg.ShowModal(Desktop);
 		}
 
 		private void _buttonChangeColor_Click(object sender, MyraEventArgs e)
@@ -62,6 +78,12 @@ namespace MyraPad.UI
 
 				do
 				{
+					if (_image == null)
+					{
+						Image = new SolidBrush(dlg.Color);
+						break;
+					}
+
 					var asSolidBrush = _image as SolidBrush;
 					if (asSolidBrush != null)
 					{
@@ -91,7 +113,15 @@ namespace MyraPad.UI
 
 		private void OnImageSet()
 		{
-			_textValue.Text = _image.ToString();
+			if (_image != null)
+			{
+				_textValue.Text = _image.ToString();
+			}
+			else
+			{
+				_textValue.Text = string.Empty;
+			}
+
 			_panelColor.Background = new SolidBrush(Color);
 		}
 	}

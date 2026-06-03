@@ -917,9 +917,14 @@ namespace MyraPad.UI
 						return;
 					}
 
-					record.SetValue(obj, dlg.Image);
-					_propertyGrid.Rebuild();
-					OnPropertyChanged();
+					if (dlg.Image == null || record.Type.IsAssignableFrom(dlg.Image.GetType()))
+					{
+						// This code skips setting new value if dlg.Image is IBrush and the property excepts IImage
+						record.SetValue(obj, dlg.Image);
+
+						_propertyGrid.Rebuild();
+						OnPropertyChanged();
+					}
 				};
 
 				dlg.ShowModal(Desktop);
