@@ -132,12 +132,16 @@ namespace AssetManagementBase
 		{
 			var fontData = assetManager.ReadAsString(assetName);
 
-			return StaticSpriteFont.FromBMFont(fontData,
+			var result = StaticSpriteFont.FromBMFont(fontData,
 						name =>
 						{
 							var region = assetManager.LoadTextureRegion(name);
 							return new TextureWithOffset(region.Texture, region.Bounds.Location);
 						});
+
+			result.Name = assetName;
+
+			return result;
 		}
 
 		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName)
@@ -162,9 +166,15 @@ namespace AssetManagementBase
 				}
 
 				var fontSize = int.Parse(parts[1].Trim());
-				var fontSystem = assetManager.LoadFontSystem(parts[0].Trim());
 
-				return fontSystem.GetFont(fontSize);
+				var fontName = parts[0].Trim();
+				var fontSystem = assetManager.LoadFontSystem(fontName);
+
+				var result = fontSystem.GetFont(fontSize);
+
+				result.Name = $"{fontName}:{fontSize}";
+
+				return result;
 			}
 
 			throw new Exception(string.Format("Can't load font '{0}'", assetName));

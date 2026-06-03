@@ -53,9 +53,9 @@ namespace AssetManagementBase
 					if (fontFile.EndsWith(".ttf") || fontFile.EndsWith(".otf"))
 					{
 						var parts = new List<string>()
-					{
-						fontFile
-					};
+						{
+							fontFile
+						};
 
 						var typeAttribute = el.Attribute("Effect");
 						if (typeAttribute != null)
@@ -84,7 +84,9 @@ namespace AssetManagementBase
 						throw new Exception(string.Format("Font '{0}' isn't supported", fontFile));
 					}
 
-					fonts[el.Attribute(BaseContext.IdName).Value] = font;
+					var key = el.Attribute(BaseContext.IdName).Value;
+					font.Name = key;
+					fonts[key] = font;
 				}
 
 				result.Fonts = fonts;

@@ -620,12 +620,7 @@ namespace Myra.Graphics2D.UI
 			var styleValue = styleProperty.GetValue(obj);
 			var value = property.GetValue(w);
 
-			if (!Equals(styleValue, value))
-			{
-				return false;
-			}
-
-			return true;
+			return Equals(styleValue, value);
 		}
 
 		/// <summary>
