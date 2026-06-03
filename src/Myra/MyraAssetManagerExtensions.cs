@@ -158,14 +158,24 @@ namespace AssetManagementBase
 			if (!assetName.Contains("."))
 			{
 				// If there's no extension, assume it's a current stylesheet font
-				return Stylesheet.Current.Fonts[assetName];
+				if (!Stylesheet.Current.Fonts.TryGetValue(assetName, out var font))
+				{
+					throw new Exception($"Font '{assetName}' not found in current stylesheet");
+				}
+
+				assetName = font.File;
+
+				if (font.File.EndsWith(".ttf") || font.File.EndsWith(".otf"))
+				{
+					assetName += ":" + font.Size;
+				}
 			}
 
 			if (assetName.Contains(".fnt"))
 			{
 				return assetManager.MyraLoadStaticSpriteFont(assetName);
 			}
-			else if (assetName.Contains(".ttf"))
+			else if (assetName.Contains(".ttf") || assetName.Contains(".otf"))
 			{
 
 				var parts = assetName.Split(':');

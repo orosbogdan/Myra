@@ -8,6 +8,8 @@ using System.Xml.Linq;
 using Myra.Attributes;
 using System.Linq;
 using FontStashSharp;
+using Myra.Graphics2D.UI.Styles;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -103,21 +105,7 @@ namespace Myra.MML
 						foreach (DictionaryEntry entry in asDict)
 						{
 							var asFont = entry.Value as SpriteFontBase;
-
-							XElement el2;
-							if (asFont != null)
-							{
-								// Special case
-								el2 = new XElement("Font");
-
-								el2.SetAttributeValue("Id", entry.Key.ToString());
-								el2.SetAttributeValue("File", asFont.ToString());
-							}
-							else
-							{
-								el2 = Save(entry.Value);
-							}
-
+							var el2 = Save(entry.Value);
 							dictRoot.Add(el2);
 						}
 					}
@@ -166,7 +154,21 @@ namespace Myra.MML
 			// Create root element with tag name or type name
 			var type = obj.GetType();
 
-			var el = new XElement(tagName ?? type.Name);
+			var xName = tagName;
+			if (tagName == null)
+			{
+				var attr = type.FindAttribute<XmlNameAttribute>();
+				if (attr != null)
+				{
+					xName = attr.XmlName;
+				}
+				else
+				{
+					xName = type.Name;
+				}
+			}
+
+			var el = new XElement(xName);
 			var baseObject = obj as BaseObject;
 
 			// Separate properties into simple (attributes) and complex (child elements)

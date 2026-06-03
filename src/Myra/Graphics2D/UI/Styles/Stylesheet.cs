@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Xml.Linq;
-using Myra.MML;
 using System.Collections;
-using FontStashSharp;
-using Myra.Graphics2D.TextureAtlases;
 using System.ComponentModel;
+using Myra.MML;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Attributes;
-
-
-
-#if MONOGAME || FNA
-using Microsoft.Xna.Framework;
-#elif STRIDE
-using Stride.Core.Mathematics;
-#else
-using Color = FontStashSharp.FSColor;
-using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
-#endif
 
 namespace Myra.Graphics2D.UI.Styles
 {
+	[XmlName("Font")]
+	public class StylesheetFont : IItemWithId
+	{
+		public string Id { get; set; }
+
+		public string File { get; set; }
+
+		public int Size { get; set; }
+
+		public StylesheetFont Clone() => new StylesheetFont
+		{
+			Id = Id,
+			File = File,
+			Size = Size
+		};
+	}
+
 	/// <summary>
 	/// Manages a collection of UI styles used throughout the application.
 	/// Provides access to default styles and named style variants for all UI widgets.
@@ -59,7 +64,6 @@ namespace Myra.Graphics2D.UI.Styles
 				_current = value;
 			}
 		}
-
 
 		private TextureRegion _whiteRegion;
 
@@ -104,7 +108,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// Skip load, since it is loaded manually
 		/// </summary>
 		[SkipLoad]
-		public Dictionary<string, SpriteFontBase> Fonts { get; internal set; }
+		public Dictionary<string, StylesheetFont> Fonts { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the desktop background.
@@ -582,7 +586,6 @@ namespace Myra.Graphics2D.UI.Styles
 			var result = new Stylesheet
 			{
 				Atlas = Atlas,
-				Fonts = new Dictionary<string, SpriteFontBase>()
 			};
 
 			// Clone all dictionary properties
@@ -610,9 +613,13 @@ namespace Myra.Graphics2D.UI.Styles
 			CloneStylesTo(result, s => s.ScrollViewerStyles);
 			CloneStylesTo(result, s => s.WindowStyles);
 
-			foreach (var pair in Fonts)
+			if (Fonts != null)
 			{
-				result.Fonts[pair.Key] = pair.Value;
+				result.Fonts = new Dictionary<string, StylesheetFont>();
+				foreach (var pair in Fonts)
+				{
+					result.Fonts[pair.Key] = pair.Value.Clone();
+				}
 			}
 
 			return result;

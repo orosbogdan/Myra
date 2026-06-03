@@ -14,13 +14,10 @@
     <ScrollViewerStyle HorizontalScrollBackground="scroll-bar" HorizontalScrollKnob="scroll-bar-horizontal-knob" VerticalScrollBackground="scroll-bar" VerticalScrollKnob="scroll-bar-vertical-knob" />
   </ScrollViewerStyles>
   <ButtonStyles>
-    <ButtonStyle Background="button" Padding="8, 5" PressedBackground="button-down">
-      <LabelStyle Font="commodore-64" TextColor="white" />
-    </ButtonStyle>
+    <ButtonStyle Background="button" Padding="8, 5" PressedBackground="button-down"/>
   </ButtonStyles>
   <CheckBoxStyles>
     <CheckBoxStyle>
-      <LabelStyle Font="commodore-64" TextColor="white" />
       <ImageStyle Image="check-box-off" PressedImage="check-box" />
     </CheckBoxStyle>
   </CheckBoxStyles>
@@ -48,17 +45,13 @@
     <ComboBoxStyle Background="list">
       <LabelStyle Font="commodore-64" TextColor="white" />
       <ListBoxStyle Background="blue">
-        <ListItemStyle OverBackground="white" Padding="8, 5" PressedBackground="button-down">
-          <LabelStyle Font="commodore-64" TextColor="white" OverTextColor="blue" PressedTextColor="blue" />
-        </ListItemStyle>
+        <ListItemStyle OverBackground="white" Padding="8, 5" PressedBackground="button-down"/>
       </ListBoxStyle>
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>
     <ListBoxStyle>
-      <ListItemStyle PressedBackground="white">
-        <LabelStyle Font="commodore-64" TextColor="white" PressedTextColor="blue" />
-      </ListItemStyle>
+      <ListItemStyle PressedBackground="white"/>
     </ListBoxStyle>
   </ListBoxStyles>
   <TreeStyles>

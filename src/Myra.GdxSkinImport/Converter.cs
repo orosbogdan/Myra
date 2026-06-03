@@ -15,13 +15,27 @@ namespace GdxSkinImport;
 
 public class Converter
 {
+	private class FontInfo
+	{
+		public SpriteFontBase Font { get; }
+		public string Id { get; }
+		public string File { get; }
+
+		public FontInfo(SpriteFontBase font, string id, string file)
+		{
+			Font = font;
+			Id = id;
+			File = file;
+		}
+	}
+
 	private readonly GraphicsDevice _device;
 	private readonly string _path;
 	private readonly string _folder;
 	private readonly Stylesheet _result = new Stylesheet();
 	private TextureRegionAtlas _atlas;
 	private readonly ColorsCache _colors = new ColorsCache();
-	private readonly Dictionary<string, SpriteFontBase> _fonts = new Dictionary<string, SpriteFontBase>();
+	private readonly Dictionary<string, FontInfo> _fonts = new Dictionary<string, FontInfo>();
 	private readonly Dictionary<string, TintedImage> _tintedDrawables = new Dictionary<string, TintedImage>();
 
 	public Converter(GraphicsDevice device, string path)
@@ -56,20 +70,27 @@ public class Converter
 		ToMyraStylesheet(data);
 
 		_result.Atlas = _atlas;
-		_result.Fonts = _fonts;
+
+		var fonts = new Dictionary<string, StylesheetFont>();
+		foreach (var pair in _fonts)
+		{
+			fonts[pair.Key] = new StylesheetFont { Id = pair.Value.Id, File = pair.Value.File };
+		}
+
+		_result.Fonts = fonts;
 
 		return _result;
 	}
 
 	private SpriteFontBase GetFont(string key)
 	{
-		SpriteFontBase result;
+		FontInfo result;
 		if (!_fonts.TryGetValue(key, out result))
 		{
 			return null;
 		}
 
-		return result;
+		return result.Font;
 	}
 
 	private IImage GetDrawable(string name)
@@ -410,9 +431,10 @@ public class Converter
 					return new TextureWithOffset(region.Texture, region.Bounds.Location);
 				});
 
-				font.Name = file;
+				font.Name = pair.Key;
 
-				_fonts[pair.Key] = font;
+				var fontInfo = new FontInfo(font, font.Name, file);
+				_fonts[pair.Key] = fontInfo;
 			}
 		}
 

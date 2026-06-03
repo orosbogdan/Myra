@@ -1,23 +1,10 @@
-﻿using FontStashSharp;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using Myra.MML;
 using Myra.Utility;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Linq;
-
-#if MONOGAME || FNA
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-#elif STRIDE
-using Stride.Core.Mathematics;
-using Texture2D = Stride.Graphics.Texture;
-#else
-using System.Drawing;
-using Texture2D = System.Object;
-using Color = FontStashSharp.FSColor;
-#endif
 
 namespace AssetManagementBase
 {
@@ -41,61 +28,31 @@ namespace AssetManagementBase
 				result.Atlas = manager.LoadTextureRegionAtlas(attr.Value);
 
 				// Load fonts
-				var fonts = new Dictionary<string, SpriteFontBase>();
+				var fonts = new Dictionary<string, StylesheetFont>();
 				var fontsNode = xDoc.Root.Element("Fonts");
-
-				var usedSpaceAttr = fontsNode.Attribute("UsedSpace");
-				Texture2D existingTexture = null;
-				var existingTextureUsedSpace = Rectangle.Empty;
-				if (usedSpaceAttr != null)
-				{
-					var usedSpace = usedSpaceAttr.Value.ParseRectangle();
-
-					existingTexture = result.Atlas.Texture;
-					existingTextureUsedSpace = usedSpace;
-				}
 
 				foreach (var el in fontsNode.Elements())
 				{
-					SpriteFontBase font = null;
+					var key = el.Attribute(BaseContext.IdName).Value;
 
-					var fontFile = el.Attribute("File").Value;
-					if (fontFile.EndsWith(".ttf") || fontFile.EndsWith(".otf"))
+					var file = el.Attribute("File").Value;
+
+					var font = new StylesheetFont
 					{
-						var parts = new List<string>()
-						{
-							fontFile
-						};
+						Id = key,
+						File = file
+					};
 
-						var typeAttribute = el.Attribute("Effect");
-						if (typeAttribute != null)
-						{
-							parts.Add(typeAttribute.Value);
-
-							var amountAttribute = el.Attribute("Amount");
-							parts.Add(amountAttribute.Value);
-						}
-
+					if (file.EndsWith(".ttf") || file.EndsWith(".otf"))
+					{
 						if (el.Attribute("Size") == null)
 						{
-							throw new Exception($"Can't load stylesheet ttf font '{fontFile}', since Size isn't specified.");
+							throw new Exception($"Font '{key}' is missing mandatory 'Size' attribute");
 						}
 
-						parts.Add(el.Attribute("Size").Value);
-						var fontSystem = manager.LoadFontSystem(fontFile, existingTexture: existingTexture, existingTextureUsedSpace: existingTextureUsedSpace);
-						font = fontSystem.GetFont(float.Parse(el.Attribute("Size").Value));
-					}
-					else if (fontFile.EndsWith(".fnt"))
-					{
-						font = manager.MyraLoadStaticSpriteFont(fontFile);
-					}
-					else
-					{
-						throw new Exception(string.Format("Font '{0}' isn't supported", fontFile));
+						font.Size = int.Parse(el.Attribute("Size").Value);
 					}
 
-					var key = el.Attribute(BaseContext.IdName).Value;
-					font.Name = key;
 					fonts[key] = font;
 				}
 

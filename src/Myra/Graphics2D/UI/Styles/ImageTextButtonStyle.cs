@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image-text button widgets (buttons with both icon and text).
@@ -13,6 +15,7 @@
 		/// <summary>
 		/// Gets or sets the spacing in pixels between the button's image and text.
 		/// </summary>
+		[DefaultValue(0)]
 		public int ImageTextSpacing { get; set; }
 
 		/// <summary>

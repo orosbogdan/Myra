@@ -2,7 +2,7 @@
 
 namespace Myra.Attributes
 {
-	[AttributeUsage(AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
 	public class XmlNameAttribute : Attribute
 	{
 		public string XmlName { get; }
