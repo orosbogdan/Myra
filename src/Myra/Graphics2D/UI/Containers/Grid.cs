@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using Myra.MML;
 using Myra.Events;
 using Myra.Attributes;
+using Myra.Graphics2D.UI.Styles;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -364,7 +366,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Grid"/> class.
 		/// </summary>
-		public Grid()
+		public Grid(string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			_layout.ColumnsProportions.CollectionChanged += OnProportionsChanged;
@@ -374,6 +376,8 @@ namespace Myra.Graphics2D.UI
 			GridLinesColor = Color.White;
 			HoverIndexCanBeNull = true;
 			CanSelectNothing = false;
+
+			SetStyle(styleName);
 		}
 
 		/// <summary>
@@ -682,7 +686,8 @@ namespace Myra.Graphics2D.UI
 				if (SelectedRowIndex != HoverRowIndex)
 				{
 					SelectedRowIndex = HoverRowIndex;
-				} else if (CanSelectNothing)
+				}
+				else if (CanSelectNothing)
 				{
 					SelectedRowIndex = null;
 				}
@@ -693,7 +698,8 @@ namespace Myra.Graphics2D.UI
 				if (SelectedColumnIndex != HoverColumnIndex)
 				{
 					SelectedColumnIndex = HoverColumnIndex;
-				} else if (CanSelectNothing)
+				}
+				else if (CanSelectNothing)
 				{
 					SelectedColumnIndex = null;
 				}
@@ -722,15 +728,43 @@ namespace Myra.Graphics2D.UI
 			HoverIndexCanBeNull = grid.HoverIndexCanBeNull;
 			CanSelectNothing = grid.CanSelectNothing;
 
-			foreach(var prop in grid.ColumnsProportions)
+			foreach (var prop in grid.ColumnsProportions)
 			{
 				ColumnsProportions.Add(prop);
 			}
 
-			foreach(var prop in grid.RowsProportions)
+			foreach (var prop in grid.RowsProportions)
 			{
 				RowsProportions.Add(prop);
 			}
+		}
+
+		public void ApplyGridStyle(GridStyle gridStyle)
+		{
+			ApplyWidgetStyle(gridStyle);
+
+			ShowGridLines = gridStyle.ShowGridLines;
+			GridLinesColor = gridStyle.GridLinesColor;
+			ColumnSpacing = gridStyle.ColumnSpacing;
+			RowSpacing = gridStyle.RowSpacing;
+			SelectionBackground = gridStyle.SelectionBackground;
+			SelectionHoverBackground = gridStyle.SelectionHoverBackground;
+			GridSelectionMode = gridStyle.GridSelectionMode;
+			HoverIndexCanBeNull = gridStyle.HoverIndexCanBeNull;
+			CanSelectNothing = gridStyle.CanSelectNothing;
+		}
+
+		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		{
+			base.InternalSetStyle(stylesheet, name);
+
+			GridStyle style;
+			if (name == null || !stylesheet.GridStyles.TryGetValue(name, out style))
+			{
+				return;
+			}
+
+			ApplyGridStyle(style);
 		}
 
 		/// <summary>

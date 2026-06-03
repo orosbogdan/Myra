@@ -13,6 +13,9 @@
 	<TextBoxStyles>
 		<TextBoxStyle Background="textfield" TextColor="white" DisabledTextColor="gray" Font="default-font" Cursor="cursor" Selection="selection" />
 	</TextBoxStyles>
+	<GridStyles>
+		<GridStyle SelectionBackground="button-down" SelectionHoverBackground="button-over" />
+	</GridStyles>
 	<ScrollViewerStyles>
 		<ScrollViewerStyle HorizontalScrollBackground="scroll-horizontal" HorizontalScrollKnob="scroll-knob-horizontal" VerticalScrollBackground="scroll" VerticalScrollKnob="scroll-knob-vertical" />
 	</ScrollViewerStyles>

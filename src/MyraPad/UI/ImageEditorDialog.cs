@@ -57,6 +57,8 @@ namespace MyraPad.UI
 				{
 					return;
 				}
+
+				Image = dlg.Image;
 			};
 
 			dlg.ShowModal(Desktop);
@@ -102,6 +104,7 @@ namespace MyraPad.UI
 					if (asTinted != null)
 					{
 						Image = new TintedImage(asTinted.Region, dlg.Color);
+						break;
 					}
 
 					throw new Exception($"Could not set Color for type {_image.GetType().Name}");

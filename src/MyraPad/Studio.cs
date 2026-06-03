@@ -7,9 +7,6 @@ using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.ColorPicker;
 using MyraPad.UI;
 using Myra;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Schema;
 
 namespace MyraPad
 {

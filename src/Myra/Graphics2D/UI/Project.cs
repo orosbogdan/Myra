@@ -578,6 +578,10 @@ namespace Myra.Graphics2D.UI
 			}
 
 			object obj = stylesDict[styleName];
+			if (obj == null)
+			{
+				return false;
+			}
 
 			// Navigate to the property in stylesheet using reflection (supports nested paths)
 			PropertyInfo styleProperty = null;
