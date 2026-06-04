@@ -1672,7 +1672,7 @@ namespace MyraPad.UI
 			if (PropertyGrid.Object is WidgetStyle)
 			{
 				// Stylesheet property changed
-				Reload();
+				QueueRefreshProject();
 			}
 			else
 			{
@@ -1904,7 +1904,7 @@ namespace MyraPad.UI
 				{
 					Project = NewProject;
 
-					if (Project != null && !string.IsNullOrEmpty(Project.StylesheetPath))
+					if (HasCustomStylesheet)
 					{
 						// Show stylesheet tab
 						AddStylesheetTab();
@@ -1981,6 +1981,20 @@ namespace MyraPad.UI
 
 			// Write the XML content to the file
 			File.WriteAllText(filePath, _textSource.Text);
+
+			if (HasCustomStylesheet)
+			{
+				// Save stylesheet too
+				var stylesheetPath = Project.StylesheetPath;
+				if (!Path.IsPathRooted(stylesheetPath))
+				{
+					var folder = Path.GetDirectoryName(filePath);
+					stylesheetPath = Path.Combine(folder, stylesheetPath);
+				}
+
+				var stylesheetData = Project.Stylesheet.ToXml();
+				File.WriteAllText(stylesheetPath, stylesheetData);
+			}
 
 			// Update the project path and state
 			FilePath = filePath;

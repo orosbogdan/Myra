@@ -6,6 +6,8 @@ namespace MyraPad.UI
 {
 	partial class MainForm
 	{
+		private bool HasCustomStylesheet => Project != null && Project.Stylesheet != null;
+
 		private void AddStylesheetTab()
 		{
 			if (_tabControlLeft.Items.Contains(_tabStylesheet))
