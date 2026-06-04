@@ -1,7 +1,7 @@
 <Project>
   <Project.ExportOptions />
   <Panel>
-    <TabControl HorizontalAlignment="Center" VerticalAlignment="Center" TabSelectorPosition="Left" Width="350" Height="260" ClipToBounds="True">
+    <TabControl HorizontalAlignment="Center" VerticalAlignment="Center" TabSelectorPosition="Left" Width="350" Height="260">
       <TabItem Text="Character">
         <Grid ColumnSpacing="8" RowSpacing="8">
           <Grid.DefaultColumnProportion Type="Auto" />
@@ -46,19 +46,19 @@
       <TabItem Text="Feats">
         <VerticalStackPanel Spacing="8">
           <Label Text="You have 2 feats left to choose" />
-          <ToggleButton ContentHorizontalAlignment="Center" Width="100">
+          <ToggleButton Width="100">
             <Label Text="Swordsman" />
           </ToggleButton>
-          <ToggleButton ContentHorizontalAlignment="Center" Width="100">
+          <ToggleButton Width="100">
             <Label Text="Salesman" />
           </ToggleButton>
-          <ToggleButton ContentHorizontalAlignment="Center" Width="100">
+          <ToggleButton Width="100">
             <Label Text="Trapsmith" />
           </ToggleButton>
-          <ToggleButton ContentHorizontalAlignment="Center" Width="100">
+          <ToggleButton Width="100">
             <Label Text="Cunning" />
           </ToggleButton>
-          <ToggleButton ContentHorizontalAlignment="Center" Width="100">
+          <ToggleButton Width="100">
             <Label Text="Empathy" />
           </ToggleButton>
         </VerticalStackPanel>
