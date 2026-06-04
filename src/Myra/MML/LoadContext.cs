@@ -87,6 +87,8 @@ namespace Myra.MML
 		// Loads external resources (brushes, fonts, textures) by name using asset manager
 		public AssetManager AssetManager = null;
 
+		public bool DemandContentProperty = true;  // Whether to require [Content] attribute for implicit child addition
+
 		// Mapping of deserialized objects to their source XML elements (for debugging/position tracking)
 		public readonly List<Tuple<object, XElement>> ObjectsNodes = new List<Tuple<object, XElement>>();
 
@@ -393,7 +395,15 @@ namespace Myra.MML
 
 						if (contentProperty == null)
 						{
-							throw new Exception(string.Format("Class {0} lacks property marked with ContentAttribute", type.Name));
+							if (DemandContentProperty)
+							{
+								throw new Exception(string.Format("Class {0} lacks property marked with ContentAttribute", type.Name));
+							}
+							else
+							{
+								// If no content property is required, then skip this item
+								continue;
+							}
 						}
 
 						var containerValue = contentProperty.GetValue(obj);

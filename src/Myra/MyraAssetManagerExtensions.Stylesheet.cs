@@ -62,13 +62,14 @@ namespace AssetManagementBase
 				var loadContext = new LoadContext
 				{
 					Assemblies = new Dictionary<Assembly, string[]>()
-				{
-					{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
-				},
+					{
+						{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
+					},
 					AssetManager = manager,
 					NodesToIgnore = new HashSet<string>(new[] { "Designer", "Colors", "Fonts" }),
 					LegacyClassNames = Stylesheet.LegacyClassNames,
 					LegacyPropertyNames = Stylesheet.LegacyPropertyNames,
+					DemandContentProperty = false
 				};
 
 				loadContext.Load<object>(result, xDoc.Root, null);

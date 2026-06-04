@@ -420,6 +420,8 @@ namespace MyraPad.UI
 				Options = new Options();
 			}
 
+			RemoveStylesheetTab();
+
 			UpdateTitle();
 		}
 
@@ -1882,6 +1884,16 @@ namespace MyraPad.UI
 				{
 					Project = NewProject;
 
+					if (Project != null && !string.IsNullOrEmpty(Project.StylesheetPath))
+					{
+						// Show stylesheet tab
+						AddStylesheetTab();
+					}
+					else
+					{
+						RemoveStylesheetTab();
+					}
+
 					// Apply the stylesheet's desktop background if available
 					if (Project.Stylesheet != null && Project.Stylesheet.DesktopStyle != null)
 					{
@@ -1913,7 +1925,7 @@ namespace MyraPad.UI
 		private void New(string rootType)
 		{
 			// Use the template and substitute the root container type
-			var source = MyraPad.Resources.NewProjectTemplate.Replace("$containerType", rootType);
+			var source = Resources.NewProjectTemplate.Replace("$containerType", rootType);
 
 			_textSource.Text = source;
 

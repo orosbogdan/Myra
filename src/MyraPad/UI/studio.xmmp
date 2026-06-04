@@ -33,7 +33,17 @@
     </HorizontalMenu>
     <HorizontalSeparator />
     <HorizontalSplitPane Id="_topSplitPane" StackPanel.ProportionType="Fill">
-      <ScrollViewer Id="_panelExplorer" />
+      <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Id="_tabControlLeft">
+        <TabItem Text="Project">
+          <ScrollViewer Id="_panelExplorer" />
+        </TabItem>
+        <TabItem Text="Stylesheet" Id="_tabStylesheet">
+          <VerticalSplitPane>
+            <ScrollViewer Id="_panelStyles" />
+            <ScrollViewer Id="_panelStyleExplorer" />
+          </VerticalSplitPane>
+        </TabItem>
+      </TabControl>
       <VerticalStackPanel>
         <VerticalSplitPane Id="_leftSplitPane" StackPanel.ProportionType="Fill">
           <Panel Id="_projectHolder" />
