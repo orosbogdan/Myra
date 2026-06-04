@@ -13,7 +13,7 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.TextureAtlases
 {
-	public class TintedImage : IImage, IHasColor
+	public class TintedRegion : IImage, IHasColor
 	{
 		internal const char Separator = '/';
 
@@ -22,7 +22,7 @@ namespace Myra.Graphics2D.TextureAtlases
 
 		public Point Size => Region.Size;
 
-		public TintedImage(TextureRegion image, Color color)
+		public TintedRegion(TextureRegion image, Color color)
 		{
 			Region = image ?? throw new ArgumentNullException(nameof(image));
 			Color = color;
@@ -43,7 +43,7 @@ namespace Myra.Graphics2D.TextureAtlases
 
 		public override bool Equals(object obj)
 		{
-			var asTinted = obj as TintedImage;
+			var asTinted = obj as TintedRegion;
 			if (asTinted == null)
 			{
 				return false;

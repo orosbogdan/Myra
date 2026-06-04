@@ -36,7 +36,7 @@ public class Converter
 	private TextureRegionAtlas _atlas;
 	private readonly ColorsCache _colors = new ColorsCache();
 	private readonly Dictionary<string, FontInfo> _fonts = new Dictionary<string, FontInfo>();
-	private readonly Dictionary<string, TintedImage> _tintedDrawables = new Dictionary<string, TintedImage>();
+	private readonly Dictionary<string, TintedRegion> _tintedDrawables = new Dictionary<string, TintedRegion>();
 
 	public Converter(GraphicsDevice device, string path)
 	{
@@ -441,7 +441,7 @@ public class Converter
 
 				var region = _atlas.Regions[(string)v["name"]];
 
-				var td = new TintedImage(region, GetColor(v, "color"));
+				var td = new TintedRegion(region, GetColor(v, "color"));
 
 
 				_tintedDrawables[pair.Key] = td;

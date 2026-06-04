@@ -96,14 +96,14 @@ namespace MyraPad.UI
 					var asTextureRegion = _image as TextureRegion;
 					if (asTextureRegion != null)
 					{
-						Image = new TintedImage(asTextureRegion, dlg.Color);
+						Image = new TintedRegion(asTextureRegion, dlg.Color);
 						break;
 					}
 
-					var asTinted = _image as TintedImage;
+					var asTinted = _image as TintedRegion;
 					if (asTinted != null)
 					{
-						Image = new TintedImage(asTinted.Region, dlg.Color);
+						Image = new TintedRegion(asTinted.Region, dlg.Color);
 						break;
 					}
 

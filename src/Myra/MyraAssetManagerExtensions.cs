@@ -115,7 +115,7 @@ namespace AssetManagementBase
 
 		public static IImage LoadImage(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			var parts = assetName.Split(TintedImage.Separator);
+			var parts = assetName.Split(TintedRegion.Separator);
 			Color? color = null;
 			if (parts.Length > 1)
 			{
@@ -129,14 +129,14 @@ namespace AssetManagementBase
 				return region;
 			}
 
-			return new TintedImage(region, color.Value);
+			return new TintedRegion(region, color.Value);
 		}
 
 		public static IImage LoadImage(this AssetManager assetManager, string assetName) => LoadImage(assetManager, assetName, Stylesheet.Current);
 
 		public static IBrush LoadBrush(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			if (!assetName.Contains(".") && assetName.IndexOf(TintedImage.Separator) == -1 && !assetName.Contains(":"))
+			if (!assetName.Contains(".") && assetName.IndexOf(TintedRegion.Separator) == -1 && !assetName.Contains(":"))
 			{
 				// It's either a default stylesheet texture atlas region or color name
 				if (stylesheet == null || !stylesheet.Atlas.Regions.TryGetValue(assetName, out var region))
