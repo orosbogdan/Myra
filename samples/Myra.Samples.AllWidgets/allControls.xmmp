@@ -1,4 +1,4 @@
-<Project StylesheetPath="../../src/Myra/Resources/default_ui_skin.xmms">
+<Project>
   <Project.ExportOptions Namespace="Myra.Samples.AllWidgets" Class="AllWidgets" OutputPath="D:\Projects\Myra\samples\Myra.Samples.AllWidgets" />
   <Panel>
     <VerticalStackPanel Spacing="8">
