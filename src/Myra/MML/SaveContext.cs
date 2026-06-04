@@ -104,7 +104,6 @@ namespace Myra.MML
 
 						foreach (DictionaryEntry entry in asDict)
 						{
-							var asFont = entry.Value as SpriteFontBase;
 							var el2 = Save(entry.Value);
 							dictRoot.Add(el2);
 						}

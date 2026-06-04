@@ -748,6 +748,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Applies the specified grid style to this grid and updates all grid-specific properties.
+		/// </summary>
+		/// <param name="gridStyle">The grid style to apply.</param>
 		public void ApplyGridStyle(GridStyle gridStyle)
 		{
 			ApplyWidgetStyle(gridStyle);
@@ -763,6 +767,11 @@ namespace Myra.Graphics2D.UI
 			CanSelectNothing = gridStyle.CanSelectNothing;
 		}
 
+		/// <summary>
+		/// Sets the internal style of this grid from the stylesheet using the specified name.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style definitions.</param>
+		/// <param name="name">The name of the style to apply, or null to use default styling.</param>
 		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
 		{
 			base.InternalSetStyle(stylesheet, name);

@@ -482,6 +482,9 @@ namespace Myra.Graphics2D.UI.Styles
 		/// </summary>
 		public Dictionary<string, ColorPickerDialogStyle> ColorPickerDialogStyles { get; } = new Dictionary<string, ColorPickerDialogStyle>();
 
+		/// <summary>
+		/// Gets the dictionary of named grid styles, keyed by style identifier.
+		/// </summary>
 		public Dictionary<string, GridStyle> GridStyles { get; } = new Dictionary<string, GridStyle>();
 
 		static Stylesheet()
@@ -514,6 +517,10 @@ namespace Myra.Graphics2D.UI.Styles
 			styles[DefaultStyleName] = value;
 		}
 
+		/// <summary>
+		/// Converts the stylesheet to an XML string representation.
+		/// </summary>
+		/// <returns>An XML string containing all styles defined in this stylesheet.</returns>
 		public string ToXml()
 		{
 			var saveContext = new SaveContext();

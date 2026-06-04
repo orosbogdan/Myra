@@ -78,6 +78,13 @@ namespace AssetManagementBase
 		/// <returns>The loaded project.</returns>
 		public static Project LoadProject(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_projectLoader, assetName);
 
+		/// <summary>
+		/// Loads a texture region from an asset, with optional stylesheet context for resolving atlas references.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the texture region asset to load. Can be an atlas reference, atlas name:region format, or file path.</param>
+		/// <param name="stylesheet">The stylesheet context for resolving atlas names. If null, loads as file.</param>
+		/// <returns>The loaded texture region.</returns>
 		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			if (assetName.Contains(":"))
@@ -111,8 +118,21 @@ namespace AssetManagementBase
 			return result;
 		}
 
+		/// <summary>
+		/// Loads a texture region from an asset using the current stylesheet context.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the texture region asset to load.</param>
+		/// <returns>The loaded texture region.</returns>
 		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName) => LoadTextureRegion(assetManager, assetName, Stylesheet.Current);
 
+		/// <summary>
+		/// Loads an image asset with optional color tinting, with stylesheet context for resolving atlas references.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the image asset to load. Can include color tint separated by '/'.</param>
+		/// <param name="stylesheet">The stylesheet context for resolving atlas names.</param>
+		/// <returns>The loaded image, or a tinted version if a color tint was specified.</returns>
 		public static IImage LoadImage(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			var parts = assetName.Split(TintedRegion.Separator);
@@ -132,8 +152,21 @@ namespace AssetManagementBase
 			return new TintedRegion(region, color.Value);
 		}
 
+		/// <summary>
+		/// Loads an image asset with optional color tinting using the current stylesheet context.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the image asset to load.</param>
+		/// <returns>The loaded image, or a tinted version if a color tint was specified.</returns>
 		public static IImage LoadImage(this AssetManager assetManager, string assetName) => LoadImage(assetManager, assetName, Stylesheet.Current);
 
+		/// <summary>
+		/// Loads a brush asset, resolving color names or atlas region references with stylesheet context.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the brush asset to load. Can be a color name or image reference.</param>
+		/// <param name="stylesheet">The stylesheet context for resolving atlas references.</param>
+		/// <returns>The loaded brush, either a SolidBrush for colors or an image-based brush.</returns>
 		public static IBrush LoadBrush(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			if (!assetName.Contains(".") && assetName.IndexOf(TintedRegion.Separator) == -1 && !assetName.Contains(":"))
@@ -155,10 +188,29 @@ namespace AssetManagementBase
 			return assetManager.LoadImage(assetName, stylesheet);
 		}
 
+		/// <summary>
+		/// Loads a brush asset using the current stylesheet context.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the brush asset to load.</param>
+		/// <returns>The loaded brush.</returns>
 		public static IBrush LoadBrush(this AssetManager assetManager, string assetName) => LoadBrush(assetManager, assetName, Stylesheet.Current);
 
+		/// <summary>
+		/// Loads a static sprite font (BMFont) from an asset file.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the font asset to load.</param>
+		/// <returns>The loaded static sprite font.</returns>
 		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_staticFontLoader, assetName);
 
+		/// <summary>
+		/// Loads a font asset, supporting BMFont files, TrueType fonts, and stylesheet-defined fonts.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the font asset to load. Can be a file path or stylesheet font name.</param>
+		/// <param name="stylesheet">The stylesheet context for resolving font names.</param>
+		/// <returns>The loaded sprite font.</returns>
 		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			if (stylesheet != null && !assetName.Contains("."))
@@ -200,6 +252,12 @@ namespace AssetManagementBase
 			throw new Exception(string.Format("Can't load font '{0}'", assetName));
 		}
 
+		/// <summary>
+		/// Loads a font asset using the current stylesheet context.
+		/// </summary>
+		/// <param name="assetManager">The asset manager instance.</param>
+		/// <param name="assetName">The name of the font asset to load.</param>
+		/// <returns>The loaded sprite font.</returns>
 		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName) => LoadFont(assetManager, assetName, Stylesheet.Current);
 	}
 }

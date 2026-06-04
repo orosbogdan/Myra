@@ -152,13 +152,17 @@ namespace Myra.Graphics2D.UI
 			LegacyClassNames["ScrollPane"] = "ScrollViewer";
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Project"/> class with the specified stylesheet.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for this project.</param>
 		public Project(Stylesheet stylesheet)
 		{
 			Stylesheet = stylesheet ?? throw new ArgumentNullException(nameof(stylesheet));
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Project"/> class.
+		/// Initializes a new instance of the <see cref="Project"/> class using the current stylesheet.
 		/// </summary>
 		public Project() : this(Stylesheet.Current)
 		{
@@ -300,14 +304,17 @@ namespace Myra.Graphics2D.UI
 			return xDoc.ToString();
 		}
 
+		/// <summary>
+		/// Saves the project to an XML string. This method is obsolete; use <see cref="ToXml"/> instead.
+		/// </summary>
+		/// <returns>An XML string representation of the project.</returns>
 		[Obsolete("Use ToXml")]
 		public string Save() => ToXml();
 
 		/// <summary>
-		/// Loads a project from an XDocument with an optional handler.
+		/// Loads a project from an XDocument with an optional asset manager.
 		/// If project has external stylesheet, temporarily switches to it during loading.
 		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
 		/// <param name="xDoc">The XDocument to load from.</param>
 		/// <param name="assetManager">The asset manager for loading resources. Required if the project has an external stylesheet.</param>
 		/// <returns>The loaded project.</returns>
@@ -336,9 +343,8 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Loads a project from XML string data with an optional handler.
+		/// Loads a project from XML string data with an optional asset manager.
 		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
 		/// <param name="data">The XML data as a string.</param>
 		/// <param name="assetManager">The asset manager for loading resources.</param>
 		/// <returns>The loaded project.</returns>
@@ -351,7 +357,6 @@ namespace Myra.Graphics2D.UI
 		/// Loads a single object from XML string data.
 		/// Determines object type from XML tag name, resolving legacy names and special types.
 		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
 		/// <param name="data">The XML data as a string.</param>
 		/// <param name="assetManager">The asset manager for loading resources.</param>
 		/// <param name="stylesheet">The stylesheet to apply to loaded objects.</param>

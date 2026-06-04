@@ -21,6 +21,9 @@ namespace Myra.Graphics2D.TextureAtlases
 	{
 		private readonly Rectangle _bounds;
 
+		/// <summary>
+		/// Gets or sets the name of the texture region.
+		/// </summary>
 		public string Name { get; set; }
 
 #if MONOGAME || FNA || STRIDE
@@ -128,6 +131,10 @@ namespace Myra.Graphics2D.TextureAtlases
 			context.Draw(Texture, dest, Bounds, color);
 		}
 
+		/// <summary>
+		/// Returns the name of the texture region.
+		/// </summary>
+		/// <returns>The region name.</returns>
 		public override string ToString() => Name;
 	}
 }

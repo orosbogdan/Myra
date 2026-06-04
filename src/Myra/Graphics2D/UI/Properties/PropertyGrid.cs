@@ -1251,7 +1251,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 				var propertyType = record.Type;
 
-				Proportion rowProportion;
 				CustomValues customValues = null;
 
 				// Flag indicating if property should have a collapsible nested grid for its sub-properties

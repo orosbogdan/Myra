@@ -2,8 +2,14 @@
 
 namespace Myra.Graphics2D.UI.Styles
 {
+	/// <summary>
+	/// Style class that defines the visual appearance of check button widgets.
+	/// </summary>
 	public class CheckButtonStyle : ImageButtonStyle
 	{
+		/// <summary>
+		/// Gets or sets the spacing between the image and text in the check button.
+		/// </summary>
 		[DefaultValue(0)]
 		public int ImageTextSpacing { get; set; }
 

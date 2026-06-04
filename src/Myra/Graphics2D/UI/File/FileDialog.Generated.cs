@@ -122,16 +122,46 @@ namespace Myra.Graphics2D.UI.File
 			Content = verticalStackPanel1;
 		}
 
-		
+
+		/// <summary>
+		/// The back navigation button widget.
+		/// </summary>
 		public Button _buttonBack;
+		/// <summary>
+		/// The forward navigation button widget.
+		/// </summary>
 		public Button _buttonForward;
+		/// <summary>
+		/// The path text input field widget.
+		/// </summary>
 		public TextBox _textFieldPath;
+		/// <summary>
+		/// The parent directory button widget.
+		/// </summary>
 		public Button _buttonParent;
+		/// <summary>
+		/// The places/shortcuts list view widget.
+		/// </summary>
 		public ListView _listPlaces;
+		/// <summary>
+		/// The files grid widget.
+		/// </summary>
 		public Grid _gridFiles;
+		/// <summary>
+		/// The scroll pane containing the files grid.
+		/// </summary>
 		public ScrollViewer _scrollPane;
+		/// <summary>
+		/// The horizontal split pane widget.
+		/// </summary>
 		public HorizontalSplitPane _splitPane;
+		/// <summary>
+		/// The file name label widget.
+		/// </summary>
 		public Label _textBlockFileName;
+		/// <summary>
+		/// The file name text input field widget.
+		/// </summary>
 		public TextBox _textFieldFileName;
 	}
 }

@@ -8,6 +8,9 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.Graphics2D.UI.Styles
 {
+	/// <summary>
+	/// Style class that defines the visual appearance and behavior of grid widgets.
+	/// </summary>
 	public class GridStyle : WidgetStyle
 	{
 		/// <summary>

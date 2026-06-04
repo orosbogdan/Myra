@@ -187,6 +187,10 @@ namespace Myra.Graphics2D.TextureAtlases
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the name of the texture atlas.
+		/// </summary>
+		/// <returns>The atlas name.</returns>
 		public override string ToString() => Name;
 	}
 }

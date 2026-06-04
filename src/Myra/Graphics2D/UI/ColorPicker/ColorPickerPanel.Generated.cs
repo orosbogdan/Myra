@@ -193,18 +193,54 @@ namespace Myra.Graphics2D.UI.ColorPicker
 			Widgets.Add(_userColors);
 		}
 
-		
+
+		/// <summary>
+		/// The color wheel selection widget.
+		/// </summary>
 		public Image _colorWheel;
+		/// <summary>
+		/// The hue/saturation picker widget.
+		/// </summary>
 		public Image _hsPicker;
+		/// <summary>
+		/// The value/brightness picker slider.
+		/// </summary>
 		public VerticalSlider _vPicker;
+		/// <summary>
+		/// The color background display widget.
+		/// </summary>
 		public Image _colorBackground;
+		/// <summary>
+		/// The current color display widget.
+		/// </summary>
 		public Image _colorDisplay;
+		/// <summary>
+		/// The RGB color input text box.
+		/// </summary>
 		public TextBox _inputRGB;
+		/// <summary>
+		/// The HSV color input text box.
+		/// </summary>
 		public TextBox _inputHSV;
+		/// <summary>
+		/// The hexadecimal color input text box.
+		/// </summary>
 		public TextBox _inputHEX;
+		/// <summary>
+		/// The alpha channel input text box.
+		/// </summary>
 		public TextBox _inputAlpha;
+		/// <summary>
+		/// The alpha channel slider widget.
+		/// </summary>
 		public HorizontalSlider _sliderAlpha;
+		/// <summary>
+		/// The save color button widget.
+		/// </summary>
 		public Button _saveColor;
+		/// <summary>
+		/// The user-saved colors grid widget.
+		/// </summary>
 		public Grid _userColors;
 	}
 }

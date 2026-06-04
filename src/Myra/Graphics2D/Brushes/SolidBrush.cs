@@ -88,6 +88,10 @@ namespace Myra.Graphics2D.Brushes
 			}
 		}
 
+		/// <summary>
+		/// Returns a string representation of the brush's color.
+		/// </summary>
+		/// <returns>A string containing the color information.</returns>
 		public override string ToString() => Color.ToColorString();
 	}
 }

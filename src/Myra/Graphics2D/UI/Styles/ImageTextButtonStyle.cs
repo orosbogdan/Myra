@@ -5,6 +5,7 @@
 	/// </summary>
 	public class ImageTextButtonStyle : CheckButtonStyle
 	{
+		/// <summary>
 		/// Gets or sets the style applied to the button's text label.
 		/// </summary>
 		public LabelStyle LabelStyle { get; set; }

@@ -61,6 +61,9 @@ namespace Myra
 			}
 		}
 
+		/// <summary>
+		/// Gets a default white texture region used for placeholder graphics and fills.
+		/// </summary>
 		public static TextureRegion WhiteRegion
 		{
 			get

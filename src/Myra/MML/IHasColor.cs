@@ -8,8 +8,14 @@ using Color = FontStashSharp.FSColor;
 
 namespace Myra.MML
 {
+	/// <summary>
+	/// Represents an object that has a color property.
+	/// </summary>
 	public interface IHasColor
 	{
+		/// <summary>
+		/// Gets the color of the object.
+		/// </summary>
 		Color Color { get; }
 	}
 }
