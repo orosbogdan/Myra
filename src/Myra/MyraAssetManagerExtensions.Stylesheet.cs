@@ -33,8 +33,16 @@ namespace AssetManagementBase
 
 				foreach (var el in fontsNode.Elements())
 				{
+					if (el.Attribute(BaseContext.IdName) == null)
+					{
+						throw new Exception($"Font is missing mandatory 'Id' attribute");
+					}
 					var key = el.Attribute(BaseContext.IdName).Value;
 
+					if (el.Attribute("File") == null)
+					{
+						throw new Exception($"Font '{key}' is missing mandatory 'File' attribute");
+					}
 					var file = el.Attribute("File").Value;
 
 					var font = new StylesheetFont
@@ -43,15 +51,13 @@ namespace AssetManagementBase
 						File = file
 					};
 
-					if (file.EndsWith(".ttf") || file.EndsWith(".otf"))
+					if (el.Attribute("Size") != null)
 					{
-						if (el.Attribute("Size") == null)
-						{
-							throw new Exception($"Font '{key}' is missing mandatory 'Size' attribute");
-						}
-
 						font.Size = int.Parse(el.Attribute("Size").Value);
 					}
+
+					font.Validate();
+					font.Font = manager.LoadFont(font.BuildFontFileKey());
 
 					fonts[key] = font;
 				}

@@ -163,12 +163,7 @@ namespace AssetManagementBase
 					throw new Exception($"Font '{assetName}' not found in current stylesheet");
 				}
 
-				assetName = font.File;
-
-				if (font.File.EndsWith(".ttf") || font.File.EndsWith(".otf"))
-				{
-					assetName += ":" + font.Size;
-				}
+				return font.Font;
 			}
 
 			if (assetName.Contains(".fnt"))
@@ -178,7 +173,7 @@ namespace AssetManagementBase
 			else if (assetName.Contains(".ttf") || assetName.Contains(".otf"))
 			{
 
-				var parts = assetName.Split(':');
+				var parts = assetName.Split(StylesheetFont.Separator);
 				if (parts.Length < 2)
 				{
 					throw new Exception("Missing font size");

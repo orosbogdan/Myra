@@ -7,27 +7,10 @@ using System.ComponentModel;
 using Myra.MML;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Attributes;
+using FontStashSharp;
 
 namespace Myra.Graphics2D.UI.Styles
 {
-	[XmlName("Font")]
-	public class StylesheetFont : IItemWithId
-	{
-		public string Id { get; set; }
-
-		public string File { get; set; }
-
-		[DefaultValue(0)]
-		public int Size { get; set; }
-
-		public StylesheetFont Clone() => new StylesheetFont
-		{
-			Id = Id,
-			File = File,
-			Size = Size
-		};
-	}
-
 	/// <summary>
 	/// Manages a collection of UI styles used throughout the application.
 	/// Provides access to default styles and named style variants for all UI widgets.
