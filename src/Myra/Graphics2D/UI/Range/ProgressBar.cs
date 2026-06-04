@@ -82,13 +82,22 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler ValueChanged;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="ProgressBar"/> class with the specified stylesheet and style.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply.</param>
+		protected ProgressBar(Stylesheet stylesheet, string styleName)
+		{
+			Maximum = 100;
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ProgressBar"/> class with the specified style.
 		/// </summary>
 		/// <param name="styleName">The name of the style to apply.</param>
-		protected ProgressBar(string styleName)
+		protected ProgressBar(string styleName) : this(Stylesheet.Current, styleName)
 		{
-			Maximum = 100;
-			SetStyle(styleName);
 		}
 
 		/// <summary>

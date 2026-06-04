@@ -349,10 +349,11 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ScrollViewer"/> class.
+		/// Initializes a new instance of the <see cref="ScrollViewer"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the scroll viewer.</param>
-		public ScrollViewer(string styleName = Stylesheet.DefaultStyleName)
+		public ScrollViewer(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout = new SingleItemLayout<Widget>(this);
 			ChildrenLayout = _layout;
@@ -365,7 +366,15 @@ namespace Myra.Graphics2D.UI
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScrollViewer"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the scroll viewer.</param>
+		public ScrollViewer(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void MoveThumb(int delta)

@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Events;
 
-
-
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -31,6 +29,8 @@ namespace Myra.Graphics2D.UI
 		private bool _rowInfosDirty = true;
 
 		internal List<TreeViewNode> AllNodes => _allNodes;
+
+		private Stylesheet Stylesheet { get; }
 
 		/// <summary>
 		/// Gets the number of top-level child nodes.
@@ -91,16 +91,26 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler SelectionChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public TreeView(string styleName = Stylesheet.DefaultStyleName)
+		public TreeView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			AcceptsKeyboardFocus = true;
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
-			SetStyle(styleName);
+			Stylesheet = stylesheet;
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public TreeView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -287,7 +297,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The newly created tree node.</returns>
 		public TreeViewNode AddSubNode(Widget content)
 		{
-			var result = new TreeViewNode(this, StyleName)
+			var result = new TreeViewNode(this, Stylesheet, StyleName)
 			{
 				Content = content
 			};

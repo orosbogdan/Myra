@@ -277,10 +277,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler<ValueChangedEventArgs<float?>> ValueChangedByUser;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public SpinButton(string styleName = Stylesheet.DefaultStyleName)
+		public SpinButton(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			AcceptsKeyboardFocus = true;
@@ -337,9 +338,17 @@ namespace Myra.Graphics2D.UI
 			_downButton.Click += DownButtonOnUp;
 			Children.Add(_downButton);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			Value = 0;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public SpinButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private static float? StringToFloat(string s)

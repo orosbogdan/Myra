@@ -112,10 +112,11 @@ namespace Myra.Graphics2D.UI
 		public override bool ClipToBounds { get => base.ClipToBounds; set => base.ClipToBounds = value; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TabControl"/> class.
+		/// Initializes a new instance of the <see cref="TabControl"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the tab control.</param>
-		public TabControl(string styleName = Stylesheet.DefaultStyleName) : base(new Grid())
+		public TabControl(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(new Grid())
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
@@ -137,7 +138,15 @@ namespace Myra.Graphics2D.UI
 
 			ClipToBounds = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TabControl"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the tab control.</param>
+		public TabControl(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ItemOnChanged(object sender, MyraEventArgs eventArgs)

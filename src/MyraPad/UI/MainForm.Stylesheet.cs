@@ -46,6 +46,12 @@ namespace MyraPad.UI
 					continue;
 				}
 
+				var dict = (IDictionary)property.GetValue(Project.Stylesheet);
+				if (dict.Count == 0)
+				{
+					continue;
+				}
+
 				var subNode = _treeViewStylesheet.AddSubNode(new Label
 				{
 					Text = property.Name.Substring(0, property.Name.Length - 6)
@@ -53,8 +59,6 @@ namespace MyraPad.UI
 
 
 				subNode.IsExpanded = true;
-
-				var dict = (IDictionary)property.GetValue(Project.Stylesheet);
 
 				foreach (var key in dict.Keys)
 				{

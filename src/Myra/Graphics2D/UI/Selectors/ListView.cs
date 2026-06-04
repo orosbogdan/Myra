@@ -372,10 +372,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler SelectedIndexChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ListView"/> class.
+		/// Initializes a new instance of the <see cref="ListView"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the list view.</param>
-		public ListView(string styleName = Stylesheet.DefaultStyleName)
+		public ListView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_scrollViewer = new ScrollViewer();
 			ChildrenLayout = new SingleItemLayout<ScrollViewer>(this)
@@ -390,7 +391,15 @@ namespace Myra.Graphics2D.UI
 
 			_widgets = new WidgetsCollection(this);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ListView"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the list view.</param>
+		public ListView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ButtonOnClick(object sender, MyraEventArgs eventArgs)

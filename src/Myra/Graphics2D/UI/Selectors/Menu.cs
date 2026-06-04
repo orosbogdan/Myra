@@ -346,10 +346,11 @@ namespace Myra.Graphics2D.UI
 		protected Grid InternalChild => _layout.Child;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Menu"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Menu"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		protected Menu(string styleName)
+		protected Menu(Stylesheet stylesheet, string styleName)
 		{
 			_layout = new SingleItemLayout<Grid>(this)
 			{
@@ -387,7 +388,15 @@ namespace Myra.Graphics2D.UI
 			VerticalAlignment = VerticalAlignment.Stretch;
 			HoverIndexCanBeNull = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Menu"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		protected Menu(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)

@@ -196,10 +196,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler Closed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Window"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Window"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public Window(string styleName = Stylesheet.DefaultStyleName)
+		public Window(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout.Spacing = 8;
 			ChildrenLayout = _layout;
@@ -237,7 +238,15 @@ namespace Myra.Graphics2D.UI
 
 			Children.Add(TitlePanel);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Window"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public Window(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

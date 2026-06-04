@@ -407,10 +407,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler CursorPositionChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public TextBox(string styleName = Stylesheet.DefaultStyleName)
+		public TextBox(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			AcceptsKeyboardFocus = true;
 
@@ -419,7 +420,7 @@ namespace Myra.Graphics2D.UI
 
 			ClipToBounds = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			BlinkIntervalInMs = 450;
 
@@ -427,6 +428,14 @@ namespace Myra.Graphics2D.UI
 
 			if (MyraEnvironment.EventHandlingModel == EventHandlingStrategy.EventBubbling)
 				this.TouchDoubleClick += TextBox_TouchDoubleClickStopPropagation;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public TextBox(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		// Prevent double-click from propagating to parent widgets

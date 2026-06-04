@@ -1,6 +1,5 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using Myra.MML;
-using Myra.Utility;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -14,74 +13,72 @@ namespace AssetManagementBase
 		{
 			var result = new Stylesheet();
 
-			using (var changer = new StylesheetChanger(result))
+			var xmlData = manager.ReadAsString(assetName);
+			var xDoc = XDocument.Parse(xmlData);
+
+			// Load atlas
+			var attr = xDoc.Root.Attribute("TextureRegionAtlas");
+			if (attr == null)
 			{
-				var xmlData = manager.ReadAsString(assetName);
-				var xDoc = XDocument.Parse(xmlData);
+				throw new Exception("Mandatory attribute 'TextureRegionAtlas' doesnt exist");
+			}
+			result.Atlas = manager.LoadTextureRegionAtlas(attr.Value);
 
-				// Load atlas
-				var attr = xDoc.Root.Attribute("TextureRegionAtlas");
-				if (attr == null)
+			// Load fonts
+			var fonts = new Dictionary<string, StylesheetFont>();
+			var fontsNode = xDoc.Root.Element("Fonts");
+
+			foreach (var el in fontsNode.Elements())
+			{
+				if (el.Attribute(BaseContext.IdName) == null)
 				{
-					throw new Exception("Mandatory attribute 'TextureRegionAtlas' doesnt exist");
+					throw new Exception($"Font is missing mandatory 'Id' attribute");
 				}
-				result.Atlas = manager.LoadTextureRegionAtlas(attr.Value);
+				var key = el.Attribute(BaseContext.IdName).Value;
 
-				// Load fonts
-				var fonts = new Dictionary<string, StylesheetFont>();
-				var fontsNode = xDoc.Root.Element("Fonts");
-
-				foreach (var el in fontsNode.Elements())
+				if (el.Attribute("File") == null)
 				{
-					if (el.Attribute(BaseContext.IdName) == null)
-					{
-						throw new Exception($"Font is missing mandatory 'Id' attribute");
-					}
-					var key = el.Attribute(BaseContext.IdName).Value;
-
-					if (el.Attribute("File") == null)
-					{
-						throw new Exception($"Font '{key}' is missing mandatory 'File' attribute");
-					}
-					var file = el.Attribute("File").Value;
-
-					var font = new StylesheetFont
-					{
-						Id = key,
-						File = file
-					};
-
-					if (el.Attribute("Size") != null)
-					{
-						font.Size = int.Parse(el.Attribute("Size").Value);
-					}
-
-					font.Validate();
-					font.Font = manager.LoadFont(font.BuildFontFileKey());
-
-					fonts[key] = font;
+					throw new Exception($"Font '{key}' is missing mandatory 'File' attribute");
 				}
+				var file = el.Attribute("File").Value;
 
-				result.Fonts = fonts;
-
-				// Load rest
-				var loadContext = new LoadContext
+				var font = new StylesheetFont
 				{
-					Assemblies = new Dictionary<Assembly, string[]>()
-					{
-						{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
-					},
-					AssetManager = manager,
-					NodesToIgnore = new HashSet<string>(new[] { "Designer", "Colors", "Fonts" }),
-					LegacyClassNames = Stylesheet.LegacyClassNames,
-					LegacyPropertyNames = Stylesheet.LegacyPropertyNames,
-					DemandContentProperty = false
+					Id = key,
+					File = file
 				};
 
-				loadContext.Load<object>(result, xDoc.Root, null);
+				if (el.Attribute("Size") != null)
+				{
+					font.Size = int.Parse(el.Attribute("Size").Value);
+				}
 
-				return result;
+				font.Validate();
+				font.Font = manager.LoadFont(font.BuildFontFileKey(), null);
+
+				fonts[key] = font;
 			}
+
+			result.Fonts = fonts;
+
+			// Load rest
+			var loadContext = new LoadContext
+			{
+				Assemblies = new Dictionary<Assembly, string[]>()
+				{
+					{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
+				},
+				AssetManager = manager,
+				NodesToIgnore = new HashSet<string>(new[] { "Designer", "Colors", "Fonts" }),
+				LegacyClassNames = Stylesheet.LegacyClassNames,
+				LegacyPropertyNames = Stylesheet.LegacyPropertyNames,
+				DemandContentProperty = false,
+				Stylesheet = result
+			};
+
+			loadContext.Load(result, xDoc.Root);
+
+			return result;
 		};
 
 		/// <summary>

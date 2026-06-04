@@ -1356,15 +1356,6 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Sets the widget's style using the current stylesheet and the specified style name.
-		/// </summary>
-		/// <param name="name">The name of the style to apply from the current stylesheet.</param>
-		public void SetStyle(string name)
-		{
-			SetStyle(Stylesheet.Current, name);
-		}
-
-		/// <summary>
 		/// Applies a named style from a stylesheet to this widget.
 		/// </summary>
 		/// <param name="stylesheet">The stylesheet containing the styles to apply.</param>

@@ -49,15 +49,24 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler ProportionsChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SplitPane"/> class.
+		/// Initializes a new instance of the <see cref="SplitPane"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the split pane.</param>
-		protected SplitPane(string styleName)
+		protected SplitPane(Stylesheet stylesheet, string styleName)
 		{
 			ChildrenLayout = _layout;
 			_widgets.CollectionChanged += WidgetsOnCollectionChanged;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SplitPane"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the split pane.</param>
+		protected SplitPane(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

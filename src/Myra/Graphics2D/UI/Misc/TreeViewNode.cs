@@ -2,7 +2,6 @@
 using Myra.Graphics2D.UI.Styles;
 using Myra.Events;
 
-
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
 #elif STRIDE
@@ -87,8 +86,9 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		private Stylesheet Stylesheet { get; }
 
-		internal TreeViewNode(TreeView topTree, string styleName = Stylesheet.DefaultStyleName)
+		internal TreeViewNode(TreeView topTree, Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout.ColumnSpacing = 2;
 			_layout.RowSpacing = 2;
@@ -134,7 +134,8 @@ namespace Myra.Graphics2D.UI
 
 			Children.Add(_childNodesStackPanel);
 
-			SetStyle(styleName);
+			Stylesheet = stylesheet;
+			SetStyle(stylesheet, styleName);
 
 			UpdateMark();
 		}
@@ -163,7 +164,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The newly created child node.</returns>
 		public TreeViewNode AddSubNode(Widget content)
 		{
-			var result = new TreeViewNode(_topTree, StyleName)
+			var result = new TreeViewNode(_topTree, Stylesheet, StyleName)
 			{
 				ParentNode = this,
 				Content = content

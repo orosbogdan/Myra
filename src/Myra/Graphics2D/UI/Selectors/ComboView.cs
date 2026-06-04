@@ -142,10 +142,11 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ComboView"/> class.
+		/// Initializes a new instance of the <see cref="ComboView"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the combo view.</param>
-		public ComboView(string styleName = Stylesheet.DefaultStyleName)
+		public ComboView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_button = new ToggleButton(null)
 			{
@@ -175,7 +176,15 @@ namespace Myra.Graphics2D.UI
 
 			DropdownMaximumHeight = 300;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ComboView"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the combo view.</param>
+		public ComboView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void InternalStopPropagation(object sender, MyraEventArgs e)

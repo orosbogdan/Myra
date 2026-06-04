@@ -208,10 +208,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler<ValueChangedEventArgs<float>> ValueChangedByUser;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Slider"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Slider"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply.</param>
-		protected Slider(string styleName)
+		protected Slider(Stylesheet stylesheet, string styleName)
 		{
 			_layout = new SingleItemLayout<Button>(this)
 			{
@@ -224,9 +225,17 @@ namespace Myra.Graphics2D.UI
 
 			ChildrenLayout = _layout;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			Maximum = 100;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Slider"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply.</param>
+		protected Slider(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private int GetHint()

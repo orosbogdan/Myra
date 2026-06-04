@@ -46,13 +46,22 @@ namespace Myra.Graphics2D.UI
 		public override Orientation Orientation => Orientation.Vertical;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerticalSeparator"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="VerticalSeparator"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public VerticalSeparator(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public VerticalSeparator(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 			HorizontalAlignment = HorizontalAlignment.Center;
 			VerticalAlignment = VerticalAlignment.Stretch;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VerticalSeparator"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public VerticalSeparator(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

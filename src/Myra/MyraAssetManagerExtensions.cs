@@ -78,7 +78,7 @@ namespace AssetManagementBase
 		/// <returns>The loaded project.</returns>
 		public static Project LoadProject(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_projectLoader, assetName);
 
-		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName)
+		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			if (assetName.Contains(":"))
 			{
@@ -90,10 +90,10 @@ namespace AssetManagementBase
 				return textureRegionAtlas[parts[1]];
 			}
 
-			if (!assetName.Contains("."))
+			if (stylesheet != null && !assetName.Contains("."))
 			{
 				// If there's no extension, assume it's a texture region atlas with id equal to the asset name
-				var textureRegionAtlas = Stylesheet.Current.Atlas;
+				var textureRegionAtlas = stylesheet.Atlas;
 				return textureRegionAtlas[assetName];
 			}
 
@@ -111,7 +111,9 @@ namespace AssetManagementBase
 			return result;
 		}
 
-		public static IImage LoadImage(this AssetManager assetManager, string assetName)
+		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName) => LoadTextureRegion(assetManager, assetName, Stylesheet.Current);
+
+		public static IImage LoadImage(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			var parts = assetName.Split(TintedImage.Separator);
 			Color? color = null;
@@ -121,7 +123,7 @@ namespace AssetManagementBase
 				assetName = parts[0];
 			}
 
-			var region = assetManager.LoadTextureRegion(assetName);
+			var region = assetManager.LoadTextureRegion(assetName, stylesheet);
 			if (color == null)
 			{
 				return region;
@@ -130,12 +132,14 @@ namespace AssetManagementBase
 			return new TintedImage(region, color.Value);
 		}
 
-		public static IBrush LoadBrush(this AssetManager assetManager, string assetName)
+		public static IImage LoadImage(this AssetManager assetManager, string assetName) => LoadImage(assetManager, assetName, Stylesheet.Current);
+
+		public static IBrush LoadBrush(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
 			if (!assetName.Contains(".") && assetName.IndexOf(TintedImage.Separator) == -1 && !assetName.Contains(":"))
 			{
 				// It's either a default stylesheet texture atlas region or color name
-				if (!Stylesheet.Current.Atlas.Regions.TryGetValue(assetName, out var region))
+				if (stylesheet == null || !stylesheet.Atlas.Regions.TryGetValue(assetName, out var region))
 				{
 					// Color
 					var color = ColorStorage.FromName(assetName);
@@ -148,17 +152,19 @@ namespace AssetManagementBase
 				}
 			}
 
-			return assetManager.LoadImage(assetName);
+			return assetManager.LoadImage(assetName, stylesheet);
 		}
+
+		public static IBrush LoadBrush(this AssetManager assetManager, string assetName) => LoadBrush(assetManager, assetName, Stylesheet.Current);
 
 		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_staticFontLoader, assetName);
 
-		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName)
+		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			if (!assetName.Contains("."))
+			if (stylesheet != null && !assetName.Contains("."))
 			{
 				// If there's no extension, assume it's a current stylesheet font
-				if (!Stylesheet.Current.Fonts.TryGetValue(assetName, out var font))
+				if (!stylesheet.Fonts.TryGetValue(assetName, out var font))
 				{
 					throw new Exception($"Font '{assetName}' not found in current stylesheet");
 				}
@@ -193,5 +199,7 @@ namespace AssetManagementBase
 
 			throw new Exception(string.Format("Can't load font '{0}'", assetName));
 		}
+
+		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName) => LoadFont(assetManager, assetName, Stylesheet.Current);
 	}
 }

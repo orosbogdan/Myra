@@ -31,12 +31,21 @@ namespace Myra.Graphics2D.UI
 		public abstract Orientation Orientation { get; }
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="SeparatorWidget"/> class with the specified stylesheet and style.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply to the separator.</param>
+		protected SeparatorWidget(Stylesheet stylesheet, string styleName)
+		{
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="SeparatorWidget"/> class.
 		/// </summary>
 		/// <param name="styleName">The name of the style to apply to the separator.</param>
-		protected SeparatorWidget(string styleName)
+		protected SeparatorWidget(string styleName) : this(Stylesheet.Current, styleName)
 		{
-			SetStyle(styleName);
 		}
 
 		/// <summary>

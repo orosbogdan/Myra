@@ -364,9 +364,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler HoverIndexChanged = null;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Grid"/> class.
+		/// Initializes a new instance of the <see cref="Grid"/> class with the specified stylesheet and style.
 		/// </summary>
-		public Grid(string styleName = Stylesheet.DefaultStyleName)
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply.</param>
+		public Grid(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			_layout.ColumnsProportions.CollectionChanged += OnProportionsChanged;
@@ -377,7 +379,14 @@ namespace Myra.Graphics2D.UI
 			HoverIndexCanBeNull = true;
 			CanSelectNothing = false;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Grid"/> class.
+		/// </summary>
+		public Grid(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

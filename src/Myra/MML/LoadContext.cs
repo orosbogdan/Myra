@@ -13,6 +13,7 @@ using Myra.Utility;
 using FontStashSharp.RichText;
 using AssetManagementBase;
 using Myra.Graphics2D.TextureAtlases;
+using Myra.Graphics2D.UI.Styles;
 
 
 #if MONOGAME || FNA
@@ -86,6 +87,8 @@ namespace Myra.MML
 
 		// Loads external resources (brushes, fonts, textures) by name using asset manager
 		public AssetManager AssetManager = null;
+
+		public Stylesheet Stylesheet = null;
 
 		public bool DemandContentProperty = true;  // Whether to require [Content] attribute for implicit child addition
 
@@ -174,13 +177,13 @@ namespace Myra.MML
 
 				if (typeof(IBrush).IsAssignableFrom(propertyType))
 				{
-					value = AssetManager.LoadBrush(attr.Value);
+					value = AssetManager.LoadBrush(attr.Value, Stylesheet);
 					break;
 				}
 
 				if (typeof(SpriteFontBase).IsAssignableFrom(propertyType))
 				{
-					value = AssetManager.LoadFont(attr.Value);
+					value = AssetManager.LoadFont(attr.Value, Stylesheet);
 					break;
 				}
 
@@ -202,7 +205,7 @@ namespace Myra.MML
 			simplePropertyInfo.SetValue(obj, value);
 		}
 
-		private void LoadComplexProperty<T>(object obj, PropertyInfo property, XElement child, T handler) where T : class
+		private void LoadComplexProperty(object obj, PropertyInfo property, XElement child)
 		{
 			// Handle different property types: List, Dict, or single object
 			do
@@ -215,7 +218,7 @@ namespace Myra.MML
 					foreach (var child2 in child.Elements())
 					{
 						var item = ObjectCreator(property.PropertyType.GenericTypeArguments[0], child2);
-						Load(item, child2, handler);
+						Load(item, child2);
 						asList.Add(item);
 					}
 
@@ -229,7 +232,7 @@ namespace Myra.MML
 					foreach (var child2 in child.Elements())
 					{
 						var item = ObjectCreator(property.PropertyType.GenericTypeArguments[1], child2);
-						Load(item, child2, handler);
+						Load(item, child2);
 
 						var id = string.Empty;
 						if (child2.Attribute(IdName) != null)
@@ -247,13 +250,13 @@ namespace Myra.MML
 				if (property.SetMethod == null)
 				{
 					// Read-only property: load into existing value
-					Load(value, child, handler);
+					Load(value, child);
 				}
 				else
 				{
 					// Writable property: create and assign new value
 					var newValue = ObjectCreator(property.PropertyType, child);
-					Load(newValue, child, handler);
+					Load(newValue, child);
 					property.SetValue(obj, newValue);
 				}
 
@@ -261,13 +264,12 @@ namespace Myra.MML
 		}
 
 		// Deserializes an object from XML element, recursively loading children and properties
-		public void Load<T>(object obj, XElement el, T handler) where T : class
+		public void Load(object obj, XElement el)
 		{
 			// Track object and its source XML for debugging/introspection
 			ObjectsNodes.Add(new Tuple<object, XElement>(obj, el));
 
 			var type = obj.GetType();
-			var handlerType = typeof(T);
 
 			var baseObject = obj as BaseObject;
 
@@ -291,19 +293,6 @@ namespace Myra.MML
 				if (simplePropertyInfo != null)
 				{
 					LoadSimpleProperty(obj, simplePropertyInfo, attr);
-				}
-				else if (handler != null && type.GetEvent(attr.Name.LocalName) != null)
-				{
-					// Event handler wiring: attribute is method name on handler object
-					var method = handlerType.GetMethod(attr.Value, BindingFlags.Public | BindingFlags.Instance);
-					var eventHandler = type.GetEvent(attr.Name.LocalName);
-					if (method == null)
-					{
-						throw new InvalidOperationException($"Handler of type '{handlerType}' does not contain method '{attr.Value}'. If it does, ensure the method is both public and non-static.");
-					}
-
-					var delegateMethod = method.CreateDelegate(eventHandler.EventHandlerType, handler);
-					eventHandler.AddEventHandler(obj, delegateMethod);
 				}
 				else
 				{
@@ -352,7 +341,7 @@ namespace Myra.MML
 				var property = (from p in complexProperties where p.Name == childName select p).FirstOrDefault();
 				if (property != null)
 				{
-					LoadComplexProperty(obj, property, child, handler);
+					LoadComplexProperty(obj, property, child);
 				}
 				else
 				{
@@ -391,7 +380,7 @@ namespace Myra.MML
 					{
 						// Create and load widget, then add to content property
 						var item = ObjectCreator(itemType, child);
-						Load(item, child, handler);
+						Load(item, child);
 
 						if (contentProperty == null)
 						{

@@ -13,10 +13,19 @@ namespace Myra.Graphics2D.UI
 		public override Orientation Orientation => Orientation.Horizontal;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="HorizontalSplitPane"/> class with the specified stylesheet and style.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public HorizontalSplitPane(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="HorizontalSplitPane"/> class with the specified style.
 		/// </summary>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public HorizontalSplitPane(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public HorizontalSplitPane(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
 

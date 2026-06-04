@@ -182,10 +182,12 @@ namespace Myra.Graphics2D.UI.File
 		public IImage IconDrive { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode.
+		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode, stylesheet, and style.
 		/// </summary>
 		/// <param name="mode">The file dialog mode (open file, save file, or choose folder).</param>
-		public FileDialog(FileDialogMode mode) : base(null)
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public FileDialog(FileDialogMode mode, Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			_mode = mode;
 
@@ -243,7 +245,16 @@ namespace Myra.Graphics2D.UI.File
 
 			UpdateEnabled();
 
-			SetStyle(Stylesheet.DefaultStyleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode.
+		/// </summary>
+		/// <param name="mode">The file dialog mode (open file, save file, or choose folder).</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public FileDialog(FileDialogMode mode, string styleName = Stylesheet.DefaultStyleName) : this(mode, Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

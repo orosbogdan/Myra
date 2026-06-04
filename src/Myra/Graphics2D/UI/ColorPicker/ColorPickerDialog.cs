@@ -38,16 +38,23 @@ namespace Myra.Graphics2D.UI.ColorPicker
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class.
+		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class with the specified stylesheet and style.
 		/// </summary>
-		public ColorPickerDialog(): base(null)
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public ColorPickerDialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 			ColorPickerPanel = new ColorPickerPanel();
 
 			Title = "Color Picker";
 			Content = ColorPickerPanel;
+		}
 
-			SetStyle(Stylesheet.DefaultStyleName);
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class.
+		/// </summary>
+		public ColorPickerDialog() : this(Stylesheet.Current, Stylesheet.DefaultStyleName)
+		{
 		}
 
 		/// <summary>
