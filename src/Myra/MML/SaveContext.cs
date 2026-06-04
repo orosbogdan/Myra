@@ -7,9 +7,6 @@ using System.Reflection;
 using System.Xml.Linq;
 using Myra.Attributes;
 using System.Linq;
-using FontStashSharp;
-using Myra.Graphics2D.UI.Styles;
-
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;

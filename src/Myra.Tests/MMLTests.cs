@@ -48,6 +48,8 @@ namespace Myra.Tests
 		[InlineData("marginBorderPadding.xmmp")]
 		[InlineData("newButtons.xmmp")]
 		[InlineData("scrolledTextField.xmmp")]
+		[InlineData("allControls.xmmp")]
+		[InlineData("allControlsC64.xmmp")]
 		public void XmlRoundTrip(string fileName)
 		{
 			var assetManager = Utility.CreateAssetManager();
