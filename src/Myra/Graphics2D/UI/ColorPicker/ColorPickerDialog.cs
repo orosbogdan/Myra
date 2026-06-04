@@ -42,12 +42,14 @@ namespace Myra.Graphics2D.UI.ColorPicker
 		/// </summary>
 		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public ColorPickerDialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
+		public ColorPickerDialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			ColorPickerPanel = new ColorPickerPanel();
 
 			Title = "Color Picker";
 			Content = ColorPickerPanel;
+
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
@@ -68,7 +70,7 @@ namespace Myra.Graphics2D.UI.ColorPicker
 			{
 				var colorDisplay = ColorPickerPanel.GetUserColorImage(i);
 				var color = colorDisplay.Color;
-				var alpha = (int) (colorDisplay.Opacity * 255);
+				var alpha = (int)(colorDisplay.Opacity * 255);
 				ColorPickerPanel.UserColors[i] = new Color(color.R, color.G, color.B, alpha);
 			}
 		}

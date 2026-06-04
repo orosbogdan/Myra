@@ -45,7 +45,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public Dialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
+		public Dialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			ConfirmKey = Keys.Enter;
 
@@ -80,12 +80,15 @@ namespace Myra.Graphics2D.UI
 
 			ButtonCancel.Click += (sender, args) =>
 			{
-				OnCancel();
+				Result = false;
+				Close();
 			};
 
 			buttonsPanel.Widgets.Add(ButtonCancel);
 
 			Children.Add(buttonsPanel);
+
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
