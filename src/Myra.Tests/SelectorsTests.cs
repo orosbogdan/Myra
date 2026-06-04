@@ -10,7 +10,7 @@ namespace Myra.Tests
 		[Fact]
 		public void ListViewTest()
 		{
-			var root = Utility.LoadFromResourceRootClone("listView.xmmp");
+			var root = Utility.LoadProjectRootClone("listView.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel = (Panel)root;
@@ -69,7 +69,7 @@ namespace Myra.Tests
 		[Fact]
 		public void ComboViewTest()
 		{
-			var assetManager = AssetManager.CreateResourceAssetManager(Utility.Assembly, "Resources.");
+			var assetManager = Utility.CreateAssetManager();
 			var project = assetManager.LoadProject("comboView.xmmp");
 			var root = project.Root;
 

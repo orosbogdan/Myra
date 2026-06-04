@@ -505,7 +505,7 @@ namespace MyraPad.UI
 				}
 
 				// Synchronize the text editor with the updated project structure
-				_textSource.Text = _project.Save();
+				_textSource.Text = _project.ToXml();
 			}
 			catch (Exception ex)
 			{
@@ -970,7 +970,7 @@ namespace MyraPad.UI
 		// Refreshes the XML editor text to match the current project state
 		private void UpdateSource()
 		{
-			var data = Project != null ? Project.Save() : string.Empty;
+			var data = Project != null ? Project.ToXml() : string.Empty;
 			if (data == _textSource.Text)
 			{
 				return;
@@ -985,7 +985,7 @@ namespace MyraPad.UI
 			try
 			{
 				var project = Project.LoadFromXml(_textSource.Text, AssetManager);
-				_textSource.Text = _project.Save();
+				_textSource.Text = _project.ToXml();
 			}
 			catch (Exception ex)
 			{

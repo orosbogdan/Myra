@@ -1,4 +1,5 @@
-﻿<Project>
+<Project>
+  <Project.ExportOptions />
   <Grid>
     <Grid.ColumnsProportions>
       <Proportion Type="Auto" />

@@ -290,7 +290,7 @@ namespace Myra.Graphics2D.UI
 		/// Saves the project to an XML string.
 		/// </summary>
 		/// <returns>An XML string representation of the project.</returns>
-		public string Save()
+		public string ToXml()
 		{
 			var saveContext = CreateSaveContext();
 			var root = saveContext.Save(this);
@@ -299,6 +299,9 @@ namespace Myra.Graphics2D.UI
 
 			return xDoc.ToString();
 		}
+
+		[Obsolete("Use ToXml")]
+		public string Save() => ToXml();
 
 		/// <summary>
 		/// Loads a project from an XDocument with an optional handler.
@@ -395,29 +398,6 @@ namespace Myra.Graphics2D.UI
 			loadContext.Load(item, xDoc.Root);
 
 			return item;
-		}
-
-		/// <summary>
-		/// Loads a single object from XML string data using the specified stylesheet.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <param name="stylesheet">The stylesheet to apply to loaded objects.</param>
-		/// <returns>The loaded object.</returns>
-		public static object LoadObjectFromXml(string data, AssetManager assetManager, Stylesheet stylesheet)
-		{
-			return LoadObjectFromXml(data, assetManager, stylesheet);
-		}
-
-		/// <summary>
-		/// Loads a single object from XML string data using this project's stylesheet.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <returns>The loaded object.</returns>
-		public object LoadObjectFromXml(string data, AssetManager assetManager)
-		{
-			return LoadObjectFromXml(data, assetManager, Stylesheet);
 		}
 
 		/// <summary>

@@ -10,7 +10,7 @@ namespace Myra.Tests
 		[Fact]
 		public void LoadLabelFromXmmp_LoadsProperties()
 		{
-			var root = Utility.LoadFromResourceRootClone("labelWithPaddings.xmmp");
+			var root = Utility.LoadProjectRootClone("labelWithPaddings.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel = (Panel)root;
