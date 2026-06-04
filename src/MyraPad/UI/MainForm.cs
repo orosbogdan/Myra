@@ -120,6 +120,7 @@ namespace MyraPad.UI
 		private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
 		// Tree view widget for displaying the widget hierarchy in the explorer panel
 		private readonly TreeView _treeViewExplorer;
+		private readonly TreeView _treeViewStylesheet;
 		// Auto-complete context menu that appears while typing XML tags
 		private VerticalMenu _autoCompleteMenu = null;
 		// Flag to track if the last click in the explorer was a right-click (for context menu)
@@ -320,7 +321,7 @@ namespace MyraPad.UI
 
 			_menuFileNew.Selected += NewItemOnClicked;
 			_menuFileOpen.Selected += OpenItemOnClicked;
-			_menuFileReload.Selected += OnMenuFileReloadSelected;
+			_menuFileReload.Selected += (s, e) => Reload();
 			_menuFileSave.Selected += SaveItemOnClicked;
 			_menuFileSaveAs.Selected += SaveAsItemOnClicked;
 			_menuFileExportToCS.Selected += ExportCsItemOnSelected;
@@ -368,6 +369,16 @@ namespace MyraPad.UI
 			_treeViewExplorer.TouchUp += _treeViewExplorer_TouchUp;
 
 			_panelExplorer.Content = _treeViewExplorer;
+
+			_treeViewStylesheet = new TreeView
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch,
+			};
+
+			_treeViewStylesheet.SelectionChanged += _treeViewStylesheet_SelectionChanged;
+
+			_panelStyles.Content = _treeViewStylesheet;
 
 			RichTextDefaults.FontResolver = p =>
 			{
@@ -703,7 +714,7 @@ namespace MyraPad.UI
 					}
 					else if (Desktop.IsKeyDown(Keys.R))
 					{
-						OnMenuFileReloadSelected(this, MyraEventArgs.Empty);
+						Reload();
 					}
 					else if (Desktop.IsKeyDown(Keys.S))
 					{
@@ -1500,8 +1511,7 @@ namespace MyraPad.UI
 			UpdateCursor();
 		}
 
-		// Reloads the current project file, clearing all cached assets
-		private void OnMenuFileReloadSelected(object sender, MyraEventArgs e)
+		private void Reload()
 		{
 			AssetManager.Cache.Clear();
 			_fontCache.Clear();
@@ -1659,34 +1669,44 @@ namespace MyraPad.UI
 		{
 			IsDirty = true;
 
-			// Serialize the modified widget object back to XML
-			var xml = _project.SaveObjectToXml(PropertyGrid.Object, ExtractTag(CurrentTag), ParentType);
-
-			// If the original tag needs a closing tag, ensure the new XML has one too
-			if (_needsCloseTag)
+			if (PropertyGrid.Object is WidgetStyle)
 			{
-				xml = xml.Replace("/>", ">");
+				// Stylesheet property changed
+				Reload();
 			}
-
-			// Replace the old XML tag with the new serialized XML
-			if (_currentTagStart != null && _currentTagEnd != null)
+			else
 			{
-				try
+				// Project property changed
+				// Serialize the modified widget object back to XML
+				var xml = _project.SaveObjectToXml(PropertyGrid.Object, ExtractTag(CurrentTag), ParentType);
+
+				// If the original tag needs a closing tag, ensure the new XML has one too
+				if (_needsCloseTag)
 				{
-					_suppressProjectRefresh = true;
-					// Replace the current tag with the updated XML
-					_textSource.Replace(_currentTagStart.Value,
-						_currentTagEnd.Value - _currentTagStart.Value + 1,
-						xml);
-					QueueRefreshProject();
-				}
-				finally
-				{
-					_suppressProjectRefresh = false;
+					xml = xml.Replace("/>", ">");
 				}
 
-				// Update the end position of the current tag after replacement
-				_currentTagEnd = _currentTagStart.Value + xml.Length - 1;
+				// Replace the old XML tag with the new serialized XML
+				if (_currentTagStart != null && _currentTagEnd != null)
+				{
+					try
+					{
+						_suppressProjectRefresh = true;
+
+						// Replace the current tag with the updated XML
+						_textSource.Replace(_currentTagStart.Value,
+							_currentTagEnd.Value - _currentTagStart.Value + 1,
+							xml);
+						QueueRefreshProject();
+					}
+					finally
+					{
+						_suppressProjectRefresh = false;
+					}
+
+					// Update the end position of the current tag after replacement
+					_currentTagEnd = _currentTagStart.Value + xml.Length - 1;
+				}
 			}
 		}
 
@@ -2216,6 +2236,5 @@ namespace MyraPad.UI
 				}
 			}
 		}
-
 	}
 }
