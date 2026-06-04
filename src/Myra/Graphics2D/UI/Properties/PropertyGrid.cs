@@ -83,14 +83,13 @@ namespace Myra.Graphics2D.UI.Properties
 			{
 				ChildrenLayout = _layout;
 
-				_layout.ColumnSpacing = 4;
-				_layout.RowSpacing = 4;
+				_layout.ColumnSpacing = 8;
+				_layout.RowSpacing = 8;
 
 				// Two columns: expand/collapse toggle (Auto) and category label (Fill)
 				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
-				_layout.RowsProportions.Add(new Proportion(ProportionType.Auto));
-				_layout.RowsProportions.Add(new Proportion(ProportionType.Auto));
+				_layout.DefaultRowProportion = Proportion.Auto;
 
 				// Create nested PropertyGrid to display this category's properties
 				_propertyGrid = new PropertyGrid(parent.PropertyGridStyle, category, parentProperty, parent)
@@ -410,11 +409,13 @@ namespace Myra.Graphics2D.UI.Properties
 			_parentGrid = parentGrid;
 
 			_parentProperty = parentProperty;
+			
 			// Two-column layout: property names (left) and value editors (right)
-			_layout.ColumnSpacing = 8;
+			_layout.ColumnSpacing = 32;
 			_layout.RowSpacing = 8;
-			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));
-			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));
+			_layout.ColumnsProportions.Add(Proportion.Auto);
+			_layout.ColumnsProportions.Add(Proportion.Fill);
+			_layout.DefaultRowProportion = Proportion.Auto;
 
 			Category = category;
 
@@ -1380,7 +1381,7 @@ namespace Myra.Graphics2D.UI.Properties
 					var nameLabel = new Label
 					{
 						Text = name,
-						VerticalAlignment = VerticalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Center
 					};
 
 					Grid.SetColumn(nameLabel, 0);
@@ -1396,8 +1397,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 					Children.Add(valueWidget);
 
-					rowProportion = new Proportion(ProportionType.Auto);
-					_layout.RowsProportions.Add(rowProportion);
 					++y;
 				}
 
@@ -1414,8 +1413,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 							Children.Add(subGrid);
 
-							rowProportion = new Proportion(ProportionType.Auto);
-							_layout.RowsProportions.Add(rowProportion);
 							++y;
 						}
 
@@ -1614,9 +1611,6 @@ namespace Myra.Graphics2D.UI.Properties
 				{
 					subGrid.Mark.IsPressed = true;
 				}
-
-				var rp = new Proportion(ProportionType.Auto);
-				_layout.RowsProportions.Add(rp);
 
 				y++;
 			}
