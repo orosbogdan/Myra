@@ -311,21 +311,39 @@ namespace Myra.Graphics2D.UI
 		[Obsolete("Use ToXml")]
 		public string Save() => ToXml();
 
+		/// <summary>
+		/// Loads a project from an XML string representation.
+		/// </summary>
+		/// <param name="data">The XML string containing the project definition.</param>
+		/// <param name="assetManager">The asset manager used to load resources referenced by the project. If null, resources will not be loaded.</param>
+		/// <param name="customStylesheet">An optional custom stylesheet to apply to the project. If not provided, the stylesheet path from the project's XML will be used.</param>
+		/// <returns>A new Project instance loaded from the provided XML data, or null if loading fails.</returns>
 		public static Project LoadFromXml(string data, AssetManager assetManager = null, Stylesheet customStylesheet = null)
 		{
-			// Check if project specifies external stylesheet
-			var stylesheet = customStylesheet ?? Stylesheet.Current;
-
 			var xDoc = XDocument.Parse(data, LoadOptions.SetLineInfo);
-			var stylesheetPathAttr = xDoc.Root.Attribute("StylesheetPath");
-			if (stylesheetPathAttr != null)
-			{
-				if (assetManager == null)
-				{
-					throw new Exception($"assetManager couldn't be null if the project has external stylesheet");
-				}
 
-				stylesheet = assetManager.LoadStylesheet(stylesheetPathAttr.Value);
+			// Check if project specifies external stylesheet
+			Stylesheet stylesheet;
+			if (customStylesheet == null)
+			{
+				var stylesheetPathAttr = xDoc.Root.Attribute("StylesheetPath");
+				if (stylesheetPathAttr != null)
+				{
+					if (assetManager == null)
+					{
+						throw new Exception($"assetManager couldn't be null if the project has external stylesheet");
+					}
+
+					stylesheet = assetManager.LoadStylesheet(stylesheetPathAttr.Value);
+				}
+				else
+				{
+					stylesheet = Stylesheet.Current;
+				}
+			}
+			else
+			{
+				stylesheet = customStylesheet;
 			}
 
 			var result = new Project(stylesheet);
@@ -468,7 +486,7 @@ namespace Myra.Graphics2D.UI
 			{
 				obj = w.GetStyle(stylesheet, styleName);
 			}
-			catch(Exception)
+			catch
 			{
 				// If there's an exception, return false(meaning the widget property doesnt have the stylesheet value)
 				return false;

@@ -160,7 +160,7 @@ namespace Myra.Graphics2D.UI.File
 
 						appendResult.Add(new Location(vol, d.Name, d.RootDirectory.FullName, true));
 					}
-					catch (Exception)
+					catch
 					{
 					}
 				}

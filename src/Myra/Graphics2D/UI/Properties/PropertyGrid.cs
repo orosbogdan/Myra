@@ -926,7 +926,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 						FireChanged(record.Name);
 					}
-					catch (Exception)
+					catch
 					{
 						// TODO: Rework this ugly type conversion solution
 					}
@@ -1099,7 +1099,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 							FireChanged(propertyType.Name);
 						}
-						catch (Exception)
+						catch
 						{
 
 						}
@@ -1211,7 +1211,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 							FireChanged(propertyType.Name);
 						}
-						catch (Exception)
+						catch
 						{
 						}
 					};

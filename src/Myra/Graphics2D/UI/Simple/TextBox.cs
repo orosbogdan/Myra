@@ -812,7 +812,7 @@ namespace Myra.Graphics2D.UI
 						{
 							clipboardText = Clipboard.GetText();
 						}
-						catch (Exception)
+						catch
 						{
 							clipboardText = MyraEnvironment.InternalClipboard;
 						}
@@ -1023,7 +1023,7 @@ namespace Myra.Graphics2D.UI
 				{
 					Clipboard.SetText(clipboardText);
 				}
-				catch (Exception)
+				catch
 				{
 					// Fallback if system clipboard is unavailable
 					MyraEnvironment.InternalClipboard = clipboardText;
