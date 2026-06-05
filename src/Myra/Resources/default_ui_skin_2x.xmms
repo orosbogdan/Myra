@@ -69,6 +69,7 @@
         <ListItemStyle PressedBackground="button-down" OverBackground="button-over" />
         <SeparatorStyle Thickness="4" Image="separator-menu" Padding="0, 4" />
       </ListBoxStyle>
+      <LabelStyle TextColor="White" Font="default-font" />
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>

@@ -57,5 +57,38 @@ namespace Myra.Graphics2D.UI.Styles
 		/// Gets or sets a value indicating whether nothing can be selected by clicking an already-selected item.
 		/// </summary>
 		public bool CanSelectNothing { get; set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GridStyle"/> class.
+		/// </summary>
+		public GridStyle()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GridStyle"/> class by copying properties from another style.
+		/// </summary>
+		/// <param name="style">The source grid style to copy from.</param>
+		public GridStyle(GridStyle style) : base(style)
+		{
+			ShowGridLines = style.ShowGridLines;
+			GridLinesColor = style.GridLinesColor;
+			ColumnSpacing = style.ColumnSpacing;
+			RowSpacing = style.RowSpacing;
+			SelectionBackground = style.SelectionBackground;
+			SelectionHoverBackground = style.SelectionHoverBackground;
+			GridSelectionMode = style.GridSelectionMode;
+			HoverIndexCanBeNull = style.HoverIndexCanBeNull;
+			CanSelectNothing = style.CanSelectNothing;
+		}
+
+		/// <summary>
+		/// Creates a deep copy of this grid style.
+		/// </summary>
+		/// <returns>A new GridStyle instance with the same properties.</returns>
+		public override WidgetStyle Clone()
+		{
+			return new GridStyle(this);
+		}
 	}
 }

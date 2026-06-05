@@ -11,6 +11,11 @@
 		public ListBoxStyle ListBoxStyle { get; set; }
 
 		/// <summary>
+		/// Gets or sets the style applied to the combo box's label.
+		/// </summary>
+		public LabelStyle LabelStyle { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ComboBoxStyle"/> class.
 		/// </summary>
 		public ComboBoxStyle()
@@ -24,6 +29,7 @@
 		public ComboBoxStyle(ComboBoxStyle style) : base(style)
 		{
 			ListBoxStyle = style.ListBoxStyle != null ? new ListBoxStyle(style.ListBoxStyle) : null;
+			LabelStyle = style.LabelStyle != null ? new LabelStyle(style.LabelStyle) : null;
 		}
 
 		/// <summary>

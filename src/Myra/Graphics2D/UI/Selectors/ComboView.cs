@@ -5,6 +5,8 @@ using Myra.Events;
 using System.Collections.Generic;
 using System.Collections;
 using Myra.Attributes;
+using System;
+
 
 
 #if MONOGAME || FNA
@@ -27,6 +29,7 @@ namespace Myra.Graphics2D.UI
 	{
 		private readonly ToggleButton _button;
 		private readonly ListView _listView = new ListView(null);
+		private readonly Label _labelPlaceholder = new Label();
 
 		/// <summary>
 		/// Gets or sets the maximum height of the dropdown list in pixels.
@@ -155,6 +158,9 @@ namespace Myra.Graphics2D.UI
 				VerticalAlignment = VerticalAlignment.Stretch
 			};
 
+			// Add placeholder label that is required so the combo wont disappear if style height is null
+			_button.Content = _labelPlaceholder;
+
 			ChildrenLayout = new SingleItemLayout<ToggleButton>(this)
 			{
 				Child = _button
@@ -228,11 +234,18 @@ namespace Myra.Graphics2D.UI
 			base.ApplyStyle(style);
 
 			var comboBoxStyle = (ComboBoxStyle)style;
-			if (comboBoxStyle.ListBoxStyle != null)
+			if (comboBoxStyle.ListBoxStyle == null)
 			{
-				var dropdownMaximumHeight = DropdownMaximumHeight;
-				_listView.ApplyListViewStyle(comboBoxStyle.ListBoxStyle);
-				DropdownMaximumHeight = dropdownMaximumHeight;
+				throw new Exception("ComboBoxStyle.ListBoxStyle can't be null.");
+			}
+
+			var dropdownMaximumHeight = DropdownMaximumHeight;
+			_listView.ApplyListViewStyle(comboBoxStyle.ListBoxStyle);
+			DropdownMaximumHeight = dropdownMaximumHeight;
+
+			if (comboBoxStyle.LabelStyle != null)
+			{
+				_labelPlaceholder.ApplyLabelStyle(comboBoxStyle.LabelStyle);
 			}
 		}
 
