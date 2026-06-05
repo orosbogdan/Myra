@@ -8,6 +8,9 @@ using Xunit;
 using Myra.Graphics2D.Brushes;
 using FontStashSharp.RichText;
 using AssetManagementBase;
+using System.Xml.Linq;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Myra.Tests
 {
@@ -51,6 +54,49 @@ namespace Myra.Tests
 		{
 			var color2 = ColorStorage.FromName(colorName);
 			Assert.Equal(color2.Value, color);
+		}
+
+		/// <summary>
+		/// Normalizes XML by sorting attributes to ensure consistent ordering regardless of serialization order.
+		/// </summary>
+		public static XElement NormalizeXml(XElement element)
+		{
+			return new XElement(element.Name,
+				element.Attributes().OrderBy(a => a.Name.LocalName),
+				element.Elements().Select(NormalizeXml));
+		}
+
+		/// <summary>
+		/// Asserts that two XML documents are semantically equal, ignoring attribute order and formatting.
+		/// </summary>
+		public static void AssertXmlEqual(XDocument a, XDocument b)
+		{
+			var normalizedA = NormalizeXml(a.Root).ToString();
+			var normalizedB = NormalizeXml(b.Root).ToString();
+			Assert.Equal(normalizedA, normalizedB);
+		}
+
+		/// <summary>
+		/// Recursively collects all widgets of a specific type from a widget hierarchy.
+		/// </summary>
+		public static List<T> CollectWidgetsByType<T>(Widget parent) where T : Widget
+		{
+			var results = new List<T>();
+			CollectWidgetsByTypeRecursive(parent, results);
+			return results;
+		}
+
+		private static void CollectWidgetsByTypeRecursive<T>(Widget parent, List<T> results) where T : Widget
+		{
+			if (parent is T widget)
+			{
+				results.Add(widget);
+			}
+
+			foreach (var child in parent.Children)
+			{
+				CollectWidgetsByTypeRecursive(child, results);
+			}
 		}
 	}
 }

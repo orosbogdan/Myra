@@ -63,12 +63,12 @@ namespace Myra.Tests
 			// Convert back to XML
 			var resultXml = project.ToXml();
 
-			// Parse both as XDocuments and compare the normalized structure
+			// Parse both as XDocuments
 			var originalDoc = XDocument.Parse(originalXml);
 			var resultDoc = XDocument.Parse(resultXml);
 
-			// Compare the XML structure (this handles formatting differences)
-			Assert.Equal(originalDoc.ToString(), resultDoc.ToString());
+			// Assert XML is semantically equal (ignoring attribute order)
+			Utility.AssertXmlEqual(originalDoc, resultDoc);
 		}
 	}
 }

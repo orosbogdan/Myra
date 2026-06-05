@@ -311,17 +311,12 @@ namespace Myra.Graphics2D.UI
 		[Obsolete("Use ToXml")]
 		public string Save() => ToXml();
 
-		/// <summary>
-		/// Loads a project from an XDocument with an optional asset manager.
-		/// If project has external stylesheet, temporarily switches to it during loading.
-		/// </summary>
-		/// <param name="xDoc">The XDocument to load from.</param>
-		/// <param name="assetManager">The asset manager for loading resources. Required if the project has an external stylesheet.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml(XDocument xDoc, AssetManager assetManager = null)
+		public static Project LoadFromXml(string data, AssetManager assetManager = null, Stylesheet customStylesheet = null)
 		{
 			// Check if project specifies external stylesheet
-			var stylesheet = Stylesheet.Current;
+			var stylesheet = customStylesheet ?? Stylesheet.Current;
+
+			var xDoc = XDocument.Parse(data, LoadOptions.SetLineInfo);
 			var stylesheetPathAttr = xDoc.Root.Attribute("StylesheetPath");
 			if (stylesheetPathAttr != null)
 			{
@@ -340,17 +335,6 @@ namespace Myra.Graphics2D.UI
 			result.ObjectsNodes = loadContext.ObjectsNodes;
 
 			return result;
-		}
-
-		/// <summary>
-		/// Loads a project from XML string data with an optional asset manager.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml(string data, AssetManager assetManager = null)
-		{
-			return LoadFromXml(XDocument.Parse(data, LoadOptions.SetLineInfo), assetManager);
 		}
 
 		/// <summary>
