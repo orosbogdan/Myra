@@ -1,13 +1,12 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A vertical separator widget that visually divides UI sections.
 	/// </summary>
-	[StyledByProperty("VerticalSeparatorStyles")]
 	public class VerticalSeparator : SeparatorWidget
 	{
 		/// <summary>
@@ -65,5 +64,7 @@ namespace Myra.Graphics2D.UI
 		public VerticalSeparator(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.VerticalSeparatorStyles;
 	}
 }

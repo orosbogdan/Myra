@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
-using Myra.Attributes;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -16,7 +16,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A menu control that displays menu items vertically in a column.
 	/// </summary>
-	[StyledByProperty("VerticalMenuStyles")]
 	public class VerticalMenu : Menu
 	{
 		/// <summary>
@@ -80,6 +79,8 @@ namespace Myra.Graphics2D.UI
 		public VerticalMenu(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.VerticalMenuStyles;
 
 		/// <summary>
 		/// Handles keyboard input for vertical menu navigation using up and down arrow keys.

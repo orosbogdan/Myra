@@ -1,7 +1,8 @@
 ﻿using Myra.Graphics2D.UI.Styles;
-using Myra.Attributes;
 using System.ComponentModel;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
 
 
 #if MONOGAME || FNA
@@ -17,7 +18,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A clickable button widget that can contain any widget as its content.
 	/// </summary>
-	[StyledByProperty("ButtonStyles")]
 	public class Button : ButtonBase
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -83,6 +83,8 @@ namespace Myra.Graphics2D.UI
 		public Button(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ButtonStyles;
 
 		/// <summary>
 		/// Handles the event when the cursor/touch leaves the button.

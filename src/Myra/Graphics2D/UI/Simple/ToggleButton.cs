@@ -1,7 +1,8 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
 
 
 #if MONOGAME || FNA
@@ -17,7 +18,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A toggle button widget that can be toggled between two states.
 	/// </summary>
-	[StyledByProperty("ButtonStyles")]
 	public class ToggleButton : ButtonBase
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -79,6 +79,8 @@ namespace Myra.Graphics2D.UI
 		public ToggleButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ButtonStyles;
 
 		/// <summary>
 		/// Called when a touch point is released on the toggle button.

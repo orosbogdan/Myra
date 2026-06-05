@@ -250,6 +250,10 @@ namespace Myra.Graphics2D.UI
 			return Orientation == Orientation.Horizontal ? pos.X - bounds.Width / 2 : pos.Y - bounds.Height / 2;
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this slider.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

@@ -4,7 +4,7 @@ using System.Linq;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
-using Myra.Attributes;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -20,7 +20,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A spin button widget for entering numeric values with increment/decrement buttons.
 	/// </summary>
-	[StyledByProperty("SpinButtonStyles")]
 	public class SpinButton : Widget
 	{
 		private readonly GridLayout _layout = new GridLayout();
@@ -354,6 +353,8 @@ namespace Myra.Graphics2D.UI
 		{
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.SpinButtonStyles;
+
 		private static float? StringToFloat(string s)
 		{
 			if (string.IsNullOrEmpty(s))
@@ -495,6 +496,10 @@ namespace Myra.Graphics2D.UI
 			return true;
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this spin button.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

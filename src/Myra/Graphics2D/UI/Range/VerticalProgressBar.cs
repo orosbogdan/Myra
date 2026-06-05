@@ -1,13 +1,12 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A progress bar control that displays progress vertically from bottom to top.
 	/// </summary>
-	[StyledByProperty("VerticalProgressBarStyles")]
 	public class VerticalProgressBar : ProgressBar
 	{
 		/// <summary>
@@ -71,5 +70,7 @@ namespace Myra.Graphics2D.UI
 		public VerticalProgressBar(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.VerticalProgressBarStyles;
 	}
 }

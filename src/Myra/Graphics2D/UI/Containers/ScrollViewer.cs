@@ -3,8 +3,10 @@ using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
 using System.Xml.Serialization;
-using Myra.Attributes;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
+
 
 
 #if MONOGAME || FNA
@@ -20,7 +22,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A container that displays its content with horizontal and/or vertical scrollbars for navigation when content exceeds available space.
 	/// </summary>
-	[StyledByProperty("ScrollViewerStyles")]
 	public class ScrollViewer : ContentControl
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -526,6 +527,12 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ScrollViewerStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this scroll viewer.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

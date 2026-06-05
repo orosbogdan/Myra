@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel;
-using Myra.Attributes;
 using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A progress bar control that displays progress horizontally from left to right.
 	/// </summary>
-	[StyledByProperty("HorizontalProgressBarStyles")]
 	public class HorizontalProgressBar : ProgressBar
 	{
 		/// <summary>
@@ -71,5 +70,7 @@ namespace Myra.Graphics2D.UI
 		public HorizontalProgressBar(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.HorizontalProgressBarStyles;
 	}
 }

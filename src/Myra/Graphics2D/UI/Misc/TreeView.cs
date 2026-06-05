@@ -4,7 +4,7 @@ using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Events;
-using Myra.Attributes;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -23,7 +23,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A hierarchical tree view widget that displays nodes in an expandable/collapsible tree structure.
 	/// </summary>
-	[StyledByProperty("TreeStyles")]
 	public class TreeView : Widget, ITreeViewNode
 	{
 		private readonly StackPanelLayout _layout = new StackPanelLayout(Orientation.Vertical);
@@ -492,6 +491,12 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TreeStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this tree view.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

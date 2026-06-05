@@ -915,6 +915,10 @@ namespace Myra.Graphics2D.UI
 			return base.InternalMeasure(availableSize);
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this menu.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

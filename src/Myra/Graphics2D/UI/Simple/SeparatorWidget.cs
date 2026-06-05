@@ -48,6 +48,10 @@ namespace Myra.Graphics2D.UI
 		{
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this separator.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -57,6 +61,10 @@ namespace Myra.Graphics2D.UI
 			Thickness = separatorStyle.Thickness;
 		}
 
+		/// <summary>
+		/// Applies the specified separator style to this separator.
+		/// </summary>
+		/// <param name="style">The separator style to apply.</param>
 		public void ApplySeparatorStyle(SeparatorStyle style) => ApplyStyle(style);
 
 		/// <summary>

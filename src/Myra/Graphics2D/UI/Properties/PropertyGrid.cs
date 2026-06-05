@@ -10,11 +10,12 @@ using System.Xml.Serialization;
 using Myra.MML;
 using Myra.Graphics2D.UI.File;
 using System.IO;
-using Myra.Attributes;
 using FontStashSharp;
 using Myra.Graphics2D.Brushes;
 using AssetManagementBase;
 using Myra.Events;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -35,7 +36,6 @@ namespace Myra.Graphics2D.UI.Properties
 	/// Uses reflection to discover properties and fields, creates appropriate editors for each type,
 	/// and organizes them by category with support for nested objects and filtering.
 	/// </summary>
-	[StyledByProperty("TreeStyles")]
 	public class PropertyGrid : Widget
 	{
 		private const string DefaultCategoryName = "Miscellaneous";
@@ -1615,6 +1615,12 @@ namespace Myra.Graphics2D.UI.Properties
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TreeStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this property grid.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

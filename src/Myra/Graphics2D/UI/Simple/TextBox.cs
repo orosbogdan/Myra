@@ -8,7 +8,7 @@ using Myra.Graphics2D.UI.TextEdit;
 using FontStashSharp;
 using FontStashSharp.RichText;
 using Myra.Events;
-using Myra.Attributes;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -31,7 +31,6 @@ namespace Myra.Graphics2D.UI
 	/// Features include multi-line text, text wrapping, password masking, keyboard navigation, selection,
 	/// clipboard operations, and full undo/redo support.
 	/// </summary>
-	[StyledByProperty("TextBoxStyles")]
 	public class TextBox : Widget
 	{
 		private const int CursorUpdateDelayInMs = 30;
@@ -1782,6 +1781,12 @@ namespace Myra.Graphics2D.UI
 			_richTextLayout.Width = _wrap ? width : default(int?);
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TextBoxStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this text box.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -1797,6 +1802,10 @@ namespace Myra.Graphics2D.UI
 			Font = textBoxStyle.Font;
 		}
 
+		/// <summary>
+		/// Applies the specified text box style to this text box.
+		/// </summary>
+		/// <param name="style">The text box style to apply.</param>
 		public void ApplyTextBoxStyle(TextBoxStyle style) => ApplyStyle(style);
 
 		/// <summary>

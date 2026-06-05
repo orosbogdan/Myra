@@ -1,11 +1,12 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
 using System.Xml.Serialization;
-using Myra.Attributes;
 using FontStashSharp;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -24,7 +25,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A draggable window widget with a title bar and optional close button.
 	/// </summary>
-	[StyledByProperty("WindowStyles")]
 	public class Window : ContentControl
 	{
 		private readonly StackPanelLayout _layout = new StackPanelLayout(Orientation.Vertical);
@@ -297,6 +297,12 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.WindowStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this window.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

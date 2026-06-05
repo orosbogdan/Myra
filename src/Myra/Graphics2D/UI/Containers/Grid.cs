@@ -8,6 +8,8 @@ using Myra.MML;
 using Myra.Events;
 using Myra.Attributes;
 using Myra.Graphics2D.UI.Styles;
+using System.Collections;
+
 
 
 #if MONOGAME || FNA
@@ -39,7 +41,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A grid widget that displays content in a table layout with support for rows, columns, spanning, and selection.
 	/// </summary>
-	[StyledByProperty("GridStyles")]
 	public class Grid : Container
 	{
 		/// <summary>
@@ -749,6 +750,14 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.GridStyles;
+
+		internal override bool CanStyleBeNull => true;
+
+		/// <summary>
+		/// Applies the specified widget style to this grid.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

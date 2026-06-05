@@ -825,7 +825,19 @@ namespace MyraPad.UI
 				return null;
 			}
 
-			var styleNames = Project.Stylesheet.GetStylesByWidgetName(widget.GetType().Name);
+			var stylesDict = widget.GetStylesDictionary(Project.Stylesheet);
+			if (stylesDict == null)
+			{
+				return null;
+			}
+
+			var stylesList = new List<string>();
+			foreach(var key in stylesDict.Keys)
+			{
+				stylesList.Add(key.ToString());
+			}
+			
+			var styleNames = stylesList.ToArray(); ;
 			if (styleNames == null || styleNames.Length < 2)
 			{
 				// Dont show this property if there's only one style(Default) or less

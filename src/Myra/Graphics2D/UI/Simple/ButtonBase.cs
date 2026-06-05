@@ -180,6 +180,10 @@ namespace Myra.Graphics2D.UI
 			return result;
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this button.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -188,6 +192,10 @@ namespace Myra.Graphics2D.UI
 			PressedBackground = buttonStyle.PressedBackground;
 		}
 
+		/// <summary>
+		/// Applies the specified button style to this button.
+		/// </summary>
+		/// <param name="style">The button style to apply.</param>
 		public void ApplyButtonStyle(ButtonStyle style) => ApplyStyle(style);
 
 		/// <summary>

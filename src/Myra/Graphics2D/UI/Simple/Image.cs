@@ -229,6 +229,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this image.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -239,6 +243,10 @@ namespace Myra.Graphics2D.UI
 			PressedRenderable = imageStyle.PressedImage;
 		}
 
+		/// <summary>
+		/// Applies the specified pressable image style to this image.
+		/// </summary>
+		/// <param name="style">The pressable image style to apply.</param>
 		public void ApplyPressableImageStyle(PressableImageStyle style) => ApplyStyle(style);
 
 		/// <summary>

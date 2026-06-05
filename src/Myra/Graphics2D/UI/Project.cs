@@ -467,7 +467,7 @@ namespace Myra.Graphics2D.UI
 		// Used to skip serializing properties that are already defined by the applied style.
 		private static bool HasStylesheetValue(Widget w, PropertyInfo property, Stylesheet stylesheet)
 		{
-			if (stylesheet == null)
+			if (stylesheet == null || w.GetStylesDictionary(stylesheet) == null)
 			{
 				return false;
 			}

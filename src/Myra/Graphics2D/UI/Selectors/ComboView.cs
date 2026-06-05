@@ -2,8 +2,10 @@
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
-using Myra.Attributes;
 using System.Collections.Generic;
+using System.Collections;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -21,7 +23,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A combo view widget that displays a list of widget items in a dropdown menu and supports selection.
 	/// </summary>
-	[StyledByProperty("ComboBoxStyles")]
 	public class ComboView : Widget, IContainer
 	{
 		private readonly ToggleButton _button;
@@ -227,6 +228,12 @@ namespace Myra.Graphics2D.UI
 			_button.Content = SelectedItem.Clone();
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ComboBoxStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this combo view.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

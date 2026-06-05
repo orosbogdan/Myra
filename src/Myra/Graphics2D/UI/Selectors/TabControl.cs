@@ -1,8 +1,8 @@
-﻿using Myra.Attributes;
-using Myra.Events;
+﻿using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
@@ -24,7 +24,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A tab control widget that displays multiple tab items with selector buttons and swappable content panels.
 	/// </summary>
-	[StyledByProperty("TabControlStyles")]
 	public class TabControl : Selector<Grid, TabItem>
 	{
 		private Grid _gridButtons;
@@ -418,6 +417,8 @@ namespace Myra.Graphics2D.UI
 
 			SelectedIndex = index;
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TabControlStyles;
 
 		protected override void ApplyStyle(WidgetStyle style)
 		{

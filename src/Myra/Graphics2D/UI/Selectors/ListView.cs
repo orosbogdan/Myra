@@ -2,11 +2,12 @@
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Graphics2D.UI.Styles;
-using Myra.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using Myra.Utility;
 using Myra.Events;
+using Myra.Attributes;
+
 
 
 #if MONOGAME || FNA
@@ -25,7 +26,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A list view widget that displays a scrollable collection of items and supports single or multiple selection.
 	/// </summary>
-	[StyledByProperty("ListBoxStyles")]
 	public class ListView : Widget, IContainer
 	{
 		private class WidgetsEnumerator : IEnumerator<Widget>, IEnumerator
@@ -544,8 +544,18 @@ namespace Myra.Graphics2D.UI
 			_scrollViewer.OnMouseWheel(delta);
 		}
 
+		/// <summary>
+		/// Applies the specified list box style to this list view.
+		/// </summary>
+		/// <param name="listBoxStyle">The list box style to apply.</param>
 		public void ApplyListViewStyle(ListBoxStyle listBoxStyle) => ApplyStyle(listBoxStyle);
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ListBoxStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this list view.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

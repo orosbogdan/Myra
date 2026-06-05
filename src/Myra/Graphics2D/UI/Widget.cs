@@ -1312,29 +1312,28 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal virtual IDictionary GetStylesDictionary(Stylesheet stylesheet) => null;
+
+		internal virtual bool CanStyleBeNull => false;
+
 		internal WidgetStyle GetStyle(Stylesheet stylesheet, string name)
 		{
-			var styledByAttr = GetType().FindAttribute<StyledByPropertyAttribute>(false);
-			if (styledByAttr == null)
+			var asDict = GetStylesDictionary(stylesheet);
+			if (asDict == null)
 			{
-				throw new Exception($"Class {GetType()} can't be styled, because it lacks StyledByPropertyAttribute.");
+				throw new Exception($"Class {GetType()} can't be styled.");
 			}
 
-			var styleProperty = stylesheet.GetType().GetProperty(styledByAttr.PropertyName);
-			if (styleProperty == null)
-			{
-				throw new Exception($"Stylesheet lacks property {styledByAttr.PropertyName}.");
-			}
-
-			if (!typeof(IDictionary).IsAssignableFrom(styleProperty.PropertyType))
-			{
-				throw new Exception($"Stylesheet property {styleProperty.Name} type is {styleProperty.PropertyType}. It can't be casted to IDictinary.");
-			}
-
-			var asDict = (IDictionary)styleProperty.GetValue(stylesheet);
 			if (!asDict.Contains(name))
 			{
-				throw new Exception($"Stylesheet property {styleProperty.Name} lacks style {name}.");
+				if (CanStyleBeNull)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Stylesheet property lacks style {name} for {GetType()}.");
+				}
 			}
 
 			var styleObj = asDict[name];
@@ -1346,12 +1345,24 @@ namespace Myra.Graphics2D.UI
 			var style = (WidgetStyle)styleObj;
 			if (style == null)
 			{
-				throw new Exception($"Style object of type {styleObj.GetType()} is null.");
+				if (CanStyleBeNull)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Style object of type {styleObj.GetType()} is null.");
+				}
 			}
 
 			return style;
 		}
 
+		/// <summary>
+		/// Sets the style for this widget by name from the specified stylesheet.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
+		/// <param name="name">The name of the style to apply.</param>
 		public void SetStyle(Stylesheet stylesheet, string name)
 		{
 			if (stylesheet == null || name == null)
@@ -1361,11 +1372,18 @@ namespace Myra.Graphics2D.UI
 
 			var style = GetStyle(stylesheet, name);
 
-			StyleName = name;
-			ApplyStyle(style);
+			if (style != null)
+			{
+				StyleName = name;
+				ApplyStyle(style);
+			}
 		}
 
-		public void ApplyWidgetStyle(WidgetStyle style)
+		/// <summary>
+		/// Applies the specified widget style to this widget.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected virtual void ApplyStyle(WidgetStyle style)
 		{
 			Width = style.Width;
 			Height = style.Height;
@@ -1389,7 +1407,11 @@ namespace Myra.Graphics2D.UI
 			Padding = style.Padding;
 		}
 
-		protected virtual void ApplyStyle(WidgetStyle style) => ApplyWidgetStyle(style);
+		/// <summary>
+		/// Applies the base widget style properties to this widget.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		public void ApplyWidgetStyle(WidgetStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Fires the KeyDown event for the specified key.

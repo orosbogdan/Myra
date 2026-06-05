@@ -1,17 +1,16 @@
 ﻿using MonoGame.Utilities;
-using Myra.Attributes;
 using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
 using System.Collections.Generic;
 using System.IO;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI.File
 {
 	/// <summary>
 	/// A dialog for selecting files or folders from the file system.
 	/// </summary>
-	[StyledByProperty("FileDialogStyles")]
 	public partial class FileDialog
 	{
 		/// <summary>
@@ -631,6 +630,12 @@ namespace Myra.Graphics2D.UI.File
 			return false;
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.FileDialogStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this file dialog.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);

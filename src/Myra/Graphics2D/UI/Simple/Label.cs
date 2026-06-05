@@ -4,7 +4,7 @@ using System;
 using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
-using Myra.Attributes;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -22,7 +22,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A text label widget that displays formatted text with support for rich text formatting.
 	/// </summary>
-	[StyledByProperty("LabelStyles")]
 	public class Label : Widget
 	{
 		private readonly RichTextLayout _richText = new RichTextLayout
@@ -364,6 +363,12 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.LabelStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this label.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -376,6 +381,10 @@ namespace Myra.Graphics2D.UI
 			Font = labelStyle.Font;
 		}
 
+		/// <summary>
+		/// Applies the specified label style to this label.
+		/// </summary>
+		/// <param name="style">The label style to apply.</param>
 		public void ApplyLabelStyle(LabelStyle style) => ApplyStyle(style);
 
 		/// <summary>

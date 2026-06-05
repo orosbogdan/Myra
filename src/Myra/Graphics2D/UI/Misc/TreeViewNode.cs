@@ -212,6 +212,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Applies the specified widget style to this tree view node.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
@@ -223,6 +227,10 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		/// <summary>
+		/// Applies the specified tree style to this tree view node.
+		/// </summary>
+		/// <param name="style">The tree style to apply.</param>
 		public void ApplyTreeStyle(TreeStyle style) => ApplyStyle(style);
 	}
 }

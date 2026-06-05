@@ -1,13 +1,12 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A horizontal separator widget that visually divides UI sections.
 	/// </summary>
-	[StyledByProperty("HorizontalSeparatorStyles")]
 	public class HorizontalSeparator : SeparatorWidget
 	{
 		/// <summary>
@@ -65,5 +64,7 @@ namespace Myra.Graphics2D.UI
 		public HorizontalSeparator(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.HorizontalSeparatorStyles;
 	}
 }

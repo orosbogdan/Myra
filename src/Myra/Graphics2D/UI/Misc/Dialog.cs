@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
-using Myra.Attributes;
+using System.Collections;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -16,7 +16,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A window dialog with OK and Cancel buttons for user interaction.
 	/// </summary>
-	[StyledByProperty("WindowStyles")]
 	public class Dialog : Window
 	{
 		/// <summary>
