@@ -420,6 +420,10 @@ namespace Myra.Graphics2D.UI
 
 		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TabControlStyles;
 
+		/// <summary>
+		/// Applies the specified widget style to this tab control.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
 		protected override void ApplyStyle(WidgetStyle style)
 		{
 			base.ApplyStyle(style);
