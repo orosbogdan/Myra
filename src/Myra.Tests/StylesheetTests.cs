@@ -111,6 +111,7 @@ namespace Myra.Tests
 		[InlineData("Stylesheets/Default/default_ui_skin.xmms")]
 		[InlineData("Stylesheets/Default/default_ui_skin_2x.xmms")]
 		[InlineData("Stylesheets/Commodore64/ui_stylesheet.xmms")]
+		[InlineData("Stylesheets/LibGDX/ui_stylesheet.xmms")]
 		public void XmlRoundTrip(string fileName)
 		{
 			var assetManager = Utility.CreateAssetManager();
