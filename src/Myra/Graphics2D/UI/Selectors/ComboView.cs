@@ -152,10 +152,7 @@ namespace Myra.Graphics2D.UI
 			_button = new ToggleButton(null)
 			{
 				HorizontalAlignment = HorizontalAlignment.Stretch,
-				Content = new Label
-				{
-					Text = string.Empty
-				}
+				VerticalAlignment = VerticalAlignment.Stretch
 			};
 
 			ChildrenLayout = new SingleItemLayout<ToggleButton>(this)
@@ -168,9 +165,6 @@ namespace Myra.Graphics2D.UI
 			_button.PressedChanged += InternalChild_PressedChanged;
 
 			_listView._parentCombo = this;
-
-			if (MyraEnvironment.EventHandlingModel == EventHandlingStrategy.EventBubbling)
-				_button.TouchDown += InternalStopPropagation;
 
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
@@ -186,11 +180,6 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply to the combo view.</param>
 		public ComboView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-		}
-
-		private void InternalStopPropagation(object sender, MyraEventArgs e)
-		{
-			e.StopPropagation();
 		}
 
 		private void DesktopOnContextMenuClosed(object sender, GenericEventArgs<Widget> genericEventArgs)
@@ -244,13 +233,6 @@ namespace Myra.Graphics2D.UI
 				var dropdownMaximumHeight = DropdownMaximumHeight;
 				_listView.ApplyListViewStyle(comboBoxStyle.ListBoxStyle);
 				DropdownMaximumHeight = dropdownMaximumHeight;
-			}
-
-			_button.ApplyButtonStyle(comboBoxStyle);
-
-			if (comboBoxStyle.LabelStyle != null)
-			{
-				((Label)_button.Content).ApplyLabelStyle(comboBoxStyle.LabelStyle);
 			}
 		}
 

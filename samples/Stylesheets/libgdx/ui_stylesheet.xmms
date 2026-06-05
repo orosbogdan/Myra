@@ -52,7 +52,6 @@
       <ListBoxStyle Background="default-rect">
         <ListItemStyle PressedBackground="default-select-selection" />
       </ListBoxStyle>
-      <LabelStyle TextColor="White" Font="ui_font" />
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>
@@ -84,13 +83,13 @@
   <HorizontalMenuStyles>
     <MenuStyle SelectionBackground="default-round-down" Background="default-round">
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="ui_font" Padding="5, 0, 5, 2" />
-      <SeparatorStyle Image="default-round" Thickness="3" />
+      <SeparatorStyle Thickness="3" Image="default-round" />
     </MenuStyle>
   </HorizontalMenuStyles>
   <VerticalMenuStyles>
     <MenuStyle SelectionBackground="default-round-down" Background="default-round">
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="ui_font" Padding="5, 2" />
-      <SeparatorStyle Image="default-round" Thickness="4" Padding="0, 0, 2, 2" />
+      <SeparatorStyle Thickness="4" Image="default-round" Padding="0, 0, 2, 2" />
     </MenuStyle>
   </VerticalMenuStyles>
   <WindowStyles>

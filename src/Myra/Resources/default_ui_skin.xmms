@@ -58,24 +58,23 @@
     <ProgressBarStyle Filler="progressbar-filled-vertical" Width="16" Background="progressbar-vertical" />
   </VerticalProgressBarStyles>
   <HorizontalSeparatorStyles>
-    <SeparatorStyle Image="separator-menu" Thickness="4" />
+    <SeparatorStyle Thickness="4" Image="separator-menu" />
   </HorizontalSeparatorStyles>
   <VerticalSeparatorStyles>
-    <SeparatorStyle Image="separator" Thickness="3" />
+    <SeparatorStyle Thickness="3" Image="separator" />
   </VerticalSeparatorStyles>
   <ComboBoxStyles>
     <ComboBoxStyle Background="default-select">
       <ListBoxStyle Background="select-box-list-bg">
         <ListItemStyle PressedBackground="button-down" OverBackground="button-over" />
-        <SeparatorStyle Image="separator-menu" Thickness="4" Padding="0, 2" />
+        <SeparatorStyle Thickness="4" Image="separator-menu" Padding="0, 2" />
       </ListBoxStyle>
-      <LabelStyle TextColor="White" Font="default-font" />
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>
     <ListBoxStyle Background="button">
       <ListItemStyle PressedBackground="list-selection" OverBackground="button-over" Padding="5, 0" />
-      <SeparatorStyle Image="separator-menu" Thickness="4" Padding="0, 2" />
+      <SeparatorStyle Thickness="4" Image="separator-menu" Padding="0, 2" />
     </ListBoxStyle>
   </ListBoxStyles>
   <TabControlStyles>
@@ -113,7 +112,7 @@
   <HorizontalMenuStyles>
     <MenuStyle SelectionHoverBackground="button-over" SelectionBackground="button-down" SpecialCharColor="Red" Background="button">
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="10, 0" />
-      <SeparatorStyle Image="separator" Thickness="3" />
+      <SeparatorStyle Thickness="3" Image="separator" />
     </MenuStyle>
   </HorizontalMenuStyles>
   <VerticalMenuStyles>
@@ -121,7 +120,7 @@
       <ImageStyle Padding="10, 0, 0, 0" />
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="10, 0" />
       <ShortcutStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="0, 0, 10, 0" />
-      <SeparatorStyle Image="separator-menu" Thickness="4" Padding="0, 2" />
+      <SeparatorStyle Thickness="4" Image="separator-menu" Padding="0, 2" />
     </MenuStyle>
   </VerticalMenuStyles>
   <WindowStyles>

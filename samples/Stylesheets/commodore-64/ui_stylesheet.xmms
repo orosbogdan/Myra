@@ -42,7 +42,6 @@
       <ListBoxStyle Background="blue">
         <ListItemStyle PressedBackground="button-down" OverBackground="white" Padding="8, 5" />
       </ListBoxStyle>
-      <LabelStyle TextColor="White" Font="commodore-64" />
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>

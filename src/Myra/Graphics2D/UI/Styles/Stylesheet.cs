@@ -349,6 +349,16 @@ namespace Myra.Graphics2D.UI.Styles
 		}
 
 		/// <summary>
+		/// Gets or sets the default style for panel widgets.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle PanelStyle
+		{
+			get => GetDefaultStyle(PanelStyles);
+			set => SetDefaultStyle(PanelStyles, value);
+		}
+
+		/// <summary>
 		/// Gets the dictionary of named label styles, keyed by style identifier.
 		/// </summary>
 		public Dictionary<string, LabelStyle> LabelStyles { get; } = new Dictionary<string, LabelStyle>();
@@ -478,6 +488,11 @@ namespace Myra.Graphics2D.UI.Styles
 		/// </summary>
 		public Dictionary<string, GridStyle> GridStyles { get; } = new Dictionary<string, GridStyle>();
 
+		/// <summary>
+		/// Gets the dictionary of named panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> PanelStyles { get; } = new Dictionary<string, WidgetStyle>();
+
 		static Stylesheet()
 		{
 			LegacyClassNames["TextBlockStyle"] = "LabelStyle";
@@ -570,6 +585,8 @@ namespace Myra.Graphics2D.UI.Styles
 			CloneStylesTo(result, s => s.TabControlStyles);
 			CloneStylesTo(result, s => s.TreeStyles);
 			CloneStylesTo(result, s => s.ScrollViewerStyles);
+			CloneStylesTo(result, s => s.GridStyles);
+			CloneStylesTo(result, s => s.PanelStyles);
 			CloneStylesTo(result, s => s.WindowStyles);
 
 			if (Fonts != null)
