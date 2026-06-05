@@ -1082,6 +1082,7 @@ namespace Myra.Graphics2D.UI.Properties
 						try
 						{
 							var filePath = dlg.FilePath;
+
 							// Make path relative to BasePath if applicable
 							if (!string.IsNullOrEmpty(Settings.BasePath))
 							{
@@ -1101,7 +1102,6 @@ namespace Myra.Graphics2D.UI.Properties
 						}
 						catch
 						{
-
 						}
 					};
 

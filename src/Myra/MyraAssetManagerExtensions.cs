@@ -87,7 +87,10 @@ namespace AssetManagementBase
 		/// <returns>The loaded texture region.</returns>
 		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			if (assetName.Contains(":"))
+			var colonPos = assetName.IndexOf(':');
+			if (colonPos != -1 &&
+				// This check is required to skip Windows full file paths
+				(colonPos >= assetName.Length - 1 || assetName[colonPos + 1] != '\\'))
 			{
 				// First part is texture region atlas name
 				// Second part is texture region name

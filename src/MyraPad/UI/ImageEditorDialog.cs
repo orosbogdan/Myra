@@ -1,8 +1,11 @@
+using AssetManagementBase;
 using Microsoft.Xna.Framework;
+using Myra;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI.ColorPicker;
+using Myra.Graphics2D.UI.File;
 using Myra.MML;
 using System;
 
@@ -45,23 +48,7 @@ namespace MyraPad.UI
 
 			_buttonChangeColor.Click += _buttonChangeColor_Click;
 			_buttomSetFromStylesheet.Click += _buttomSetFromStylesheet_Click;
-		}
-
-		private void _buttomSetFromStylesheet_Click(object sender, MyraEventArgs e)
-		{
-			var dlg = new ChooseTextureRegionDialog();
-
-			dlg.Closed += (s, a) =>
-			{
-				if (!dlg.Result)
-				{
-					return;
-				}
-
-				Image = dlg.Image;
-			};
-
-			dlg.ShowModal(Desktop);
+			_buttonSetFromFile.Click += _buttonSetFromFile_Click;
 		}
 
 		private void _buttonChangeColor_Click(object sender, MyraEventArgs e)
@@ -109,6 +96,45 @@ namespace MyraPad.UI
 
 					throw new Exception($"Could not set Color for type {_image.GetType().Name}");
 				} while (false);
+			};
+
+			dlg.ShowModal(Desktop);
+		}
+
+		private void _buttomSetFromStylesheet_Click(object sender, MyraEventArgs e)
+		{
+			var dlg = new ChooseTextureRegionDialog();
+
+			dlg.Closed += (s, a) =>
+			{
+				if (!dlg.Result)
+				{
+					return;
+				}
+
+				Image = dlg.Image;
+			};
+
+			dlg.ShowModal(Desktop);
+		}
+
+		private void _buttonSetFromFile_Click(object sender, MyraEventArgs e)
+		{
+			var dlg = new FileDialog(FileDialogMode.OpenFile);
+			dlg.Filter = "*.png|*.jpg|*.bmp|*.gif|*.dds";
+
+			dlg.Closed += (s, a) =>
+			{
+				if (!dlg.Result)
+				{
+					return;
+				}
+
+				var image = Studio.AssetManager.LoadTexture2D(MyraEnvironment.GraphicsDevice, dlg.FilePath);
+				Image = new TextureRegion(image)
+				{
+					Name = dlg.FilePath
+				};
 			};
 
 			dlg.ShowModal(Desktop);

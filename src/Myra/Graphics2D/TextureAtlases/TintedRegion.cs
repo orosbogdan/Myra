@@ -18,7 +18,7 @@ namespace Myra.Graphics2D.TextureAtlases
 	/// </summary>
 	public class TintedRegion : IImage, IHasColor
 	{
-		internal const char Separator = '/';
+		internal const char Separator = '|';
 
 		/// <summary>
 		/// Gets the underlying texture region.
