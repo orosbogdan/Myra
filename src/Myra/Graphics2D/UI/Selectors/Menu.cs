@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
@@ -916,20 +915,16 @@ namespace Myra.Graphics2D.UI
 			return base.InternalMeasure(availableSize);
 		}
 
-		/// <summary>
-		/// Applies the specified menu style to the menu and all its items.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyMenuStyle(MenuStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			var clone = new MenuStyle(style);
+			base.ApplyStyle(style);
 
-			ApplyWidgetStyle(clone);
-
+			var menuStyle = (MenuStyle)style;
+			var clone = new MenuStyle(menuStyle);
 			MenuStyle = clone;
 
-			InternalChild.SelectionHoverBackground = style.SelectionHoverBackground;
-			InternalChild.SelectionBackground = style.SelectionBackground;
+			InternalChild.SelectionHoverBackground = menuStyle.SelectionHoverBackground;
+			InternalChild.SelectionBackground = menuStyle.SelectionBackground;
 		}
 	}
 }

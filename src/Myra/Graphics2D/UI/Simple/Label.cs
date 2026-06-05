@@ -4,6 +4,8 @@ using System;
 using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -20,6 +22,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A text label widget that displays formatted text with support for rich text formatting.
 	/// </summary>
+	[StyledByProperty("LabelStyles")]
 	public class Label : Widget
 	{
 		private readonly RichTextLayout _richText = new RichTextLayout
@@ -361,30 +364,19 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified label style to the label.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyLabelStyle(LabelStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			TextColor = style.TextColor;
-			DisabledTextColor = style.DisabledTextColor;
-			OverTextColor = style.OverTextColor;
-			PressedTextColor = style.PressedTextColor;
-			Font = style.Font;
+			var labelStyle = (LabelStyle)style;
+			TextColor = labelStyle.TextColor;
+			DisabledTextColor = labelStyle.DisabledTextColor;
+			OverTextColor = labelStyle.OverTextColor;
+			PressedTextColor = labelStyle.PressedTextColor;
+			Font = labelStyle.Font;
 		}
 
-		/// <summary>
-		/// Applies a named label style from the stylesheet to the label.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the label style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyLabelStyle(stylesheet.LabelStyles.SafelyGetStyle(name));
-		}
+		public void ApplyLabelStyle(LabelStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Copies all properties from another widget to this label.

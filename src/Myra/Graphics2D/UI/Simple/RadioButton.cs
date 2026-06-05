@@ -1,15 +1,12 @@
 ﻿using Myra.Attributes;
 using Myra.Graphics2D.UI.Styles;
-using System;
-using System.ComponentModel;
-using System.Xml.Serialization;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A radio button widget that can be part of a group where only one button can be selected at a time.
 	/// </summary>
-	[StyleTypeName("RadioButton")]
+	[StyledByProperty("RadioButtonStyles")]
 	public class RadioButton : CheckButtonBase
 	{
 		/// <summary>
@@ -94,16 +91,6 @@ namespace Myra.Graphics2D.UI
 
 				asRadio.IsPressed = false;
 			}
-		}
-
-		/// <summary>
-		/// Applies a named radio button style from the stylesheet to the radio button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the radio button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyCheckButtonStyle(stylesheet.RadioButtonStyles.SafelyGetStyle(name));
 		}
 	}
 }

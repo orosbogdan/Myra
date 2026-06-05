@@ -1,4 +1,5 @@
-﻿using Myra.Events;
+﻿using Myra.Attributes;
+using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
@@ -23,6 +24,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A tab control widget that displays multiple tab items with selector buttons and swappable content panels.
 	/// </summary>
+	[StyledByProperty("TabControlStyles")]
 	public class TabControl : Selector<Grid, TabItem>
 	{
 		private Grid _gridButtons;
@@ -296,7 +298,8 @@ namespace Myra.Graphics2D.UI
 			{
 				button.Tag = item;
 				_gridButtons.Widgets.Insert(index, button);
-			} else
+			}
+			else
 			{
 				var topItemPanel = new HorizontalStackPanel();
 				topItemPanel.Tag = item;
@@ -416,39 +419,26 @@ namespace Myra.Graphics2D.UI
 			SelectedIndex = index;
 		}
 
-		/// <summary>
-		/// Applies the specified style to the tab control and its tab items.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyTabControlStyle(TabControlStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			TabControlStyle = style;
+			var tabControlStyle = (TabControlStyle)style;
+			TabControlStyle = new TabControlStyle(tabControlStyle);
 
-			TabSelectorPosition = style.TabSelectorPosition;
-			InternalChild.RowSpacing = style.HeaderSpacing;
-			_gridButtons.ColumnSpacing = style.ButtonSpacing;
+			TabSelectorPosition = tabControlStyle.TabSelectorPosition;
+			InternalChild.RowSpacing = tabControlStyle.HeaderSpacing;
+			_gridButtons.ColumnSpacing = tabControlStyle.ButtonSpacing;
 
-			_panelContent.ApplyWidgetStyle(style.ContentStyle);
+			_panelContent.ApplyWidgetStyle(tabControlStyle.ContentStyle);
 
 			foreach (var item in Items)
 			{
-				item.Button.ApplyButtonStyle(style.TabItemStyle);
+				item.Button.ApplyButtonStyle(tabControlStyle.TabItemStyle);
 
-				var label = (Label)item.LabelWidget;
-				label.ApplyLabelStyle(style.TabItemStyle.LabelStyle);
+				var label = item.LabelWidget;
+				label.ApplyLabelStyle(tabControlStyle.TabItemStyle.LabelStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named tab control style from the stylesheet to the tab control.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the tab control style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyTabControlStyle(stylesheet.TabControlStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

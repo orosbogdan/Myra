@@ -4,6 +4,8 @@ using System.Linq;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -18,6 +20,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A spin button widget for entering numeric values with increment/decrement buttons.
 	/// </summary>
+	[StyledByProperty("SpinButtonStyles")]
 	public class SpinButton : Widget
 	{
 		private readonly GridLayout _layout = new GridLayout();
@@ -492,38 +495,25 @@ namespace Myra.Graphics2D.UI
 			return true;
 		}
 
-		/// <summary>
-		/// Applies the specified spin button style to this spin button and its components.
-		/// </summary>
-		/// <param name="style">The spin button style to apply.</param>
-		public void ApplySpinButtonStyle(SpinButtonStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.TextBoxStyle != null)
+			var spinButtonStyle = (SpinButtonStyle)style;
+			if (spinButtonStyle.TextBoxStyle != null)
 			{
-				_textField.ApplyTextBoxStyle(style.TextBoxStyle);
+				_textField.ApplyTextBoxStyle(spinButtonStyle.TextBoxStyle);
 			}
 
-			if (style.UpButtonStyle != null)
+			if (spinButtonStyle.UpButtonStyle != null)
 			{
-				_upButton.ApplyImageButtonStyle(style.UpButtonStyle);
+				_upButton.ApplyImageButtonStyle(spinButtonStyle.UpButtonStyle);
 			}
 
-			if (style.DownButtonStyle != null)
+			if (spinButtonStyle.DownButtonStyle != null)
 			{
-				_downButton.ApplyImageButtonStyle(style.DownButtonStyle);
+				_downButton.ApplyImageButtonStyle(spinButtonStyle.DownButtonStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this spin button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the spin button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplySpinButtonStyle(stylesheet.SpinButtonStyles.SafelyGetStyle(name));
 		}
 
 		private void UpButtonOnUp(object sender, MyraEventArgs eventArgs)

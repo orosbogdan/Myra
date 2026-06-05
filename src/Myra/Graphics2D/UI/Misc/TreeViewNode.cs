@@ -1,14 +1,4 @@
-﻿using System;
-using Myra.Graphics2D.UI.Styles;
-using Myra.Events;
-
-#if MONOGAME || FNA
-using Microsoft.Xna.Framework;
-#elif STRIDE
-using Stride.Core.Mathematics;
-#else
-using Color = FontStashSharp.FSColor;
-#endif
+﻿using Myra.Graphics2D.UI.Styles;
 
 namespace Myra.Graphics2D.UI
 {
@@ -86,9 +76,7 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		private Stylesheet Stylesheet { get; }
-
-		internal TreeViewNode(TreeView topTree, Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
+		internal TreeViewNode(TreeView topTree)
 		{
 			_layout.ColumnSpacing = 2;
 			_layout.RowSpacing = 2;
@@ -134,8 +122,7 @@ namespace Myra.Graphics2D.UI
 
 			Children.Add(_childNodesStackPanel);
 
-			Stylesheet = stylesheet;
-			SetStyle(stylesheet, styleName);
+			ApplyStyle(_topTree.TreeStyle);
 
 			UpdateMark();
 		}
@@ -164,7 +151,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The newly created child node.</returns>
 		public TreeViewNode AddSubNode(Widget content)
 		{
-			var result = new TreeViewNode(_topTree, Stylesheet, StyleName)
+			var result = new TreeViewNode(_topTree)
 			{
 				ParentNode = this,
 				Content = content
@@ -225,33 +212,17 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified tree view node style to this node and its components.
-		/// </summary>
-		/// <param name="style">The tree style to apply.</param>
-		public void ApplyTreeViewNodeStyle(TreeStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.MarkStyle != null)
+			var treeStyle = (TreeStyle)style;
+			if (treeStyle.MarkStyle != null)
 			{
-				_mark.ApplyButtonStyle(style.MarkStyle);
-				if (style.MarkStyle.ImageStyle != null)
-				{
-					var image = (Image)_mark.Content;
-					image.ApplyPressableImageStyle(style.MarkStyle.ImageStyle);
-				}
+				_mark.ApplyImageButtonStyle(treeStyle.MarkStyle);
 			}
 		}
 
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this tree view node.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the tree style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyTreeViewNodeStyle(stylesheet.TreeStyles.SafelyGetStyle(name));
-		}
+		public void ApplyTreeStyle(TreeStyle style) => ApplyStyle(style);
 	}
 }

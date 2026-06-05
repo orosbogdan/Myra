@@ -204,23 +204,20 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified style to the check button and its images.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyCheckButtonStyle(CheckButtonStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyButtonStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.ImageStyle != null)
+			var checkButtonStyle = (CheckButtonStyle)style;
+			if (checkButtonStyle.ImageStyle != null)
 			{
-				_check.ApplyPressableImageStyle(style.ImageStyle);
+				_check.ApplyPressableImageStyle(checkButtonStyle.ImageStyle);
 
-				UncheckedImage = style.ImageStyle.Image;
-				CheckedImage = style.ImageStyle.PressedImage;
+				UncheckedImage = checkButtonStyle.ImageStyle.Image;
+				CheckedImage = checkButtonStyle.ImageStyle.PressedImage;
 			}
 
-			CheckContentSpacing = style.ImageTextSpacing;
+			CheckContentSpacing = checkButtonStyle.ImageTextSpacing;
 		}
 
 		private void UpdateChildren()

@@ -1,5 +1,5 @@
 using Myra.Graphics2D.UI.Styles;
-
+using Myra.Attributes;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -14,6 +14,7 @@ namespace Myra.Graphics2D.UI.ColorPicker
 	/// <summary>
 	/// A dialog window for selecting colors with a color picker panel.
 	/// </summary>
+	[StyledByProperty("ColorPickerDialogStyles")]
 	public class ColorPickerDialog : Dialog
 	{
 		/// <summary>
@@ -75,25 +76,12 @@ namespace Myra.Graphics2D.UI.ColorPicker
 			}
 		}
 
-		/// <summary>
-		/// Applies a color picker dialog style to the dialog.
-		/// </summary>
-		/// <param name="style">The color picker dialog style to apply.</param>
-		public void ApplyColorPickerDialogStyle(ColorPickerDialogStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWindowStyle(style);
+			base.ApplyStyle(style);
 
-			ColorPickerPanel.ApplyColorPickerDialogStyle(style);
-		}
-
-		/// <summary>
-		/// Applies internal styling to the color picker dialog based on the stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyColorPickerDialogStyle(stylesheet.ColorPickerDialogStyles.SafelyGetStyle(name));
+			var colorPickerDialogStyle = (ColorPickerDialogStyle)style;
+			ColorPickerPanel.ApplyColorPickerDialogStyle(colorPickerDialogStyle);
 		}
 	}
 }

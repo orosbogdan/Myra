@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
@@ -251,22 +250,19 @@ namespace Myra.Graphics2D.UI
 			return Orientation == Orientation.Horizontal ? pos.X - bounds.Width / 2 : pos.Y - bounds.Height / 2;
 		}
 
-		/// <summary>
-		/// Applies the specified slider style to this slider.
-		/// </summary>
-		/// <param name="style">The slider style to apply.</param>
-		public void ApplySliderStyle(SliderStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.KnobStyle != null)
+			var sliderStyle = (SliderStyle)style;
+			if (sliderStyle.KnobStyle != null)
 			{
-				ImageButton.ApplyButtonStyle(style.KnobStyle);
+				ImageButton.ApplyButtonStyle(sliderStyle.KnobStyle);
 
-				if (style.KnobStyle.ImageStyle != null)
+				if (sliderStyle.KnobStyle.ImageStyle != null)
 				{
 					var image = (Image)ImageButton.Content;
-					image.ApplyPressableImageStyle(style.KnobStyle.ImageStyle);
+					image.ApplyPressableImageStyle(sliderStyle.KnobStyle.ImageStyle);
 				}
 			}
 		}

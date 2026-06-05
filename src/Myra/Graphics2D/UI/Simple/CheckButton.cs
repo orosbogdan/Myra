@@ -1,7 +1,6 @@
 ﻿using Myra.Attributes;
 using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
-using System;
 using System.ComponentModel;
 
 namespace Myra.Graphics2D.UI
@@ -9,7 +8,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A check button widget that can be checked or unchecked independently.
 	/// </summary>
-	[StyleTypeName("CheckBox")]
+	[StyledByProperty("CheckBoxStyles")]
 	public class CheckButton : CheckButtonBase
 	{
 		/// <summary>
@@ -55,19 +54,6 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public CheckButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-		}
-
-		/// <summary>
-		/// Applies a named check button style from the stylesheet to the check button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the check button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			base.InternalSetStyle(stylesheet, name);
-
-			var style = stylesheet.CheckBoxStyles.SafelyGetStyle(name);
-			ApplyCheckButtonStyle(style);
 		}
 	}
 }

@@ -7,7 +7,7 @@ using Myra.MML;
 using Myra.Graphics2D.UI.Properties;
 using Myra.Attributes;
 using Myra.Events;
-
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -1312,10 +1312,59 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the properties from a widget style to this widget.
-		/// </summary>
-		/// <param name="style">The widget style to apply.</param>
+		internal WidgetStyle GetStyle(Stylesheet stylesheet, string name)
+		{
+			var styledByAttr = GetType().FindAttribute<StyledByPropertyAttribute>(false);
+			if (styledByAttr == null)
+			{
+				throw new Exception($"Class {GetType()} can't be styled, because it lacks StyledByPropertyAttribute.");
+			}
+
+			var styleProperty = stylesheet.GetType().GetProperty(styledByAttr.PropertyName);
+			if (styleProperty == null)
+			{
+				throw new Exception($"Stylesheet lacks property {styledByAttr.PropertyName}.");
+			}
+
+			if (!typeof(IDictionary).IsAssignableFrom(styleProperty.PropertyType))
+			{
+				throw new Exception($"Stylesheet property {styleProperty.Name} type is {styleProperty.PropertyType}. It can't be casted to IDictinary.");
+			}
+
+			var asDict = (IDictionary)styleProperty.GetValue(stylesheet);
+			if (!asDict.Contains(name))
+			{
+				throw new Exception($"Stylesheet property {styleProperty.Name} lacks style {name}.");
+			}
+
+			var styleObj = asDict[name];
+			if (!(styleObj is WidgetStyle))
+			{
+				throw new Exception($"Style object of type {styleObj.GetType()} can't be cast to WidgetStyle.");
+			}
+
+			var style = (WidgetStyle)styleObj;
+			if (style == null)
+			{
+				throw new Exception($"Style object of type {styleObj.GetType()} is null.");
+			}
+
+			return style;
+		}
+
+		public void SetStyle(Stylesheet stylesheet, string name)
+		{
+			if (stylesheet == null || name == null)
+			{
+				return;
+			}
+
+			var style = GetStyle(stylesheet, name);
+
+			StyleName = name;
+			ApplyStyle(style);
+		}
+
 		public void ApplyWidgetStyle(WidgetStyle style)
 		{
 			Width = style.Width;
@@ -1340,29 +1389,7 @@ namespace Myra.Graphics2D.UI
 			Padding = style.Padding;
 		}
 
-		/// <summary>
-		/// Sets the widget's style using a specific stylesheet and style name.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		public void SetStyle(Stylesheet stylesheet, string name)
-		{
-			StyleName = name;
-
-			if (StyleName != null)
-			{
-				InternalSetStyle(stylesheet, StyleName);
-			}
-		}
-
-		/// <summary>
-		/// Applies a named style from a stylesheet to this widget.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the styles to apply.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		protected virtual void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-		}
+		protected virtual void ApplyStyle(WidgetStyle style) => ApplyWidgetStyle(style);
 
 		/// <summary>
 		/// Fires the KeyDown event for the specified key.

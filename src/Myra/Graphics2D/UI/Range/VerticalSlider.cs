@@ -1,11 +1,13 @@
-﻿using System.ComponentModel;
+﻿using Myra.Attributes;
 using Myra.Graphics2D.UI.Styles;
+using System.ComponentModel;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A slider control that allows users to select a value from a vertical range.
 	/// </summary>
+	[StyledByProperty("VerticalSliderStyles")]
 	public class VerticalSlider : Slider
 	{
 		/// <summary>
@@ -68,16 +70,6 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public VerticalSlider(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-		}
-
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this vertical slider.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the vertical slider style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplySliderStyle(stylesheet.VerticalSliderStyles.SafelyGetStyle(name));
 		}
 	}
 }

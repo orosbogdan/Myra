@@ -563,6 +563,8 @@ namespace Myra.Graphics2D.UI.ColorPicker
 		/// <param name="style">The color picker dialog style to apply.</param>
 		public void ApplyColorPickerDialogStyle(ColorPickerDialogStyle style)
 		{
+			ApplyStyle(style);
+			
 			foreach (var image in _userColorBackgrounds)
 			{
 				image.Renderable = style.CheckerBoard;

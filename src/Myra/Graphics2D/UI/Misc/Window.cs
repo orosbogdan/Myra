@@ -24,6 +24,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A draggable window widget with a title bar and optional close button.
 	/// </summary>
+	[StyledByProperty("WindowStyles")]
 	public class Window : ContentControl
 	{
 		private readonly StackPanelLayout _layout = new StackPanelLayout(Orientation.Vertical);
@@ -296,26 +297,23 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified window style to the window and its components.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyWindowStyle(WindowStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.TitleStyle != null)
+			var windowStyle = (WindowStyle)style;
+			if (windowStyle.TitleStyle != null)
 			{
-				_titleLabel.ApplyLabelStyle(style.TitleStyle);
+				_titleLabel.ApplyLabelStyle(windowStyle.TitleStyle);
 			}
 
-			if (style.CloseButtonStyle != null)
+			if (windowStyle.CloseButtonStyle != null)
 			{
-				CloseButton.ApplyButtonStyle(style.CloseButtonStyle);
-				if (style.CloseButtonStyle.ImageStyle != null)
+				CloseButton.ApplyButtonStyle(windowStyle.CloseButtonStyle);
+				if (windowStyle.CloseButtonStyle.ImageStyle != null)
 				{
 					var image = (Image)CloseButton.Content;
-					image.ApplyPressableImageStyle(style.CloseButtonStyle.ImageStyle);
+					image.ApplyPressableImageStyle(windowStyle.CloseButtonStyle.ImageStyle);
 				}
 			}
 		}
@@ -402,16 +400,6 @@ namespace Myra.Graphics2D.UI
 			}
 
 			Closed.Invoke(this, InputEventType.Closing);
-		}
-
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this window.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the window style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyWindowStyle(stylesheet.WindowStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -14,6 +16,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A menu control that displays menu items horizontally in a row.
 	/// </summary>
+	[StyledByProperty("HorizontalMenuStyles")]
 	public class HorizontalMenu : Menu
 	{
 		/// <summary>
@@ -92,16 +95,6 @@ namespace Myra.Graphics2D.UI
 					MoveHover(1);
 					break;
 			}
-		}
-
-		/// <summary>
-		/// Applies a named horizontal menu style from the stylesheet to the menu.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the horizontal menu style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyMenuStyle(stylesheet.HorizontalMenuStyles.SafelyGetStyle(name));
 		}
 	}
 }

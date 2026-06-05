@@ -2,7 +2,6 @@
 using Myra.Utility;
 using System.ComponentModel;
 using System.Xml.Serialization;
-using System;
 using Myra.Events;
 
 namespace Myra.Graphics2D.UI
@@ -181,16 +180,15 @@ namespace Myra.Graphics2D.UI
 			return result;
 		}
 
-		/// <summary>
-		/// Applies the specified button style to the button.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyButtonStyle(ButtonStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			PressedBackground = style.PressedBackground;
+			var buttonStyle = (ButtonStyle)style;
+			PressedBackground = buttonStyle.PressedBackground;
 		}
+
+		public void ApplyButtonStyle(ButtonStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Applies the specified image button style to the button.
@@ -198,23 +196,13 @@ namespace Myra.Graphics2D.UI
 		/// <param name="style">The image button style to apply.</param>
 		public void ApplyImageButtonStyle(ImageButtonStyle style)
 		{
-			ApplyButtonStyle(style);
+			ApplyStyle(style);
 
 			if (style.ImageStyle != null)
 			{
 				var image = (Image)Content;
 				image.ApplyPressableImageStyle(style.ImageStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named button style from the stylesheet to the button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyButtonStyle(stylesheet.ButtonStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

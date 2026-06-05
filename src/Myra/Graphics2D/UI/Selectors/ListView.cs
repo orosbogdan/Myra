@@ -6,7 +6,6 @@ using Myra.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using Myra.Utility;
-using System.Reflection;
 using Myra.Events;
 
 
@@ -26,6 +25,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A list view widget that displays a scrollable collection of items and supports single or multiple selection.
 	/// </summary>
+	[StyledByProperty("ListBoxStyles")]
 	public class ListView : Widget, IContainer
 	{
 		private class WidgetsEnumerator : IEnumerator<Widget>, IEnumerator
@@ -544,34 +544,23 @@ namespace Myra.Graphics2D.UI
 			_scrollViewer.OnMouseWheel(delta);
 		}
 
-		/// <summary>
-		/// Applies the specified style to the list view and its items.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyListBoxStyle(ListBoxStyle style)
-		{
-			ApplyWidgetStyle(style);
+		public void ApplyListViewStyle(ListBoxStyle listBoxStyle) => ApplyStyle(listBoxStyle);
 
-			ListBoxStyle = style;
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var listBoxStyle = (ListBoxStyle)style;
+			ListBoxStyle = new ListBoxStyle(listBoxStyle);
 
 			foreach (var item in Widgets)
 			{
 				var asButton = item.Parent as ListViewButton;
 				if (asButton != null)
 				{
-					asButton.ApplyButtonStyle(style.ListItemStyle);
+					asButton.ApplyButtonStyle(listBoxStyle.ListItemStyle);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Applies a named list view style from the stylesheet to the list view.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the list view style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyListBoxStyle(stylesheet.ListBoxStyles.SafelyGetStyle(name));
 		}
 
 		private Widget GetChildByIndex(int index)

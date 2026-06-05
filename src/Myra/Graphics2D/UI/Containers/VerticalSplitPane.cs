@@ -1,10 +1,12 @@
-﻿using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Attributes;
+using Myra.Graphics2D.UI.Styles;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A split pane container that divides space vertically between two child widgets with a resizable separator.
 	/// </summary>
+	[StyledByProperty("VerticalSplitPaneStyles")]
 	public class VerticalSplitPane : SplitPane
 	{
 		/// <summary>
@@ -33,16 +35,6 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public VerticalSplitPane(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-		}
-
-		/// <summary>
-		/// Applies internal styling to the vertical split pane based on the stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplySplitPaneStyle(stylesheet.VerticalSplitPaneStyles.SafelyGetStyle(name));
 		}
 	}
 }

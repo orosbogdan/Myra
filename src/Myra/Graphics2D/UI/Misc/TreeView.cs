@@ -4,6 +4,8 @@ using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Events;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -21,6 +23,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A hierarchical tree view widget that displays nodes in an expandable/collapsible tree structure.
 	/// </summary>
+	[StyledByProperty("TreeStyles")]
 	public class TreeView : Widget, ITreeViewNode
 	{
 		private readonly StackPanelLayout _layout = new StackPanelLayout(Orientation.Vertical);
@@ -30,7 +33,7 @@ namespace Myra.Graphics2D.UI
 
 		internal List<TreeViewNode> AllNodes => _allNodes;
 
-		private Stylesheet Stylesheet { get; }
+		internal TreeStyle TreeStyle { get; set; }
 
 		/// <summary>
 		/// Gets the number of top-level child nodes.
@@ -101,7 +104,6 @@ namespace Myra.Graphics2D.UI
 			AcceptsKeyboardFocus = true;
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
-			Stylesheet = stylesheet;
 			SetStyle(stylesheet, styleName);
 		}
 
@@ -297,7 +299,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The newly created tree node.</returns>
 		public TreeViewNode AddSubNode(Widget content)
 		{
-			var result = new TreeViewNode(this, Stylesheet, StyleName)
+			var result = new TreeViewNode(this)
 			{
 				Content = content
 			};
@@ -490,27 +492,15 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this tree view.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the tree style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			base.InternalSetStyle(stylesheet, name);
-			ApplyTreeViewStyle(stylesheet.TreeStyles.SafelyGetStyle(name));
-		}
+			base.ApplyStyle(style);
 
-		/// <summary>
-		/// Applies the specified tree style to this tree view, including selection backgrounds.
-		/// </summary>
-		/// <param name="style">The tree style to apply.</param>
-		public void ApplyTreeViewStyle(TreeStyle style)
-		{
-			ApplyWidgetStyle(style);
+			var treeStyle = (TreeStyle)style;
 
-			SelectionBackground = style.SelectionBackground;
-			SelectionHoverBackground = style.SelectionHoverBackground;
+			TreeStyle = new TreeStyle(treeStyle);
+			SelectionBackground = treeStyle.SelectionBackground;
+			SelectionHoverBackground = treeStyle.SelectionHoverBackground;
 		}
 
 		/// <summary>

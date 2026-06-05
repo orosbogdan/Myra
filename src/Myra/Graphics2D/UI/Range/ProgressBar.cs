@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
@@ -100,18 +99,15 @@ namespace Myra.Graphics2D.UI
 		{
 		}
 
-		/// <summary>
-		/// Applies the specified progress bar style to this progress bar.
-		/// </summary>
-		/// <param name="style">The progress bar style to apply.</param>
-		public void ApplyProgressBarStyle(ProgressBarStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.Filler == null)
+			var progressBarStyle = (ProgressBarStyle)style;
+			if (progressBarStyle.Filler == null)
 				return;
 
-			Filler = style.Filler;
+			Filler = progressBarStyle.Filler;
 		}
 
 		/// <summary>

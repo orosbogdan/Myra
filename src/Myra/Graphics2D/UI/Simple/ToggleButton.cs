@@ -1,7 +1,6 @@
 ﻿using Myra.Attributes;
 using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
-using System;
 using Myra.Events;
 
 
@@ -18,7 +17,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A toggle button widget that can be toggled between two states.
 	/// </summary>
-	[StyleTypeName("Button")]
+	[StyledByProperty("ButtonStyles")]
 	public class ToggleButton : ButtonBase
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -113,16 +112,6 @@ namespace Myra.Graphics2D.UI
 			{
 				SetValueByUser(!IsPressed);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named button style from the stylesheet to the toggle button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyButtonStyle(stylesheet.ButtonStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

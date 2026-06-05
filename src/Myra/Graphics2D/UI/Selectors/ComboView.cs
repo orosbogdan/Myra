@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
@@ -22,6 +21,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A combo view widget that displays a list of widget items in a dropdown menu and supports selection.
 	/// </summary>
+	[StyledByProperty("ComboBoxStyles")]
 	public class ComboView : Widget, IContainer
 	{
 		private readonly ToggleButton _button;
@@ -227,24 +227,23 @@ namespace Myra.Graphics2D.UI
 			_button.Content = SelectedItem.Clone();
 		}
 
-		/// <summary>
-		/// Applies the specified style to the combo view and its dropdown list.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyComboViewStyle(ComboBoxStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			if (style.ListBoxStyle != null)
+			base.ApplyStyle(style);
+
+			var comboBoxStyle = (ComboBoxStyle)style;
+			if (comboBoxStyle.ListBoxStyle != null)
 			{
 				var dropdownMaximumHeight = DropdownMaximumHeight;
-				_listView.ApplyListBoxStyle(style.ListBoxStyle);
+				_listView.ApplyListViewStyle(comboBoxStyle.ListBoxStyle);
 				DropdownMaximumHeight = dropdownMaximumHeight;
 			}
 
-			_button.ApplyButtonStyle(style);
+			_button.ApplyButtonStyle(comboBoxStyle);
 
-			if (style.LabelStyle != null)
+			if (comboBoxStyle.LabelStyle != null)
 			{
-				((Label)_button.Content).ApplyLabelStyle(style.LabelStyle);
+				((Label)_button.Content).ApplyLabelStyle(comboBoxStyle.LabelStyle);
 			}
 		}
 
@@ -301,16 +300,6 @@ namespace Myra.Graphics2D.UI
 			base.OnKeyDown(k);
 
 			_listView.OnKeyDown(k);
-		}
-
-		/// <summary>
-		/// Applies a named combo view style from the stylesheet to the combo view.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the combo view style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyComboViewStyle(stylesheet.ComboBoxStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
@@ -376,15 +375,12 @@ namespace Myra.Graphics2D.UI
 			FireProportionsChanged();
 		}
 
-		/// <summary>
-		/// Applies the specified style to the split pane and its splitter handles.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplySplitPaneStyle(SplitPaneStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			HandleStyle = style.HandleStyle;
+			var splitPaneStyle = (SplitPaneStyle)style;
+			HandleStyle = splitPaneStyle.HandleStyle;
 			Reset();
 		}
 

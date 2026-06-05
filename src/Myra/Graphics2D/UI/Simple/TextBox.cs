@@ -8,6 +8,8 @@ using Myra.Graphics2D.UI.TextEdit;
 using FontStashSharp;
 using FontStashSharp.RichText;
 using Myra.Events;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -29,6 +31,7 @@ namespace Myra.Graphics2D.UI
 	/// Features include multi-line text, text wrapping, password masking, keyboard navigation, selection,
 	/// clipboard operations, and full undo/redo support.
 	/// </summary>
+	[StyledByProperty("TextBoxStyles")]
 	public class TextBox : Widget
 	{
 		private const int CursorUpdateDelayInMs = 30;
@@ -1779,33 +1782,22 @@ namespace Myra.Graphics2D.UI
 			_richTextLayout.Width = _wrap ? width : default(int?);
 		}
 
-		/// <summary>
-		/// Applies a text box style to the text box, setting colors, cursor, selection, and font.
-		/// </summary>
-		/// <param name="style">The text box style to apply.</param>
-		public void ApplyTextBoxStyle(TextBoxStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			TextColor = style.TextColor;
-			DisabledTextColor = style.DisabledTextColor;
-			FocusedTextColor = style.FocusedTextColor;
+			var textBoxStyle = (TextBoxStyle)style;
+			TextColor = textBoxStyle.TextColor;
+			DisabledTextColor = textBoxStyle.DisabledTextColor;
+			FocusedTextColor = textBoxStyle.FocusedTextColor;
 
-			Cursor = style.Cursor;
-			Selection = style.Selection;
+			Cursor = textBoxStyle.Cursor;
+			Selection = textBoxStyle.Selection;
 
-			Font = style.Font;
+			Font = textBoxStyle.Font;
 		}
 
-		/// <summary>
-		/// Applies a named text box style from the stylesheet to the text box.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the text box style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyTextBoxStyle(stylesheet.TextBoxStyles.SafelyGetStyle(name));
-		}
+		public void ApplyTextBoxStyle(TextBoxStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Gets the width of the character at the specified text index.

@@ -12,7 +12,6 @@ using Myra.Graphics2D.UI.File;
 using System.IO;
 using Myra.Attributes;
 using FontStashSharp;
-using FontStashSharp.RichText;
 using Myra.Graphics2D.Brushes;
 using AssetManagementBase;
 using Myra.Events;
@@ -36,6 +35,7 @@ namespace Myra.Graphics2D.UI.Properties
 	/// Uses reflection to discover properties and fields, creates appropriate editors for each type,
 	/// and organizes them by category with support for nested objects and filtering.
 	/// </summary>
+	[StyledByProperty("TreeStyles")]
 	public class PropertyGrid : Widget
 	{
 		private const string DefaultCategoryName = "Miscellaneous";
@@ -409,7 +409,7 @@ namespace Myra.Graphics2D.UI.Properties
 			_parentGrid = parentGrid;
 
 			_parentProperty = parentProperty;
-			
+
 			// Two-column layout: property names (left) and value editors (right)
 			_layout.ColumnSpacing = 32;
 			_layout.RowSpacing = 8;
@@ -421,7 +421,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 			if (style != null)
 			{
-				ApplyPropertyGridStyle(style);
+				ApplyStyle(style);
 			}
 
 			HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -1615,17 +1615,11 @@ namespace Myra.Graphics2D.UI.Properties
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified tree style to the property grid and all child elements.
-		/// Stores the style for use when creating child widgets and categories.
-		/// </summary>
-		/// <param name="style">The tree style to apply.</param>
-		public void ApplyPropertyGridStyle(TreeStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			// Apply style to this widget and store for child widget creation
-			ApplyWidgetStyle(style);
-
-			PropertyGridStyle = style;
+			base.ApplyStyle(style);
+			var treeStyle = (TreeStyle)style;
+			PropertyGridStyle = treeStyle;
 		}
 	}
 }

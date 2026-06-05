@@ -20,6 +20,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A container that displays its content with horizontal and/or vertical scrollbars for navigation when content exceeds available space.
 	/// </summary>
+	[StyledByProperty("ScrollViewerStyles")]
 	public class ScrollViewer : ContentControl
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -525,18 +526,15 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified style to the scroll viewer.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyScrollViewerStyle(ScrollViewerStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			HorizontalScrollBackground = style.HorizontalScrollBackground;
-			HorizontalScrollKnob = style.HorizontalScrollKnob;
-			VerticalScrollBackground = style.VerticalScrollBackground;
-			VerticalScrollKnob = style.VerticalScrollKnob;
+			base.ApplyStyle(style);
 
-			ApplyWidgetStyle(style);
+			var scrollViewerStyle = (ScrollViewerStyle)style;
+			HorizontalScrollBackground = scrollViewerStyle.HorizontalScrollBackground;
+			HorizontalScrollKnob = scrollViewerStyle.HorizontalScrollKnob;
+			VerticalScrollBackground = scrollViewerStyle.VerticalScrollBackground;
+			VerticalScrollKnob = scrollViewerStyle.VerticalScrollKnob;
 		}
 
 		/// <summary>
@@ -752,16 +750,6 @@ namespace Myra.Graphics2D.UI
 		private void DesktopTouchUp(object sender, MyraEventArgs args)
 		{
 			_startBoundsPos = null;
-		}
-
-		/// <summary>
-		/// Applies internal styling to the scroll viewer based on the stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyScrollViewerStyle(stylesheet.ScrollViewerStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

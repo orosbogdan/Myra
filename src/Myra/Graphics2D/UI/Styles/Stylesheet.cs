@@ -7,7 +7,6 @@ using System.ComponentModel;
 using Myra.MML;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Attributes;
-using FontStashSharp;
 
 namespace Myra.Graphics2D.UI.Styles
 {
@@ -19,14 +18,6 @@ namespace Myra.Graphics2D.UI.Styles
 	{
 		internal static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
 		internal static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
-
-		internal static readonly Dictionary<string, string> LegacyStylesheetNames = new Dictionary<string, string>
-		{
-			["ComboView"] = "ComboBox",
-			["ListView"] = "ListBox",
-			["TreeView"] = "Tree",
-			["CheckButton"] = "CheckBox",
-		};
 
 		/// <summary>
 		/// The default style identifier used when no specific style name is provided.
@@ -531,37 +522,6 @@ namespace Myra.Graphics2D.UI.Styles
 			var xDoc = new XDocument(root);
 
 			return xDoc.ToString();
-		}
-
-		/// <summary>
-		/// Gets an array of style names available for the specified widget type.
-		/// </summary>
-		/// <param name="name">The widget type name (e.g., "Button", "Label", "TextBox").</param>
-		/// <returns>An array of style identifiers for the widget type, or null if the widget type has no styles defined.</returns>
-		public string[] GetStylesByWidgetName(string name)
-		{
-			// Special case
-			if (name.Contains("Button"))
-			{
-				name = "Button";
-			}
-
-			var propertyName = name + "Styles";
-			var property = GetType().GetProperty(propertyName);
-			if (property == null)
-			{
-				return null;
-			}
-
-			var dict = (IDictionary)property.GetValue(this);
-
-			var result = new List<string>();
-			foreach (var k in dict.Keys)
-			{
-				result.Add((string)k);
-			}
-
-			return result.ToArray();
 		}
 
 		private void CloneStylesTo<T>(Stylesheet destStylesheet, Func<Stylesheet, Dictionary<string, T>> stylesGetter) where T : WidgetStyle

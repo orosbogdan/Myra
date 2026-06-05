@@ -446,21 +446,12 @@ namespace Myra.Graphics2D.UI
 						throw new NullReferenceException(nameof(stylesheet));
 					}
 
-					// Extract StyleName from XML attribute, defaulting if not found or invalid
+					// Extract StyleName from XML attribute, defaulting if not found
 					var styleName = Stylesheet.DefaultStyleName;
 					var styleNameAttr = element.Attribute("StyleName");
 					if (styleNameAttr != null)
 					{
-						var stylesNames = stylesheet.GetStylesByWidgetName(type.Name);
-						if (stylesNames != null && stylesNames.Contains(styleNameAttr.Value))
-						{
-							styleName = styleNameAttr.Value;
-						}
-						else
-						{
-							// Remove invalid style name attribute
-							styleNameAttr.Remove();
-						}
+						styleName = styleNameAttr.Value;
 					}
 
 					// Create widget with style name parameter
@@ -488,41 +479,17 @@ namespace Myra.Graphics2D.UI
 				styleName = Stylesheet.DefaultStyleName;
 			}
 
-			// Determine the styles dictionary property name for this widget type
-			var typeName = w.GetType().Name;
-			var styleTypeNameAttribute = w.GetType().FindAttribute<StyleTypeNameAttribute>();
-			if (styleTypeNameAttribute != null)
+			object obj = null;
+			try
 			{
-				typeName = styleTypeNameAttribute.Name;
+				obj = w.GetStyle(stylesheet, styleName);
 			}
-
-			string s;
-			if (Stylesheet.LegacyStylesheetNames.TryGetValue(typeName, out s))
+			catch(Exception)
 			{
-				typeName = s;
-			}
-
-			// Get the stylesheet's Styles collection for this widget type
-			var stylesDictPropertyName = typeName + "Styles";
-			var stylesDictProperty = stylesheet.GetType().GetRuntimeProperty(stylesDictPropertyName);
-			if (stylesDictProperty == null)
-			{
+				// If there's an exception, return false(meaning the widget property doesnt have the stylesheet value)
 				return false;
 			}
 
-			var stylesDict = (IDictionary)stylesDictProperty.GetValue(stylesheet);
-			if (stylesDict == null)
-			{
-				return false;
-			}
-
-			// Get the style object, fallback to default if style name not found
-			if (!stylesDict.Contains(styleName))
-			{
-				styleName = Stylesheet.DefaultStyleName;
-			}
-
-			object obj = stylesDict[styleName];
 			if (obj == null)
 			{
 				return false;

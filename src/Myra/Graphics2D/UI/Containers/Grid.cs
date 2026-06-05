@@ -39,6 +39,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A grid widget that displays content in a table layout with support for rows, columns, spanning, and selection.
 	/// </summary>
+	[StyledByProperty("GridStyles")]
 	public class Grid : Container
 	{
 		/// <summary>
@@ -748,13 +749,11 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified grid style to this grid and updates all grid-specific properties.
-		/// </summary>
-		/// <param name="gridStyle">The grid style to apply.</param>
-		public void ApplyGridStyle(GridStyle gridStyle)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(gridStyle);
+			base.ApplyStyle(style);
+
+			var gridStyle = (GridStyle)style;
 
 			ShowGridLines = gridStyle.ShowGridLines;
 			GridLinesColor = gridStyle.GridLinesColor;
@@ -765,24 +764,6 @@ namespace Myra.Graphics2D.UI
 			GridSelectionMode = gridStyle.GridSelectionMode;
 			HoverIndexCanBeNull = gridStyle.HoverIndexCanBeNull;
 			CanSelectNothing = gridStyle.CanSelectNothing;
-		}
-
-		/// <summary>
-		/// Sets the internal style of this grid from the stylesheet using the specified name.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style definitions.</param>
-		/// <param name="name">The name of the style to apply, or null to use default styling.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			base.InternalSetStyle(stylesheet, name);
-
-			GridStyle style;
-			if (name == null || !stylesheet.GridStyles.TryGetValue(name, out style))
-			{
-				return;
-			}
-
-			ApplyGridStyle(style);
 		}
 
 		/// <summary>

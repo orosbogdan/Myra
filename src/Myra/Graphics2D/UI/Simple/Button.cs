@@ -1,6 +1,5 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using Myra.Attributes;
-using System;
 using System.ComponentModel;
 using Myra.Events;
 
@@ -18,7 +17,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A clickable button widget that can contain any widget as its content.
 	/// </summary>
-	[StyleTypeName("Button")]
+	[StyledByProperty("ButtonStyles")]
 	public class Button : ButtonBase
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -137,16 +136,6 @@ namespace Myra.Graphics2D.UI
 		private void DesktopTouchUp(object sender, MyraEventArgs args)
 		{
 			IsPressed = false;
-		}
-
-		/// <summary>
-		/// Applies a named button style from the stylesheet to the button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyButtonStyle(stylesheet.ButtonStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

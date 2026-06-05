@@ -16,7 +16,7 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A window dialog with OK and Cancel buttons for user interaction.
 	/// </summary>
-	[StyleTypeName("Window")]
+	[StyledByProperty("WindowStyles")]
 	public class Dialog : Window
 	{
 		/// <summary>

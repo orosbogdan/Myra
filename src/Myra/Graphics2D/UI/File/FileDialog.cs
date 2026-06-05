@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using MonoGame.Utilities;
+﻿using MonoGame.Utilities;
+using Myra.Attributes;
 using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Myra.Graphics2D.UI.File
 {
 	/// <summary>
 	/// A dialog for selecting files or folders from the file system.
 	/// </summary>
+	[StyledByProperty("FileDialogStyles")]
 	public partial class FileDialog
 	{
 		/// <summary>
@@ -630,23 +631,20 @@ namespace Myra.Graphics2D.UI.File
 			return false;
 		}
 
-		/// <summary>
-		/// Applies the specified file dialog style to this dialog instance.
-		/// </summary>
-		/// <param name="style">The file dialog style to apply.</param>
-		public void ApplyFileDialogStyle(FileDialogStyle style)
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWindowStyle(style);
+			base.ApplyStyle(style);
 
-			_buttonBack.ApplyImageButtonStyle(style.BackButtonStyle);
-			_buttonForward.ApplyImageButtonStyle(style.ForwardButtonStyle);
-			_buttonParent.ApplyImageButtonStyle(style.ParentButtonStyle);
+			var fileDialogStyle = (FileDialogStyle)style;
+			_buttonBack.ApplyImageButtonStyle(fileDialogStyle.BackButtonStyle);
+			_buttonForward.ApplyImageButtonStyle(fileDialogStyle.ForwardButtonStyle);
+			_buttonParent.ApplyImageButtonStyle(fileDialogStyle.ParentButtonStyle);
 
-			_gridFiles.SelectionBackground = style.SelectionBackground;
-			_gridFiles.SelectionHoverBackground = style.SelectionHoverBackground;
+			_gridFiles.SelectionBackground = fileDialogStyle.SelectionBackground;
+			_gridFiles.SelectionHoverBackground = fileDialogStyle.SelectionHoverBackground;
 
-			IconDrive = style.IconDrive;
-			IconFolder = style.IconFolder;
+			IconDrive = fileDialogStyle.IconDrive;
+			IconFolder = fileDialogStyle.IconFolder;
 
 			foreach (var widget in _listPlaces.Widgets)
 			{
@@ -661,16 +659,6 @@ namespace Myra.Graphics2D.UI.File
 
 				image.Renderable = pathInfo.IsDrive ? IconDrive : IconFolder;
 			}
-		}
-
-		/// <summary>
-		/// Internal method to set the style of the dialog from a stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style definition.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyFileDialogStyle(stylesheet.FileDialogStyles.SafelyGetStyle(name));
 		}
 	}
 }
