@@ -87,8 +87,8 @@ namespace Myra.Graphics2D.UI.Properties
 				_layout.RowSpacing = 8;
 
 				// Two columns: expand/collapse toggle (Auto) and category label (Fill)
-				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
+				_layout.ColumnsProportions.Add(Proportion.Auto);
+				_layout.ColumnsProportions.Add(Proportion.Fill);
 				_layout.DefaultRowProportion = Proportion.Auto;
 
 				// Create nested PropertyGrid to display this category's properties
@@ -413,8 +413,8 @@ namespace Myra.Graphics2D.UI.Properties
 			// Two-column layout: property names (left) and value editors (right)
 			_layout.ColumnSpacing = 32;
 			_layout.RowSpacing = 8;
-			_layout.ColumnsProportions.Add(Proportion.Auto);
-			_layout.ColumnsProportions.Add(Proportion.Fill);
+			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1.0f));
+			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1.0f));
 			_layout.DefaultRowProportion = Proportion.Auto;
 
 			Category = category;

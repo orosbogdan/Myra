@@ -60,7 +60,7 @@
           <TextBox Id="_textBoxFilter" StackPanel.ProportionType="Fill" />
         </HorizontalStackPanel>
         <HorizontalSeparator />
-        <ScrollViewer Id="_propertyGridPane" StackPanel.ProportionType="Fill">
+        <ScrollViewer ShowHorizontalScrollBar="False" Id="_propertyGridPane" StackPanel.ProportionType="Fill">
           <PropertyGrid Id="_propertyGrid" />
         </ScrollViewer>
         <HorizontalSeparator />

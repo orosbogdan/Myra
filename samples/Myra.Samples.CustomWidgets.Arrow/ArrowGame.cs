@@ -37,7 +37,10 @@ namespace Myra.Samples.CustomWidgets
 				VerticalAlignment = VerticalAlignment.Center
 			};
 
-			var scrollViewer = new ScrollViewer();
+			var scrollViewer = new ScrollViewer
+			{
+				ShowHorizontalScrollBar = false
+			};
 
 			_propertyGrid = new PropertyGrid
 			{

@@ -649,7 +649,7 @@ namespace Myra.Graphics2D.UI
 					HorizontalScrollKnob.Size.Y);
 
 				// Available height for vertical scrollbar (reduced if horizontal scrollbar is shown)
-				var bh = bounds.Height - (_horizontalScrollingOn ? hsHeight : 0);
+				var bh = bounds.Height - ((_horizontalScrollingOn && ShowHorizontalScrollBar) ? hsHeight : 0);
 
 				// Position vertical scrollbar frame on the right edge of the bounds
 				_verticalScrollbarFrame = new Rectangle(
