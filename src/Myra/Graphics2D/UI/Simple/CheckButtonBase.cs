@@ -79,6 +79,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(0)]
+		[StylePropertyPath("ImageTextSpacing")]
 		public int CheckContentSpacing
 		{
 			get => _layout.Spacing;

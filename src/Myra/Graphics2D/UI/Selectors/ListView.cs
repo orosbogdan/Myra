@@ -378,7 +378,7 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply to the list view.</param>
 		public ListView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
-			_scrollViewer = new ScrollViewer();
+			_scrollViewer = new ScrollViewer(stylesheet);
 			ChildrenLayout = new SingleItemLayout<ScrollViewer>(this)
 			{
 				Child = _scrollViewer

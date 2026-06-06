@@ -985,7 +985,7 @@ namespace MyraPad.UI
 			var textFont = new TextBox
 			{
 				Readonly = true,
-				Text = value.ToString()
+				Text = value?.ToString()
 			};
 
 			StackPanel.SetProportionType(textFont, ProportionType.Fill);

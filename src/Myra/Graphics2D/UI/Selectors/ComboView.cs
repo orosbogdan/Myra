@@ -26,7 +26,7 @@ namespace Myra.Graphics2D.UI
 	public class ComboView : Widget, IContainer
 	{
 		private readonly ToggleButton _button;
-		private readonly ListView _listView = new ListView(null);
+		private readonly ListView _listView;
 		private readonly Label _labelPlaceholder = new Label();
 
 		/// <summary>
@@ -168,6 +168,7 @@ namespace Myra.Graphics2D.UI
 
 			_button.PressedChanged += InternalChild_PressedChanged;
 
+			_listView = new ListView(stylesheet);
 			_listView._parentCombo = this;
 
 			HorizontalAlignment = HorizontalAlignment.Left;

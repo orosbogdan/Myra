@@ -6,16 +6,17 @@ namespace MyraPad.UI
 {
 	partial class MainForm
 	{
+		private Stylesheet _stylesheetAtStyleTree;
+
 		private bool HasCustomStylesheet => Project != null && !string.IsNullOrEmpty(Project.StylesheetPath);
 
 		private void AddStylesheetTab()
 		{
-			if (_tabControlLeft.Items.Contains(_tabStylesheet))
+			if (!_tabControlLeft.Items.Contains(_tabStylesheet))
 			{
-				return;
+				_tabControlLeft.Items.Add(_tabStylesheet);
 			}
 
-			_tabControlLeft.Items.Add(_tabStylesheet);
 			RefreshStyles();
 		}
 
@@ -27,10 +28,16 @@ namespace MyraPad.UI
 
 		private void RefreshStyles()
 		{
+			if (Project.Stylesheet == _stylesheetAtStyleTree)
+			{
+				return;
+			}
+
 			_treeViewStylesheet.RemoveAllSubNodes();
 
 			if (Project == null || Project.Stylesheet == null)
 			{
+				_stylesheetAtStyleTree = Project.Stylesheet;
 				return;
 			}
 
@@ -78,6 +85,8 @@ namespace MyraPad.UI
 					styleNode.Tag = style;
 				}
 			}
+
+			_stylesheetAtStyleTree = Project.Stylesheet;
 		}
 
 		private void _treeViewStylesheet_SelectionChanged(object sender, MyraEventArgs e)
