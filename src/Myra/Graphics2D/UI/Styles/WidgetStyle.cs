@@ -60,6 +60,8 @@
 		/// </summary>
 		public IBrush FocusedBackground { get; set; }
 
+		public IBrush PressedBackground { get; set; }
+
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border.
 		/// </summary>
@@ -79,6 +81,8 @@
 		/// Gets or sets the brush used for the widget's border when it has focus.
 		/// </summary>
 		public IBrush FocusedBorder { get; set; }
+
+		public IBrush PressedBorder { get; set; }
 
 		/// <summary>
 		/// Gets or sets the space outside the widget's border.

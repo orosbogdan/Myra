@@ -94,7 +94,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		protected override void InternalOnTouchDown()
 		{
-			SetValueByUser(!IsPressed);
+			SetIsPressedByUser(!IsPressed);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Myra.Graphics2D.UI
 
 			if (k == Keys.Space)
 			{
-				SetValueByUser(!IsPressed);
+				SetIsPressedByUser(!IsPressed);
 			}
 		}
 

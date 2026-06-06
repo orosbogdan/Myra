@@ -10,14 +10,15 @@
 		/// </summary>
 		public IImage Image { get; set; }
 
+		public IImage DisabledImage { get; set; }
+
 		/// <summary>
 		/// Gets or sets the image displayed when the mouse is over the widget, or null to use the default image.
 		/// </summary>
 		public IImage OverImage { get; set; }
 
-		/// <summary>
-		/// Gets or sets the image displayed when the widget is pressed.
-		/// </summary>
+		public IImage FocusedImage { get; set; }
+
 		public IImage PressedImage { get; set; }
 
 		/// <summary>
@@ -34,6 +35,7 @@
 		public ImageStyle(ImageStyle style) : base(style)
 		{
 			Image = style.Image;
+			DisabledImage = style.DisabledImage;
 			OverImage = style.OverImage;
 			PressedImage = style.PressedImage;
 		}

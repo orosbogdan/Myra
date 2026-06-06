@@ -95,7 +95,7 @@ namespace Myra.Graphics2D.UI
 
 			if (ReleaseOnTouchLeft)
 			{
-				SetValueByUser(false);
+				SetIsPressedByUser(false);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		protected override void InternalOnTouchUp()
 		{
-			SetValueByUser(false);
+			SetIsPressedByUser(false);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		protected override void InternalOnTouchDown()
 		{
-			SetValueByUser(true);
+			SetIsPressedByUser(true);
 		}
 
 		/// <summary>
