@@ -4,7 +4,26 @@ namespace MyraPad.UI
 {
 	public partial class FontEditorDialog
 	{
-		public SpriteFontBase Font { get; set; }
+		private SpriteFontBase _font;
+
+		public SpriteFontBase Font
+		{
+			get => _font;
+
+			set
+			{
+				_font = value;
+
+				if (value == null)
+				{
+					_textValue.Text = string.Empty;
+				}
+				else
+				{
+					_textValue.Text = value.ToString();
+				}
+			}
+		}
 
 		public FontEditorDialog()
 		{

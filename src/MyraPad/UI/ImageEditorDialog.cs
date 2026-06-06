@@ -124,8 +124,10 @@ namespace MyraPad.UI
 
 		private void _buttonSetFromFile_Click(object sender, MyraEventArgs e)
 		{
-			var dlg = new FileDialog(FileDialogMode.OpenFile);
-			dlg.Filter = "*.png|*.jpg|*.bmp|*.gif|*.dds";
+			var dlg = new FileDialog(FileDialogMode.OpenFile)
+			{
+				Filter = "*.png|*.jpg|*.bmp|*.gif|*.dds"
+			};
 
 			dlg.Closed += (s, a) =>
 			{
