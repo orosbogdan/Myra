@@ -25,6 +25,8 @@ namespace Myra.Graphics2D.UI.Styles
 		/// </summary>
 		public Color? DisabledTextColor { get; set; }
 
+		public Color? FocusedTextColor { get; set; }
+
 		/// <summary>
 		/// Gets or sets the color of the label's text when the mouse is over the widget, or null to use the default.
 		/// </summary>

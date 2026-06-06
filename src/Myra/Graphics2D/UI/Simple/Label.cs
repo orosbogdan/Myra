@@ -24,6 +24,7 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Label : Widget
 	{
+		private readonly Color?[] _colors = new Color?[(int)WidgetVisualState.Total];
 		private readonly RichTextLayout _richText = new RichTextLayout
 		{
 			SupportsCommands = true
@@ -171,36 +172,41 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(TextHorizontalAlignment.Left)]
-		public TextHorizontalAlignment TextAlign
-		{
-			get; set;
-		}
+		public TextHorizontalAlignment TextAlign { get; set; }
 
-		/// <summary>
-		/// Gets or sets the color of the text.
-		/// </summary>
 		[Category("Appearance")]
 		public Color TextColor
 		{
-			get; set;
+			get => _colors[(int)WidgetVisualState.Normal].Value;
+			set => _colors[(int)WidgetVisualState.Normal] = value;
 		}
 
-		/// <summary>
-		/// Gets or sets the color of the text when the label is disabled.
-		/// </summary>
-		[Category("Appearance")]
-		public Color? DisabledTextColor
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets or sets the color of the text when the cursor is over the label.
-		/// </summary>
 		[Category("Appearance")]
 		public Color? OverTextColor
 		{
-			get; set;
+			get => _colors[(int)WidgetVisualState.Over];
+			set => _colors[(int)WidgetVisualState.Over] = value;
+		}
+
+		[Category("Appearance")]
+		public Color? DisabledTextColor
+		{
+			get => _colors[(int)WidgetVisualState.Disabled];
+			set => _colors[(int)WidgetVisualState.Disabled] = value;
+		}
+
+		[Category("Appearance")]
+		public Color? FocusedTextColor
+		{
+			get => _colors[(int)WidgetVisualState.Focused];
+			set => _colors[(int)WidgetVisualState.Focused] = value;
+		}
+
+		[Category("Appearance")]
+		public Color? PressedTextColor
+		{
+			get => _colors[(int)WidgetVisualState.Pressed];
+			set => _colors[(int)WidgetVisualState.Pressed] = value;
 		}
 
 		/// <summary>
@@ -214,16 +220,6 @@ namespace Myra.Graphics2D.UI
 			set => _richText.SupportsCommands = value;
 		}
 
-		internal Color? PressedTextColor
-		{
-			get; set;
-		}
-
-		internal bool IsPressed
-		{
-			get; set;
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Label"/> class with the specified stylesheet and style.
 		/// </summary>
@@ -231,6 +227,7 @@ namespace Myra.Graphics2D.UI
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
 		public Label(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
+			TextColor = Color.Black;
 			SetStyle(stylesheet, styleName);
 		}
 
@@ -253,23 +250,14 @@ namespace Myra.Graphics2D.UI
 				return;
 			}
 
-			var color = TextColor;
-			var useChunkColor = true;
-			if (!Enabled && DisabledTextColor != null)
+			var nullableColor = GetCurrentVisual(_colors);
+			if (nullableColor == null)
 			{
-				color = DisabledTextColor.Value;
-				useChunkColor = false;
+				return;
 			}
-			else if (IsPressed && PressedTextColor != null)
-			{
-				color = PressedTextColor.Value;
-				useChunkColor = false;
-			}
-			else if (IsMouseInside && OverTextColor != null)
-			{
-				color = OverTextColor.Value;
-				useChunkColor = false;
-			}
+
+			var color = nullableColor.Value;
+			var useChunkColor = color == TextColor;
 
 			var textToDraw = _richText;
 
@@ -376,6 +364,7 @@ namespace Myra.Graphics2D.UI
 			var labelStyle = (LabelStyle)style;
 			TextColor = labelStyle.TextColor;
 			DisabledTextColor = labelStyle.DisabledTextColor;
+			FocusedTextColor = labelStyle.FocusedTextColor;
 			OverTextColor = labelStyle.OverTextColor;
 			PressedTextColor = labelStyle.PressedTextColor;
 			Font = labelStyle.Font;
@@ -404,10 +393,11 @@ namespace Myra.Graphics2D.UI
 			AutoEllipsisMethod = label.AutoEllipsisMethod;
 			AutoEllipsisString = label.AutoEllipsisString;
 			TextAlign = label.TextAlign;
-			TextColor = label.TextColor;
-			DisabledTextColor = label.DisabledTextColor;
-			OverTextColor = label.OverTextColor;
-			PressedTextColor = label.PressedTextColor;
+
+			for (var i = 0; i < (int)WidgetVisualState.Total; ++i)
+			{
+				_colors[i] = label._colors[i];
+			}
 		}
 	}
 }

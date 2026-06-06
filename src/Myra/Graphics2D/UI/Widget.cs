@@ -910,6 +910,8 @@ namespace Myra.Graphics2D.UI
 		[XmlIgnore]
 		public Action<RenderContext> AfterRender;
 
+		protected virtual bool UseOverBackground => IsMouseInside;
+
 		public event MyraEventHandler PressedChanged;
 
 		public event MyraEventHandler<ValueChangingEventArgs<bool>> PressedChangingByUser;
@@ -946,7 +948,7 @@ namespace Myra.Graphics2D.UI
 						break;
 					}
 
-					if (IsMouseInside && values[(int)WidgetVisualState.Over] != null)
+					if (UseOverBackground && values[(int)WidgetVisualState.Over] != null)
 					{
 						result = values[(int)WidgetVisualState.Over];
 						break;
