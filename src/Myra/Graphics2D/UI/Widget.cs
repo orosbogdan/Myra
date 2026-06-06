@@ -1679,7 +1679,7 @@ namespace Myra.Graphics2D.UI
 				newTop = _startLeftTop.Y + (int)delta.Y;
 			}
 
-			var parentBounds = Parent != null ? Parent.Bounds : Desktop.InternalBounds;
+			var parentBounds = Parent != null ? Parent.ActualBounds : Desktop.InternalBounds;
 			if (newLeft < 0)
 			{
 				newLeft = 0;
