@@ -7,8 +7,6 @@ using System.Collections;
 using Myra.Attributes;
 using System;
 
-
-
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;

@@ -558,21 +558,17 @@ namespace Myra.Graphics2D.UI.Properties
 		}
 
 		// Creates a color editor with preview swatch and picker dialog button
-		private Grid CreateColorEditor(Record record, bool hasSetter)
+		private Widget CreateColorEditor(Record record, bool hasSetter)
 		{
 			var propertyType = record.Type;
 			var value = record.GetValue(_object);
 
-			var subGrid = new Grid
+			var subGrid = new HorizontalStackPanel
 			{
-				ColumnSpacing = 8,
-				HorizontalAlignment = HorizontalAlignment.Stretch
+				Spacing = 8
 			};
 
 			var isColor = propertyType == typeof(Color);
-
-			subGrid.ColumnsProportions.Add(new Proportion());
-			subGrid.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
 
 			// Get current color from property (handle both Color and Color?)
 			var color = Color.Transparent;
@@ -589,12 +585,12 @@ namespace Myra.Graphics2D.UI.Properties
 			var image = new Image
 			{
 				Renderable = Stylesheet.Current.WhiteRegion,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Center,
-				Width = 32,
 				Height = 16,
 				Color = color
 			};
-
+			StackPanel.SetProportionType(image, ProportionType.Fill);
 			subGrid.Widgets.Add(image);
 
 			// "Change..." button to open color picker dialog
@@ -608,8 +604,6 @@ namespace Myra.Graphics2D.UI.Properties
 					Text = "Change..."
 				}
 			};
-			Grid.SetColumn(button, 1);
-
 			subGrid.Widgets.Add(button);
 
 			if (hasSetter)

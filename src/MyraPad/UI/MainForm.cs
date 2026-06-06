@@ -832,11 +832,11 @@ namespace MyraPad.UI
 			}
 
 			var stylesList = new List<string>();
-			foreach(var key in stylesDict.Keys)
+			foreach (var key in stylesDict.Keys)
 			{
 				stylesList.Add(key.ToString());
 			}
-			
+
 			var styleNames = stylesList.ToArray(); ;
 			if (styleNames == null || styleNames.Length < 2)
 			{
@@ -887,31 +887,37 @@ namespace MyraPad.UI
 
 		private Widget CreateImageEditor(Record record, object obj)
 		{
-			var value = record.GetValue(obj) as IHasColor;
-
 			var panel = new HorizontalStackPanel
 			{
 				Spacing = 8
 			};
 
-			// Get brush color, or transparent if brush is null
-			var color = Color.Transparent;
-			if (value != null)
-			{
-				color = value.Color;
-			}
-
 			// Color preview swatch
 			var image = new Image
 			{
-				Renderable = Stylesheet.Current.WhiteRegion,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Center,
-				Width = 32,
-				Height = 16,
-				Color = color
+				Height = 16
 			};
 
+			StackPanel.SetProportionType(image, ProportionType.Fill);
 			panel.Widgets.Add(image);
+
+			var value = record.GetValue(obj);
+			var asImage = value as IImage;
+			if (asImage != null)
+			{
+				image.Renderable = asImage;
+			}
+			else
+			{
+				var asHasColor = value as IHasColor;
+				if (asHasColor != null)
+				{
+					image.Renderable = Stylesheet.Current.WhiteRegion;
+					image.Color = asHasColor.Color;
+				}
+			}
 
 			// "Change..." button to open color picker
 			var button = new Button
@@ -924,7 +930,6 @@ namespace MyraPad.UI
 					HorizontalAlignment = HorizontalAlignment.Center,
 				}
 			};
-			StackPanel.SetProportionType(button, ProportionType.Fill);
 			panel.Widgets.Add(button);
 
 			button.Click += (s, a) =>
@@ -958,11 +963,79 @@ namespace MyraPad.UI
 			return panel;
 		}
 
+		private Widget CreateFontEditor(Record record, object obj)
+		{
+			var value = (SpriteFontBase)record.GetValue(obj);
+
+			var panel = new HorizontalStackPanel
+			{
+				Spacing = 8
+			};
+
+			// Color preview swatch
+			var textFont = new TextBox
+			{
+				Readonly = true,
+				Text = value.ToString()
+			};
+
+			StackPanel.SetProportionType(textFont, ProportionType.Fill);
+			panel.Widgets.Add(textFont);
+
+			// "Change..." button to open color picker
+			var button = new Button
+			{
+				Tag = value,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				Content = new Label
+				{
+					Text = "Change...",
+					HorizontalAlignment = HorizontalAlignment.Center,
+				}
+			};
+			panel.Widgets.Add(button);
+
+			button.Click += (s, a) =>
+			{
+				var value = (SpriteFontBase)record.GetValue(obj);
+				var dlg = new FontEditorDialog
+				{
+					Font = value
+				};
+
+				dlg.Closed += (s, a) =>
+				{
+					if (!dlg.Result)
+					{
+						return;
+					}
+
+					/*					if (dlg.Image == null || record.Type.IsAssignableFrom(dlg.Image.GetType()))
+										{
+											// This code skips setting new value if dlg.Image is IBrush and the property excepts IImage
+											record.SetValue(obj, dlg.Image);
+
+											_propertyGrid.Rebuild();
+											OnPropertyChanged();
+										}*/
+				};
+
+				dlg.ShowModal(Desktop);
+			};
+
+			return panel;
+		}
+
 		private Widget CreateCustomEditor(Record record, object obj)
 		{
 			if (typeof(IBrush).IsAssignableFrom(record.Type))
 			{
 				return CreateImageEditor(record, obj);
+			}
+
+			if (typeof(SpriteFontBase).IsAssignableFrom(record.Type))
+			{
+				return CreateFontEditor(record, obj);
 			}
 
 			return null;

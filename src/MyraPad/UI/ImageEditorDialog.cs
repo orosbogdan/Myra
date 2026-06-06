@@ -30,14 +30,18 @@ namespace MyraPad.UI
 		{
 			get
 			{
-				var color = Color.Transparent;
+				if (_image == null)
+				{
+					return Color.Transparent;
+				}
+
 				var hasColor = _image as IHasColor;
 				if (hasColor != null)
 				{
-					color = hasColor.Color;
+					return hasColor.Color;
 				}
 
-				return color;
+				return Color.White;
 			}
 		}
 
