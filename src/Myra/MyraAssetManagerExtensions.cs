@@ -143,6 +143,10 @@ namespace AssetManagementBase
 			if (parts.Length > 1)
 			{
 				color = ColorStorage.FromName(parts[1]);
+				if (color == null)
+				{
+					throw new Exception($"Could not parse color name '{parts[1]}'");
+				}
 				assetName = parts[0];
 			}
 
@@ -241,6 +245,10 @@ namespace AssetManagementBase
 				}
 
 				var fontSize = int.Parse(parts[1].Trim());
+				if (fontSize <= 0)
+				{
+					throw new ArgumentOutOfRangeException($"Invalid font size {fontSize}");
+				}
 
 				var fontName = parts[0].Trim();
 				var fontSystem = assetManager.LoadFontSystem(fontName);

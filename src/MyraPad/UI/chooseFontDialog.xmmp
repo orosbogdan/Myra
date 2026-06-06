@@ -11,32 +11,24 @@
           <Grid>
             <Grid.DefaultRowProportion Type="Auto" />
             <Grid.ColumnsProportions>
-              <Proportion Type="Pixels" Value="60" />
-              <Proportion Type="Pixels" Value="100" />
+              <Proportion Type="Pixels" Value="200" />
               <Proportion Type="Pixels" Value="50" />
               <Proportion Type="Fill" />
             </Grid.ColumnsProportions>
-            <Label Text="Image" />
+            <Label Text="Source" />
             <Label Text="Size" Grid.Column="1" />
-            <Label Text="NP" Grid.Column="2" />
-            <Label Text="Name" Grid.Column="3" />
+            <Label Text="Name" Grid.Column="2" />
           </Grid>
           <Grid RowSpacing="4" GridSelectionMode="Row" Id="_gridData">
             <Grid.DefaultRowProportion Type="Auto" />
             <Grid.ColumnsProportions>
-              <Proportion Type="Pixels" Value="60" />
-              <Proportion Type="Pixels" Value="100" />
+              <Proportion Type="Pixels" Value="200" />
               <Proportion Type="Pixels" Value="50" />
               <Proportion Type="Fill" />
             </Grid.ColumnsProportions>
-            <Image Renderable="icon-folder" Width="32" Height="32" Grid.Row="1" />
-            <Label Text="32x32" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" />
-            <CheckButton VerticalAlignment="Center" Enabled="False" Grid.Column="2" Grid.Row="1" />
-            <Label Text="icon-folder" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" />
-            <Image Renderable="icon-star" Width="32" Height="32" Grid.Row="2" />
-            <Label Text="32x32" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" />
-            <CheckButton IsChecked="True" VerticalAlignment="Center" Enabled="False" Grid.Column="2" Grid.Row="2" />
-            <Label Text="icon-star" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2" />
+            <Label Text="MonoDroid.ttf" VerticalAlignment="Center" />
+            <Label Text="32" VerticalAlignment="Center" Grid.Column="1" />
+            <Label Text="default-font" VerticalAlignment="Center" Grid.Column="2" />
           </Grid>
         </VerticalStackPanel>
       </ScrollViewer>

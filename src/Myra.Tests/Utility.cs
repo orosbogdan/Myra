@@ -17,6 +17,7 @@ namespace Myra.Tests
 	internal static class Utility
 	{
 		public static readonly Assembly Assembly = typeof(Utility).Assembly;
+		private const float FloatEpsilon = 1e-6f;
 
 		public static Widget LoadProjectRootClone(string name)
 		{
@@ -54,6 +55,11 @@ namespace Myra.Tests
 		{
 			var color2 = ColorStorage.FromName(colorName);
 			Assert.Equal(color2.Value, color);
+		}
+
+		public static void AssertEqualEpsilon(float expected, float actual)
+		{
+			Assert.Equal(expected, actual, FloatEpsilon);
 		}
 
 		/// <summary>
