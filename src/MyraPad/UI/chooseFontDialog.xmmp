@@ -29,6 +29,9 @@
             <Label Text="MonoDroid.ttf" VerticalAlignment="Center" />
             <Label Text="32" VerticalAlignment="Center" Grid.Column="1" />
             <Label Text="default-font" VerticalAlignment="Center" Grid.Column="2" />
+            <Label Text="commodore-64.fnt" VerticalAlignment="Center" Grid.Row="1" />
+            <Label Text="20" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" />
+            <Label Text="commodore-64" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" />
           </Grid>
         </VerticalStackPanel>
       </ScrollViewer>

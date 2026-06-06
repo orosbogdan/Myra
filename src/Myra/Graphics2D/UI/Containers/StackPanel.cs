@@ -90,7 +90,7 @@ namespace Myra.Graphics2D.UI
 			ChildrenLayout = _layout;
 			GridLinesColor = Color.White;
 
-			_proportions.CollectionChanged += (s, e) => InvalidateChildren();
+			_proportions.CollectionChanged += (s, e) => InvalidateProportions();
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The size of the cell.</returns>
 		public int GetCellSize(int index) => _layout.GetCellSize(index);
 
-		private void InvalidateChildren()
+		private void InvalidateProportions()
 		{
 			_childrenDirty = true;
 		}
@@ -193,7 +193,7 @@ namespace Myra.Graphics2D.UI
 			if (propertyInfo.Id == ProportionTypeProperty.Id ||
 				propertyInfo.Id == ProportionValueProperty.Id)
 			{
-				InvalidateChildren();
+				InvalidateProportions();
 			}
 		}
 

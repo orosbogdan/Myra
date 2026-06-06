@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Xml.Linq;
-using System.Collections;
 using System.ComponentModel;
 using Myra.MML;
 using Myra.Graphics2D.TextureAtlases;
@@ -512,7 +511,7 @@ namespace Myra.Graphics2D.UI.Styles
 			T result = null;
 			if (!styles.TryGetValue(DefaultStyleName, out result))
 			{
-				throw new Exception("Stylesheet doesnt define default style for " + typeof(T).Name + ".");
+				return null;
 			}
 
 			return result;
@@ -520,7 +519,14 @@ namespace Myra.Graphics2D.UI.Styles
 
 		private static void SetDefaultStyle<T>(Dictionary<string, T> styles, T value) where T : WidgetStyle
 		{
-			styles[DefaultStyleName] = value;
+			if (value == null)
+			{
+				styles.Remove(DefaultStyleName);
+			}
+			else
+			{
+				styles[DefaultStyleName] = value;
+			}
 		}
 
 		/// <summary>

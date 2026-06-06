@@ -28,6 +28,25 @@ namespace MyraPad.UI
 		public FontEditorDialog()
 		{
 			BuildUI();
+
+			_buttomSetFromStylesheet.Click += _buttomSetFromStylesheet_Click;
+		}
+
+		private void _buttomSetFromStylesheet_Click(object sender, MyraEventArgs e)
+		{
+			var dlg = new ChooseFontDialog();
+
+			dlg.Closed += (s, a) =>
+			{
+				if (!dlg.Result)
+				{
+					return;
+				}
+
+				Font = dlg.Font.Font;
+			};
+
+			dlg.ShowModal(Desktop);
 		}
 	}
 }

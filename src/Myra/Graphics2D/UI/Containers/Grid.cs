@@ -477,6 +477,17 @@ namespace Myra.Graphics2D.UI
 			return RowsProportions[row];
 		}
 
+		/// <summary>
+		/// Invalidates the child layout and clears grid-specific state.
+		/// </summary>
+		protected override void InvalidateChildren()
+		{
+			base.InvalidateChildren();
+
+			HoverRowIndex = null;
+			SelectedRowIndex = null;
+		}
+
 		private void RenderSelection(RenderContext context)
 		{
 			var bounds = ActualBounds;
