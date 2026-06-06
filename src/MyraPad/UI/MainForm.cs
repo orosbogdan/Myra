@@ -908,6 +908,15 @@ namespace MyraPad.UI
 			if (asImage != null)
 			{
 				image.Renderable = asImage;
+
+				if (record.Type != typeof(IBrush))
+				{
+					// It's image; keep aspect ratio
+					image.HorizontalAlignment = HorizontalAlignment.Center;
+
+					var aspectRatio = (float)asImage.Size.X / asImage.Size.Y;
+					image.Width = (int)(aspectRatio * image.Height);
+				}
 			}
 			else
 			{
