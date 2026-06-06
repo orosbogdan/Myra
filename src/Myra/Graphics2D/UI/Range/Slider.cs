@@ -266,7 +266,7 @@ namespace Myra.Graphics2D.UI
 				if (sliderStyle.KnobStyle.ImageStyle != null)
 				{
 					var image = (Image)ImageButton.Content;
-					image.ApplyPressableImageStyle(sliderStyle.KnobStyle.ImageStyle);
+					image.ApplyImageStyle(sliderStyle.KnobStyle.ImageStyle);
 				}
 			}
 		}

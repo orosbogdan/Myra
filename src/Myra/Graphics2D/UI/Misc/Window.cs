@@ -319,7 +319,7 @@ namespace Myra.Graphics2D.UI
 				if (windowStyle.CloseButtonStyle.ImageStyle != null)
 				{
 					var image = (Image)CloseButton.Content;
-					image.ApplyPressableImageStyle(windowStyle.CloseButtonStyle.ImageStyle);
+					image.ApplyImageStyle(windowStyle.CloseButtonStyle.ImageStyle);
 				}
 			}
 		}

@@ -216,7 +216,7 @@ namespace Myra.Graphics2D.UI
 			var checkButtonStyle = (CheckButtonStyle)style;
 			if (checkButtonStyle.ImageStyle != null)
 			{
-				_check.ApplyPressableImageStyle(checkButtonStyle.ImageStyle);
+				_check.ApplyImageStyle(checkButtonStyle.ImageStyle);
 
 				UncheckedImage = checkButtonStyle.ImageStyle.Image;
 				CheckedImage = checkButtonStyle.ImageStyle.PressedImage;

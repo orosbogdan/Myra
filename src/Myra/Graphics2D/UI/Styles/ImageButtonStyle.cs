@@ -8,7 +8,7 @@
 		/// <summary>
 		/// Gets or sets the style applied to the button's image display.
 		/// </summary>
-		public PressableImageStyle ImageStyle { get; set; }
+		public ImageStyle ImageStyle { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageButtonStyle"/> class.
@@ -23,7 +23,7 @@
 		/// <param name="style">The source image button style to copy from.</param>
 		public ImageButtonStyle(ImageButtonStyle style): base(style)
 		{
-			ImageStyle = style.ImageStyle != null ? new PressableImageStyle(style.ImageStyle) : null;
+			ImageStyle = style.ImageStyle != null ? new ImageStyle(style.ImageStyle) : null;
 		}
 
 		/// <summary>

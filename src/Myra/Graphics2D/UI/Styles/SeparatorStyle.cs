@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Style class that defines the visual appearance of separator widgets.
 	/// </summary>
-	public class SeparatorStyle : PressableImageStyle
+	public class SeparatorStyle : ImageStyle
 	{
 		/// <summary>
 		/// Gets or sets the thickness of the separator line in pixels.

@@ -237,7 +237,7 @@ namespace Myra.Graphics2D.UI
 		{
 			base.ApplyStyle(style);
 
-			var imageStyle = (PressableImageStyle)style;
+			var imageStyle = (ImageStyle)style;
 			Renderable = imageStyle.Image;
 			OverRenderable = imageStyle.OverImage;
 			PressedRenderable = imageStyle.PressedImage;
@@ -247,7 +247,7 @@ namespace Myra.Graphics2D.UI
 		/// Applies the specified pressable image style to this image.
 		/// </summary>
 		/// <param name="style">The pressable image style to apply.</param>
-		public void ApplyPressableImageStyle(PressableImageStyle style) => ApplyStyle(style);
+		public void ApplyImageStyle(ImageStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Copies all properties from another widget to this image.

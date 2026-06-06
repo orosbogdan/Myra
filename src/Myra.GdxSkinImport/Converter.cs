@@ -183,7 +183,7 @@ public class Converter
 
 		if (data.TryGetValue("checkboxOff", out var offObj))
 		{
-			var imageStyle = new PressableImageStyle();
+			var imageStyle = new ImageStyle();
 			imageStyle.Image = GetDrawable(offObj.ToString());
 
 			style.ImageStyle = imageStyle;
@@ -192,7 +192,7 @@ public class Converter
 		if (data.TryGetValue("checkboxOn", out var onObj))
 		{
 			if (style.ImageStyle == null)
-				style.ImageStyle = new PressableImageStyle();
+				style.ImageStyle = new ImageStyle();
 			style.ImageStyle.PressedImage = GetDrawable(onObj.ToString());
 		}
 
@@ -243,7 +243,7 @@ public class Converter
 		if (data.TryGetValue("knob", out var knobObj))
 		{
 			var knobButtonStyle = new ImageButtonStyle();
-			var imageStyle = new PressableImageStyle();
+			var imageStyle = new ImageStyle();
 			imageStyle.Image = GetDrawable(knobObj.ToString());
 			knobButtonStyle.ImageStyle = imageStyle;
 			style.KnobStyle = knobButtonStyle;
@@ -281,7 +281,7 @@ public class Converter
 		if (data.TryGetValue("closeButton", out var closeButtonObj))
 		{
 			var closeButtonStyle = new ImageButtonStyle();
-			var imageStyle = new PressableImageStyle();
+			var imageStyle = new ImageStyle();
 			imageStyle.Image = GetDrawable(closeButtonObj.ToString());
 			closeButtonStyle.ImageStyle = imageStyle;
 			style.CloseButtonStyle = closeButtonStyle;

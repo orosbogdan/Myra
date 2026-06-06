@@ -544,7 +544,7 @@ namespace Myra.Graphics2D.UI
 				{
 					if (MenuStyle.ImageStyle != null)
 					{
-						menuItem.ImageWidget.ApplyPressableImageStyle(MenuStyle.ImageStyle);
+						menuItem.ImageWidget.ApplyImageStyle(MenuStyle.ImageStyle);
 					}
 					menuItem.Label.ApplyLabelStyle(MenuStyle.LabelStyle);
 					if (MenuStyle.ShortcutStyle != null)

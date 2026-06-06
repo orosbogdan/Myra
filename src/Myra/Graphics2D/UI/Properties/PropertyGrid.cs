@@ -106,7 +106,7 @@ namespace Myra.Graphics2D.UI.Properties
 				var imageStyle = parent.PropertyGridStyle.MarkStyle.ImageStyle;
 				if (imageStyle != null)
 				{
-					markImage.ApplyPressableImageStyle(imageStyle);
+					markImage.ApplyImageStyle(imageStyle);
 				}
 
 				_mark = new ToggleButton(null)

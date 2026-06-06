@@ -321,7 +321,7 @@ namespace Myra.Graphics2D.UI
 					if (style.CloseButtonStyle.ImageStyle != null)
 					{
 						var closeImage = (Image)closeButton.Content;
-						closeImage.ApplyPressableImageStyle(style.CloseButtonStyle.ImageStyle);
+						closeImage.ApplyImageStyle(style.CloseButtonStyle.ImageStyle);
 					}
 				}
 

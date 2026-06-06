@@ -209,7 +209,7 @@ namespace Myra.Graphics2D.UI
 			if (style.ImageStyle != null)
 			{
 				var image = (Image)Content;
-				image.ApplyPressableImageStyle(style.ImageStyle);
+				image.ApplyImageStyle(style.ImageStyle);
 			}
 		}
 

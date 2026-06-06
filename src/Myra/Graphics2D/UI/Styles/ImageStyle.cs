@@ -16,6 +16,11 @@
 		public IImage OverImage { get; set; }
 
 		/// <summary>
+		/// Gets or sets the image displayed when the widget is pressed.
+		/// </summary>
+		public IImage PressedImage { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ImageStyle"/> class.
 		/// </summary>
 		public ImageStyle()
@@ -30,6 +35,7 @@
 		{
 			Image = style.Image;
 			OverImage = style.OverImage;
+			PressedImage = style.PressedImage;
 		}
 
 		/// <summary>
