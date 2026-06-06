@@ -174,6 +174,9 @@ namespace Myra.Graphics2D.UI
 		[DefaultValue(TextHorizontalAlignment.Left)]
 		public TextHorizontalAlignment TextAlign { get; set; }
 
+		/// <summary>
+		/// Gets or sets the text color in the label's normal state.
+		/// </summary>
 		[Category("Appearance")]
 		public Color TextColor
 		{
@@ -181,6 +184,9 @@ namespace Myra.Graphics2D.UI
 			set => _colors[(int)WidgetVisualState.Normal] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the text color when the mouse is over the label.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? OverTextColor
 		{
@@ -188,6 +194,9 @@ namespace Myra.Graphics2D.UI
 			set => _colors[(int)WidgetVisualState.Over] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the text color when the label is disabled.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? DisabledTextColor
 		{
@@ -195,6 +204,9 @@ namespace Myra.Graphics2D.UI
 			set => _colors[(int)WidgetVisualState.Disabled] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the text color when the label has focus.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? FocusedTextColor
 		{
@@ -202,6 +214,9 @@ namespace Myra.Graphics2D.UI
 			set => _colors[(int)WidgetVisualState.Focused] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the text color when the label is pressed.
+		/// </summary>
 		[Category("Appearance")]
 		public Color? PressedTextColor
 		{

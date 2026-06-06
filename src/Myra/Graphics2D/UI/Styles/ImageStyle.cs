@@ -10,6 +10,9 @@
 		/// </summary>
 		public IImage Image { get; set; }
 
+		/// <summary>
+		/// Gets or sets the image displayed when the widget is disabled.
+		/// </summary>
 		public IImage DisabledImage { get; set; }
 
 		/// <summary>
@@ -17,8 +20,14 @@
 		/// </summary>
 		public IImage OverImage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the image displayed when the widget has focus.
+		/// </summary>
 		public IImage FocusedImage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the image displayed when the widget is pressed.
+		/// </summary>
 		public IImage PressedImage { get; set; }
 
 		/// <summary>

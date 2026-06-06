@@ -714,6 +714,9 @@ namespace Myra.Graphics2D.UI
 			set => _backgrounds[(int)WidgetVisualState.Focused] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's background when it is pressed.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush PressedBackground
 		{
@@ -721,6 +724,9 @@ namespace Myra.Graphics2D.UI
 			set => _backgrounds[(int)WidgetVisualState.Pressed] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border in its normal state.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush Border
 		{
@@ -728,6 +734,9 @@ namespace Myra.Graphics2D.UI
 			set => _borders[(int)WidgetVisualState.Normal] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when the mouse is over it.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush OverBorder
 		{
@@ -735,6 +744,9 @@ namespace Myra.Graphics2D.UI
 			set => _borders[(int)WidgetVisualState.Over] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when it is disabled.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush DisabledBorder
 		{
@@ -742,6 +754,9 @@ namespace Myra.Graphics2D.UI
 			set => _borders[(int)WidgetVisualState.Disabled] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when it has focus.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush FocusedBorder
 		{
@@ -749,6 +764,9 @@ namespace Myra.Graphics2D.UI
 			set => _borders[(int)WidgetVisualState.Focused] = value;
 		}
 
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when it is pressed.
+		/// </summary>
 		[Category("Appearance")]
 		public IBrush PressedBorder
 		{
@@ -910,10 +928,19 @@ namespace Myra.Graphics2D.UI
 		[XmlIgnore]
 		public Action<RenderContext> AfterRender;
 
+		/// <summary>
+		/// Gets a value indicating whether the over background should be used for the widget's current state.
+		/// </summary>
 		protected virtual bool UseOverBackground => IsMouseInside;
 
+		/// <summary>
+		/// Occurs when the widget's pressed state changes.
+		/// </summary>
 		public event MyraEventHandler PressedChanged;
 
+		/// <summary>
+		/// Occurs when the widget's pressed state is being changed by user interaction, before the change is committed.
+		/// </summary>
 		public event MyraEventHandler<ValueChangingEventArgs<bool>> PressedChangingByUser;
 
 		/// <summary>
@@ -928,6 +955,12 @@ namespace Myra.Graphics2D.UI
 			Children.CollectionChanged += ChildrenOnCollectionChanged;
 		}
 
+		/// <summary>
+		/// Gets the current visual element based on the widget's state, selecting from the provided array of visual values.
+		/// </summary>
+		/// <typeparam name="T">The type of visual element.</typeparam>
+		/// <param name="values">Array of visual values indexed by WidgetVisualState.</param>
+		/// <returns>The current visual element appropriate for the widget's current state.</returns>
 		protected T GetCurrentVisual<T>(T[] values)
 		{
 			var result = values[(int)WidgetVisualState.Normal];
@@ -972,8 +1005,16 @@ namespace Myra.Graphics2D.UI
 			return result;
 		}
 
+		/// <summary>
+		/// Gets the brush to use for the widget's background based on its current state.
+		/// </summary>
+		/// <returns>The current background brush appropriate for the widget's state.</returns>
 		public IBrush GetCurrentBackground() => GetCurrentVisual(_backgrounds);
 
+		/// <summary>
+		/// Gets the brush to use for the widget's border based on its current state.
+		/// </summary>
+		/// <returns>The current border brush appropriate for the widget's state.</returns>
 		public IBrush GetCurrentBorder() => GetCurrentVisual(_borders);
 
 		/// <summary>
@@ -1756,11 +1797,18 @@ namespace Myra.Graphics2D.UI
 			_startPos = null;
 		}
 
+		/// <summary>
+		/// Raises the PressedChanged event.
+		/// </summary>
 		public virtual void OnPressedChanged()
 		{
 			PressedChanged.Invoke(this, InputEventType.PressedChanged);
 		}
 
+		/// <summary>
+		/// Sets the IsPressed state as a result of user interaction, raising the PressedChangingByUser event first.
+		/// </summary>
+		/// <param name="value">The new pressed state value.</param>
 		protected void SetIsPressedByUser(bool value)
 		{
 			if (value != IsPressed && PressedChangingByUser != null)
