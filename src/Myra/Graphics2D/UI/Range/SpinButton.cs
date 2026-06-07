@@ -108,21 +108,6 @@ namespace Myra.Graphics2D.UI
 
 			set
 			{
-				if (value == null && !Nullable)
-				{
-					throw new Exception("value can't be null when Nullable is false");
-				}
-
-				if (value.HasValue && Minimum.HasValue && value.Value < Minimum.Value)
-				{
-					throw new Exception("Value can't be lower than Minimum");
-				}
-
-				if (value.HasValue && Maximum.HasValue && value.Value > Maximum.Value)
-				{
-					throw new Exception("Value can't be higher than Maximum");
-				}
-
 				if (FixedNumberSize)
 				{
 					string MajorString = "";

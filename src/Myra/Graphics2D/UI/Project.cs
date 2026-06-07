@@ -457,7 +457,19 @@ namespace Myra.Graphics2D.UI
 					}
 
 					// Create widget with style name parameter
-					return (Widget)Activator.CreateInstance(type, stylesheet, styleName);
+					try
+					{
+						return (Widget)Activator.CreateInstance(type, stylesheet, styleName);
+					}
+					catch (TargetInvocationException ex)
+					{
+						if (ex.InnerException != null)
+						{
+							throw ex.InnerException;
+						}
+
+						throw ex;
+					}
 				}
 			}
 

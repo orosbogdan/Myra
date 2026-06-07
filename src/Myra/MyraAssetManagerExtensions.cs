@@ -62,6 +62,27 @@ namespace AssetManagementBase
 			return Project.LoadFromXml(data, manager);
 		};
 
+		internal static bool TryGetParameter(ref string assetName, out string parameter)
+		{
+			parameter = null;
+			var colonPos = assetName.IndexOf(StylesheetFont.Separator);
+			if (colonPos != -1 &&
+				// This check is required to skip Windows full file paths
+				(colonPos >= assetName.Length - 1 || assetName[colonPos + 1] != '\\'))
+			{
+				// First part is texture region atlas name
+				// Second part is texture region name
+				var parts = assetName.Split(StylesheetFont.Separator);
+
+				assetName = parts[0].Trim();
+				parameter = parts[1].Trim();
+
+				return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Loads a texture region atlas from an XML asset file.
 		/// </summary>
@@ -87,17 +108,11 @@ namespace AssetManagementBase
 		/// <returns>The loaded texture region.</returns>
 		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			var colonPos = assetName.IndexOf(':');
-			if (colonPos != -1 &&
-				// This check is required to skip Windows full file paths
-				(colonPos >= assetName.Length - 1 || assetName[colonPos + 1] != '\\'))
+			string parameter;
+			if (TryGetParameter(ref assetName, out parameter))
 			{
-				// First part is texture region atlas name
-				// Second part is texture region name
-				var parts = assetName.Split(':');
-
-				var textureRegionAtlas = assetManager.LoadTextureRegionAtlas(parts[0]);
-				return textureRegionAtlas[parts[1]];
+				var textureRegionAtlas = assetManager.LoadTextureRegionAtlas(assetName);
+				return textureRegionAtlas[parameter];
 			}
 
 			if (stylesheet != null && !assetName.Contains("."))
@@ -176,7 +191,7 @@ namespace AssetManagementBase
 		/// <returns>The loaded brush, either a SolidBrush for colors or an image-based brush.</returns>
 		public static IBrush LoadBrush(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			if (!assetName.Contains(".") && assetName.IndexOf(TintedRegion.Separator) == -1 && !assetName.Contains(":"))
+			if (!assetName.Contains(".") && assetName.IndexOf(TintedRegion.Separator) == -1 && assetName.IndexOf(StylesheetFont.Separator) == -1)
 			{
 				// It's either a default stylesheet texture atlas region or color name
 				if (stylesheet == null || !stylesheet.Atlas.Regions.TryGetValue(assetName, out var region))
@@ -220,15 +235,47 @@ namespace AssetManagementBase
 		/// <returns>The loaded sprite font.</returns>
 		public static SpriteFontBase LoadFont(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
+			int? fontSize = null;
+			string parameter;
+
+			var originalAssetName = assetName;
+			if (TryGetParameter(ref assetName, out parameter))
+			{
+				int fs;
+				if (!int.TryParse(parameter, out fs) || fs <= 0)
+				{
+					throw new Exception($"Invalid font size {fontSize}.");
+				}
+
+				fontSize = fs;
+			}
+
 			if (stylesheet != null && !assetName.Contains("."))
 			{
 				// If there's no extension, assume it's a current stylesheet font
 				if (!stylesheet.Fonts.TryGetValue(assetName, out var font))
 				{
-					throw new Exception($"Font '{assetName}' not found in current stylesheet");
+					throw new Exception($"Font '{assetName}' not found in current stylesheet.");
 				}
 
-				return font.Font;
+				var result = font.Font;
+
+				if (fontSize != null)
+				{
+					var asDynamicFont = result as DynamicSpriteFont;
+					if (asDynamicFont != null)
+					{
+						// Custom font size
+						result = asDynamicFont.FontSystem.GetFont(fontSize.Value);
+						result.Name = originalAssetName;
+					}
+					else
+					{
+						throw new Exception($"Font '{assetName}' size can't be modified.");
+					}
+				}
+
+				return result;
 			}
 
 			if (assetName.Contains(".fnt"))
@@ -237,25 +284,13 @@ namespace AssetManagementBase
 			}
 			else if (assetName.Contains(".ttf") || assetName.Contains(".otf"))
 			{
-
-				var parts = assetName.Split(StylesheetFont.Separator);
-				if (parts.Length < 2)
+				if (fontSize == null)
 				{
-					throw new Exception("Missing font size");
+					throw new Exception("Missing font size.");
 				}
-
-				var fontSize = int.Parse(parts[1].Trim());
-				if (fontSize <= 0)
-				{
-					throw new ArgumentOutOfRangeException($"Invalid font size {fontSize}");
-				}
-
-				var fontName = parts[0].Trim();
-				var fontSystem = assetManager.LoadFontSystem(fontName);
-
-				var result = fontSystem.GetFont(fontSize);
-
-				result.Name = $"{fontName}:{fontSize}";
+				var fontSystem = assetManager.LoadFontSystem(assetName);
+				var result = fontSystem.GetFont(fontSize.Value);
+				result.Name = $"{assetName}{StylesheetFont.Separator}{fontSize}";
 
 				return result;
 			}

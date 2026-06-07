@@ -50,6 +50,7 @@ namespace MyraPad
 				{
 					_projectXmls.TryDequeue(out projectXml);
 				}
+
 				if (!string.IsNullOrEmpty(projectXml))
 				{
 					try
@@ -63,6 +64,9 @@ namespace MyraPad
 						Studio.MainForm.QueueClearExplorer();
 						Studio.MainForm.QueueSetStatusText(ex.Message);
 					}
+
+					// Skip object refresh if we reloaded the whole project
+					_objectXmls.Clear();
 				}
 
 				var objectXml = string.Empty;

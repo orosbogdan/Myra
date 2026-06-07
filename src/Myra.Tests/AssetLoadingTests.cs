@@ -248,7 +248,7 @@ namespace Myra.Tests
 		{
 			var assetManager = CreateAssetManager();
 
-			var ex = Assert.Throws<FormatException>(() =>
+			var ex = Assert.Throws<Exception>(() =>
 				assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf:notanumber"));
 
 			Assert.NotNull(ex);
@@ -260,7 +260,7 @@ namespace Myra.Tests
 			var assetManager = CreateAssetManager();
 
 			// Negative size is invalid and throws ArgumentOutOfRangeException
-			var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
+			var ex = Assert.Throws<Exception>(() =>
 				assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf:-32"));
 
 			Assert.NotNull(ex);
@@ -302,6 +302,41 @@ namespace Myra.Tests
 			Assert.Equal("default-font", defaultFont.Id);
 			Assert.Equal("Inter-Regular.ttf", defaultFont.File);
 			Assert.Equal(20, defaultFont.Size);
+		}
+
+		[Fact]
+		public void LoadStylesheet_DefaultFontWithSize()
+		{
+			var assetManager = CreateAssetManager();
+
+			var stylesheet = assetManager.LoadStylesheet("Stylesheets/Default/default_ui_skin.xmms");
+			var defaultFont = assetManager.LoadFont("default-font:36", stylesheet);
+
+			Assert.NotNull(defaultFont);
+			Assert.Equal("default-font:36", defaultFont.Name);
+			Assert.Equal(36, (int)Math.Round(defaultFont.FontSize));
+		}
+
+		[Fact]
+		public void LoadStylesheet_DefaultFontNotExistant()
+		{
+			var assetManager = CreateAssetManager();
+
+			var stylesheet = assetManager.LoadStylesheet("Stylesheets/Default/default_ui_skin.xmms");
+			var ex = Assert.Throws<Exception>(() => assetManager.LoadFont("default-font2", stylesheet));
+
+			Assert.NotNull(ex);
+		}
+
+		[Fact]
+		public void LoadStylesheet_FontSizeCantBeModified()
+		{
+			var assetManager = CreateAssetManager();
+
+			var stylesheet = assetManager.LoadStylesheet("Stylesheets/Commodore64/ui_stylesheet.xmms");
+			var ex = Assert.Throws<Exception>(() => assetManager.LoadFont("commodore-64:32", stylesheet));
+
+			Assert.NotNull(ex);
 		}
 
 		[Fact]

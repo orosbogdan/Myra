@@ -61,7 +61,19 @@ namespace Myra.MML
 			{
 				if (Property != null)
 				{
-					Property.SetValue(obj, value);
+					try
+					{
+						Property.SetValue(obj, value);
+					}
+					catch (TargetInvocationException ex)
+					{
+						if (ex.InnerException != null)
+						{
+							throw ex.InnerException;
+						}
+
+						throw ex;
+					}
 				}
 				else if (AttachedProperty != null && obj is BaseObject)
 				{
