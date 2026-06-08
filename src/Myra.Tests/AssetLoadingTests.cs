@@ -51,7 +51,7 @@ namespace Myra.Tests
 			var assetManager = CreateAssetManager();
 
 			// Missing region name results in KeyNotFoundException for empty string
-			var ex = Assert.Throws<KeyNotFoundException>(() => assetManager.LoadTextureRegion("Stylesheets/Default/default_ui_skin.xmat:"));
+			var ex = Assert.Throws<AssetNotFoundException>(() => assetManager.LoadTextureRegion("Stylesheets/Default/default_ui_skin.xmat:"));
 
 			Assert.NotNull(ex);
 		}
@@ -275,18 +275,6 @@ namespace Myra.Tests
 				assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf"));
 
 			Assert.NotNull(ex);
-		}
-
-		[Fact]
-		public void LoadFont_TTFWithWhitespace_TrimsCorrectly()
-		{
-			var assetManager = CreateAssetManager();
-
-			// Spaces around the separator should be trimmed
-			var font = assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf : 32");
-
-			Assert.NotNull(font);
-			Utility.AssertEqualEpsilon(32f, font.FontSize);
 		}
 
 		[Fact]

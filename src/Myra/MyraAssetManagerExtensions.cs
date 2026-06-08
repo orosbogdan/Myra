@@ -65,19 +65,16 @@ namespace AssetManagementBase
 		internal static bool TryGetParameter(ref string assetName, out string parameter)
 		{
 			parameter = null;
-			var colonPos = assetName.IndexOf(StylesheetFont.Separator);
-			if (colonPos != -1 &&
-				// This check is required to skip Windows full file paths
-				(colonPos >= assetName.Length - 1 || assetName[colonPos + 1] != '\\'))
+
+			for (var i = 0; i < assetName.Length - 1; ++i)
 			{
-				// First part is texture region atlas name
-				// Second part is texture region name
-				var parts = assetName.Split(StylesheetFont.Separator);
-
-				assetName = parts[0].Trim();
-				parameter = parts[1].Trim();
-
-				return true;
+				if (assetName[i] == StylesheetFont.Separator && char.IsLetterOrDigit(assetName[i + 1]))
+				{
+					// Found
+					parameter = assetName.Substring(i + 1).Trim();
+					assetName = assetName.Substring(0, i).Trim();
+					return true;
+				}
 			}
 
 			return false;

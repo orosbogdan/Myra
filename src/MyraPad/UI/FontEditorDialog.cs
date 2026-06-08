@@ -1,12 +1,18 @@
 using AssetManagementBase;
 using FontStashSharp;
+using Myra.Graphics2D.UI.File;
 using Myra.Graphics2D.UI.Styles;
+using Myra.Utility;
 using System;
+using System.IO;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MyraPad.UI
 {
 	public partial class FontEditorDialog
 	{
+		private const int DefaultTTFFontSize = 32;
+
 		private SpriteFontBase _font;
 
 		public SpriteFontBase Font
@@ -48,8 +54,9 @@ namespace MyraPad.UI
 		{
 			BuildUI();
 
-			_buttomSetFromStylesheet.Click += _buttomSetFromStylesheet_Click;
 			_spinSize.ValueChangedByUser += _spinSize_ValueChanged;
+			_buttomSetFromStylesheet.Click += _buttomSetFromStylesheet_Click;
+			_buttonSetFromFile.Click += _buttonSetFromFile_Click;
 
 			UpdateFont();
 		}
@@ -90,6 +97,48 @@ namespace MyraPad.UI
 		private void _spinSize_ValueChanged(object sender, ValueChangedEventArgs<float?> e)
 		{
 			_textValue.Text = Font.ToString();
+		}
+
+		private void _buttonSetFromFile_Click(object sender, MyraEventArgs e)
+		{
+			var dlg = new FileDialog(FileDialogMode.OpenFile)
+			{
+				Filter = "*.fnt|*.ttf"
+			};
+
+			dlg.Closed += (s, a) =>
+			{
+				if (!dlg.Result)
+				{
+					return;
+				}
+
+				var path = dlg.FilePath;
+				if (!string.IsNullOrEmpty(Studio.MainForm.FilePath))
+				{
+					path = PathUtils.TryToMakePathRelativeTo(path, Path.GetDirectoryName(Studio.MainForm.FilePath));
+				}
+
+				SpriteFontBase font;
+
+				if (path.EndsWith(".ttf", StringComparison.InvariantCultureIgnoreCase))
+				{
+					// TTF font
+					var fontSystem = Studio.AssetManager.LoadFontSystem(path);
+
+					font = fontSystem.GetFont(DefaultTTFFontSize);
+					font.Name = $"{path}{StylesheetFont.Separator}{DefaultTTFFontSize}";
+				} else
+				{
+					// FNT font
+					font = Studio.AssetManager.LoadFont(path);
+					font.Name = path;
+				}
+
+				Font = font;
+			};
+
+			dlg.ShowModal(Desktop);
 		}
 	}
 }
