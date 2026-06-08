@@ -185,10 +185,12 @@ namespace Myra.Tests
 		public void LoadFont_BMFontFile_LoadsSuccessfully()
 		{
 			var assetManager = CreateAssetManager();
+			var assetName = "arial64.fnt";
 
-			var font = assetManager.LoadFont("arial64.fnt");
+			var font = assetManager.LoadFont(assetName);
 
 			Assert.NotNull(font);
+			Assert.Equal(assetName, font.Name);
 			Utility.AssertEqualEpsilon(63f, font.FontSize);
 		}
 
@@ -196,11 +198,13 @@ namespace Myra.Tests
 		public void LoadFont_FromStylesheet_ReturnsCorrectFont()
 		{
 			var assetManager = CreateAssetManager();
+			var assetName = "default-font";
 
 			var stylesheet = assetManager.LoadStylesheet("Stylesheets/Default/default_ui_skin.xmms");
-			var font = assetManager.LoadFont("default-font", stylesheet);
+			var font = assetManager.LoadFont(assetName, stylesheet);
 
 			Assert.NotNull(font);
+			Assert.Equal(assetName, font.Name);
 			Utility.AssertEqualEpsilon(20f, font.FontSize);
 		}
 
@@ -221,10 +225,12 @@ namespace Myra.Tests
 		public void LoadFont_TTFFile_LoadsSuccessfully()
 		{
 			var assetManager = CreateAssetManager();
+			var assetName = "Stylesheets/Default/Inter-Regular.ttf:32";
 
-			var font = assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf:32");
+			var font = assetManager.LoadFont(assetName);
 
 			Assert.NotNull(font);
+			Assert.Equal(assetName, font.Name);
 			Utility.AssertEqualEpsilon(32f, font.FontSize);
 		}
 
@@ -232,12 +238,16 @@ namespace Myra.Tests
 		public void LoadFont_TTFMultipleSizes_ReturnsDifferentInstances()
 		{
 			var assetManager = CreateAssetManager();
+			var assetName16 = "Stylesheets/Default/Inter-Regular.ttf:16";
+			var assetName32 = "Stylesheets/Default/Inter-Regular.ttf:32";
 
-			var font16 = assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf:16");
-			var font32 = assetManager.LoadFont("Stylesheets/Default/Inter-Regular.ttf:32");
+			var font16 = assetManager.LoadFont(assetName16);
+			var font32 = assetManager.LoadFont(assetName32);
 
 			Assert.NotNull(font16);
 			Assert.NotNull(font32);
+			Assert.Equal(assetName16, font16.Name);
+			Assert.Equal(assetName32, font32.Name);
 			Assert.NotEqual(font16, font32);
 			Utility.AssertEqualEpsilon(16f, font16.FontSize);
 			Utility.AssertEqualEpsilon(32f, font32.FontSize);

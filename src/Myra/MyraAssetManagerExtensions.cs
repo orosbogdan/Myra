@@ -221,7 +221,7 @@ namespace AssetManagementBase
 		/// <param name="assetManager">The asset manager instance.</param>
 		/// <param name="assetName">The name of the font asset to load.</param>
 		/// <returns>The loaded static sprite font.</returns>
-		public static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_staticFontLoader, assetName);
+		private static StaticSpriteFont MyraLoadStaticSpriteFont(this AssetManager assetManager, string assetName) => assetManager.UseLoader(_staticFontLoader, assetName);
 
 		/// <summary>
 		/// Loads a font asset, supporting BMFont files, TrueType fonts, and stylesheet-defined fonts.
@@ -247,52 +247,64 @@ namespace AssetManagementBase
 				fontSize = fs;
 			}
 
-			if (stylesheet != null && !assetName.Contains("."))
+			SpriteFontBase result = null;
+
+			do
 			{
-				// If there's no extension, assume it's a current stylesheet font
-				if (!stylesheet.Fonts.TryGetValue(assetName, out var font))
+				if (stylesheet != null && !assetName.Contains("."))
 				{
-					throw new Exception($"Font '{assetName}' not found in current stylesheet.");
-				}
-
-				var result = font.Font;
-
-				if (fontSize != null)
-				{
-					var asDynamicFont = result as DynamicSpriteFont;
-					if (asDynamicFont != null)
+					// If there's no extension, assume it's a current stylesheet font
+					if (!stylesheet.Fonts.TryGetValue(assetName, out var font))
 					{
-						// Custom font size
-						result = asDynamicFont.FontSystem.GetFont(fontSize.Value);
-						result.Name = originalAssetName;
+						throw new Exception($"Font '{assetName}' not found in current stylesheet.");
 					}
-					else
+
+					result = font.Font;
+					if (fontSize != null)
 					{
-						throw new Exception($"Font '{assetName}' size can't be modified.");
+						var asDynamicFont = result as DynamicSpriteFont;
+						if (asDynamicFont != null)
+						{
+							// Custom font size
+							result = asDynamicFont.FontSystem.GetFont(fontSize.Value);
+						}
+						else
+						{
+							throw new Exception($"Font '{assetName}' size can't be modified.");
+						}
 					}
+
+					break;
 				}
 
-				return result;
-			}
-
-			if (assetName.Contains(".fnt"))
-			{
-				return assetManager.MyraLoadStaticSpriteFont(assetName);
-			}
-			else if (assetName.Contains(".ttf") || assetName.Contains(".otf"))
-			{
-				if (fontSize == null)
+				if (assetName.Contains(".fnt"))
 				{
-					throw new Exception("Missing font size.");
+					result = assetManager.MyraLoadStaticSpriteFont(assetName);
+					break;
 				}
-				var fontSystem = assetManager.LoadFontSystem(assetName);
-				var result = fontSystem.GetFont(fontSize.Value);
-				result.Name = $"{assetName}{StylesheetFont.Separator}{fontSize}";
 
-				return result;
+				if (assetName.Contains(".ttf") || assetName.Contains(".otf"))
+				{
+					if (fontSize == null)
+					{
+						throw new Exception("Missing font size.");
+					}
+
+					var fontSystem = assetManager.LoadFontSystem(assetName);
+					result = fontSystem.GetFont(fontSize.Value);
+					break;
+				}
+			}
+			while (false);
+
+			if (result == null)
+			{
+				throw new Exception(string.Format("Can't load font '{0}'", assetName));
 			}
 
-			throw new Exception(string.Format("Can't load font '{0}'", assetName));
+			result.Name = originalAssetName;
+
+			return result;
 		}
 
 		/// <summary>
