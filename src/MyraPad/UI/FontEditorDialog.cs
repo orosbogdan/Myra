@@ -32,7 +32,7 @@ namespace MyraPad.UI
 
 				var assetName = _font.Name;
 				string parameter;
-				MyraAssetManagerExtensions.TryGetParameter(ref assetName, out parameter);
+				StylesheetFont.TryGetParameter(ref assetName, out parameter);
 
 				var project = Studio.MainForm.Project;
 				return Studio.AssetManager.LoadFont($"{assetName}{StylesheetFont.Separator}{FontSize}", project.Stylesheet);

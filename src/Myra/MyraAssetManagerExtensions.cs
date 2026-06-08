@@ -62,24 +62,6 @@ namespace AssetManagementBase
 			return Project.LoadFromXml(data, manager);
 		};
 
-		internal static bool TryGetParameter(ref string assetName, out string parameter)
-		{
-			parameter = null;
-
-			for (var i = 0; i < assetName.Length - 1; ++i)
-			{
-				if (assetName[i] == StylesheetFont.Separator && char.IsLetterOrDigit(assetName[i + 1]))
-				{
-					// Found
-					parameter = assetName.Substring(i + 1).Trim();
-					assetName = assetName.Substring(0, i).Trim();
-					return true;
-				}
-			}
-
-			return false;
-		}
-
 		/// <summary>
 		/// Loads a texture region atlas from an XML asset file.
 		/// </summary>
@@ -105,11 +87,11 @@ namespace AssetManagementBase
 		/// <returns>The loaded texture region.</returns>
 		public static TextureRegion LoadTextureRegion(this AssetManager assetManager, string assetName, Stylesheet stylesheet)
 		{
-			string parameter;
-			if (TryGetParameter(ref assetName, out parameter))
+			string regionName;
+			if (TextureRegionAtlas.TryGetRegionName(ref assetName, out regionName))
 			{
 				var textureRegionAtlas = assetManager.LoadTextureRegionAtlas(assetName);
-				return textureRegionAtlas[parameter];
+				return textureRegionAtlas[regionName];
 			}
 
 			if (stylesheet != null && !assetName.Contains("."))
@@ -236,7 +218,7 @@ namespace AssetManagementBase
 			string parameter;
 
 			var originalAssetName = assetName;
-			if (TryGetParameter(ref assetName, out parameter))
+			if (StylesheetFont.TryGetParameter(ref assetName, out parameter))
 			{
 				int fs;
 				if (!int.TryParse(parameter, out fs) || fs <= 0)

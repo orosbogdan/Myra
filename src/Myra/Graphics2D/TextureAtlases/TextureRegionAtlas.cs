@@ -21,6 +21,11 @@ namespace Myra.Graphics2D.TextureAtlases
 	/// </summary>
 	public class TextureRegionAtlas
 	{
+		/// <summary>
+		/// The character used to separate atlas names from region names in atlas references.
+		/// </summary>
+		private const char Separator = ':';
+
 		private const string TextureAtlasName = "TextureAtlas";
 		private const string ImageName = "Image";
 		private const string TextureRegionName = "TextureRegion";
@@ -86,6 +91,30 @@ namespace Myra.Graphics2D.TextureAtlases
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Attempts to extract a texture region name from an asset name in the format "atlasName:regionName".
+		/// </summary>
+		/// <param name="assetName">The asset name to parse (e.g., "default_ui_skin.xmat:button"). Will be modified to contain only the atlas name.</param>
+		/// <param name="regionName">The extracted region name if found (e.g., "button"); otherwise null.</param>
+		/// <returns>True if a region name was found and extracted; otherwise false.</returns>
+		internal static bool TryGetRegionName(ref string assetName, out string regionName)
+		{
+			regionName = null;
+
+			for (var i = 0; i < assetName.Length - 1; ++i)
+			{
+				if (assetName[i] == Separator && char.IsLetterOrDigit(assetName[i + 1]))
+				{
+					// Found
+					regionName = assetName.Substring(i + 1).Trim();
+					assetName = assetName.Substring(0, i).Trim();
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>

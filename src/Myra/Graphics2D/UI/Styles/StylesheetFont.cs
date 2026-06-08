@@ -18,7 +18,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// The character used to separate font file names from size values in font keys.
 		/// </summary>
-		public const char Separator = ':';
+		internal const char Separator = ':';
 
 		/// <summary>
 		/// Gets or sets the identifier for this font.
@@ -99,6 +99,30 @@ namespace Myra.Graphics2D.UI.Styles
 			}
 
 			return File + Separator + Size;
+		}
+
+		/// <summary>
+		/// Attempts to extract a numeric parameter from an asset name containing a separator.
+		/// </summary>
+		/// <param name="assetName">The asset name to parse. Will be modified to remove the parameter.</param>
+		/// <param name="parameter">The extracted parameter if found; otherwise null.</param>
+		/// <returns>True if a numeric parameter was found and extracted; otherwise false.</returns>
+		internal static bool TryGetParameter(ref string assetName, out string parameter)
+		{
+			parameter = null;
+
+			for (var i = 0; i < assetName.Length - 1; ++i)
+			{
+				if (assetName[i] == Separator && char.IsDigit(assetName[i + 1]))
+				{
+					// Found
+					parameter = assetName.Substring(i + 1).Trim();
+					assetName = assetName.Substring(0, i).Trim();
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>

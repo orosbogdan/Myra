@@ -1,9 +1,7 @@
 using AssetManagementBase;
 using FontStashSharp.RichText;
-using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
-using Myra.Graphics2D.UI.Styles;
 using System;
 using System.Collections.Generic;
 using Xunit;
