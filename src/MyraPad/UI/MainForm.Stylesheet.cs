@@ -34,7 +34,6 @@ namespace MyraPad.UI
 			}
 
 			_treeViewStylesheet.RemoveAllSubNodes();
-
 			if (Project == null || Project.Stylesheet == null)
 			{
 				_stylesheetAtStyleTree = Project.Stylesheet;
@@ -87,11 +86,58 @@ namespace MyraPad.UI
 			}
 
 			_stylesheetAtStyleTree = Project.Stylesheet;
+			RefreshStyleExplorer();
+		}
+
+		private void AddStylesExplorerRecursive(ITreeViewNode rootNode, object style)
+		{
+			var newNode = rootNode.AddSubNode(new Label
+			{
+				Text = style.GetType().Name
+			});
+
+			newNode.Tag = style;
+			newNode.IsExpanded = true;
+
+			var allProperties = style.GetType().GetProperties();
+			foreach (var property in allProperties)
+			{
+				if (property.GetMethod == null ||
+					!property.GetMethod.IsPublic ||
+					property.GetMethod.IsStatic ||
+					!typeof(WidgetStyle).IsAssignableFrom(property.PropertyType))
+				{
+					continue;
+				}
+
+				AddStylesExplorerRecursive(newNode, property.GetValue(style));
+			}
+		}
+
+		private void RefreshStyleExplorer()
+		{
+			_treeViewStyleExplorer.RemoveAllSubNodes();
+			if (_treeViewStylesheet.SelectedNode == null)
+			{
+				return;
+			}
+
+			AddStylesExplorerRecursive(_treeViewStyleExplorer, _treeViewStylesheet.SelectedNode.Tag);
 		}
 
 		private void _treeViewStylesheet_SelectionChanged(object sender, MyraEventArgs e)
 		{
-			_propertyGrid.Object = _treeViewStylesheet.SelectedNode?.Tag;
+			RefreshStyleExplorer();
+
+			if (_treeViewStyleExplorer.SubNodesCount > 0)
+			{
+				_treeViewStyleExplorer.SelectedNode = _treeViewStyleExplorer.GetSubNode(0);
+			}
+		}
+
+		private void _treeViewStyleExplorer_SelectionChanged(object sender, MyraEventArgs e)
+		{
+			_propertyGrid.Object = _treeViewStyleExplorer.SelectedNode?.Tag;
 		}
 	}
 }

@@ -121,6 +121,7 @@ namespace MyraPad.UI
 		// Tree view widget for displaying the widget hierarchy in the explorer panel
 		private readonly TreeView _treeViewExplorer;
 		private readonly TreeView _treeViewStylesheet;
+		private readonly TreeView _treeViewStyleExplorer;
 		// Auto-complete context menu that appears while typing XML tags
 		private VerticalMenu _autoCompleteMenu = null;
 		// Flag to track if the last click in the explorer was a right-click (for context menu)
@@ -377,8 +378,16 @@ namespace MyraPad.UI
 			};
 
 			_treeViewStylesheet.SelectionChanged += _treeViewStylesheet_SelectionChanged;
-
 			_panelStyles.Content = _treeViewStylesheet;
+
+			_treeViewStyleExplorer = new TreeView
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch
+			};
+
+			_treeViewStyleExplorer.SelectionChanged += _treeViewStyleExplorer_SelectionChanged;
+			_panelStyleExplorer.Content = _treeViewStyleExplorer;
 
 			RichTextDefaults.FontResolver = p =>
 			{

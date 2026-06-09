@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of combo box widgets.
@@ -8,11 +10,13 @@
 		/// <summary>
 		/// Gets or sets the style applied to the combo box's dropdown list.
 		/// </summary>
+		[Browsable(false)]
 		public ListBoxStyle ListBoxStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the combo box's label.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle LabelStyle { get; set; }
 
 		/// <summary>

@@ -8,26 +8,17 @@
 		/// <summary>
 		/// Gets or sets the style applied to the spin button's up increment button.
 		/// </summary>
-		public ImageButtonStyle UpButtonStyle
-		{
-			get; set;
-		}
+		public ImageButtonStyle UpButtonStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the spin button's down decrement button.
 		/// </summary>
-		public ImageButtonStyle DownButtonStyle
-		{
-			get; set;
-		}
+		public ImageButtonStyle DownButtonStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the spin button's text input field.
 		/// </summary>
-		public TextBoxStyle TextBoxStyle
-		{
-			get; set;
-		}
+		public TextBoxStyle TextBoxStyle { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SpinButtonStyle"/> class.

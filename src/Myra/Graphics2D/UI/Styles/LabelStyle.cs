@@ -13,7 +13,7 @@ namespace Myra.Graphics2D.UI.Styles
 	/// <summary>
 	/// Style class that defines the visual appearance of label and text widgets.
 	/// </summary>
-	public class LabelStyle: WidgetStyle
+	public class LabelStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the color of the label's text.

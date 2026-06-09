@@ -35,8 +35,14 @@ namespace Myra.Graphics2D.UI
 		internal TreeStyle TreeStyle { get; set; }
 
 		/// <summary>
+		/// Gets the number of child nodes directly under this tree view.
+		/// </summary>
+		public int SubNodesCount => Children.Count;
+
+		/// <summary>
 		/// Gets the number of top-level child nodes.
 		/// </summary>
+		[Obsolete("Use SubNodesCount")]
 		public int ChildNodesCount => Children.Count;
 
 		/// <summary>

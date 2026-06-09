@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image-text button widgets (buttons with both icon and text).
@@ -8,6 +10,7 @@
 		/// <summary>
 		/// Gets or sets the style applied to the button's text label.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle LabelStyle { get; set; }
 
 		/// <summary>

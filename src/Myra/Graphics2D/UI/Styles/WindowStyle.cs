@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of window widgets.
@@ -8,11 +10,13 @@
 		/// <summary>
 		/// Gets or sets the style applied to the window's title bar text.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle TitleStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the window's close button.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle CloseButtonStyle { get; set; }
 
 		/// <summary>

@@ -1,18 +1,22 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of list box widgets.
 	/// </summary>
-	public class ListBoxStyle: WidgetStyle
+	public class ListBoxStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the style applied to list box items.
 		/// </summary>
+		[Browsable(false)]
 		public ButtonStyle ListItemStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to separator lines between list items.
 		/// </summary>
+		[Browsable(false)]
 		public SeparatorStyle SeparatorStyle { get; set; }
 
 		/// <summary>

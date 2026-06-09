@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Style class that defines the visual appearance of progress bar widgets.
 	/// </summary>
-	public class ProgressBarStyle: WidgetStyle
+	public class ProgressBarStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the brush used to fill the progress bar based on its current value.
@@ -21,7 +21,7 @@
 		/// Initializes a new instance of the <see cref="ProgressBarStyle"/> class by copying properties from another style.
 		/// </summary>
 		/// <param name="style">The source progress bar style to copy from.</param>
-		public ProgressBarStyle(ProgressBarStyle style): base(style)
+		public ProgressBarStyle(ProgressBarStyle style) : base(style)
 		{
 			Filler = style.Filler;
 		}

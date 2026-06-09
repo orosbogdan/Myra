@@ -6,6 +6,8 @@ using Stride.Core.Mathematics;
 using Color = FontStashSharp.FSColor;
 #endif
 
+using System.ComponentModel;
+
 namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
@@ -16,21 +18,25 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the style applied to menu item icons.
 		/// </summary>
+		[Browsable(false)]
 		public ImageStyle ImageStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu item text labels.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle LabelStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu item shortcut key text.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle ShortcutStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu separator lines.
 		/// </summary>
+		[Browsable(false)]
 		public SeparatorStyle SeparatorStyle { get; set; }
 
 		/// <summary>

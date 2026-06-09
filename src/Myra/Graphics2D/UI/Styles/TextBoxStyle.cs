@@ -13,7 +13,7 @@ namespace Myra.Graphics2D.UI.Styles
 	/// <summary>
 	/// Style class that defines the visual appearance of text box widgets.
 	/// </summary>
-	public class TextBoxStyle: WidgetStyle
+	public class TextBoxStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the color of the text box's text.

@@ -8,9 +8,6 @@
 		/// <summary>
 		/// Gets or sets the brush used to render the desktop background.
 		/// </summary>
-		public IBrush Background
-		{
-			get; set;
-		}
+		public IBrush Background { get; set; }
 	}
 }

@@ -1,13 +1,16 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of slider widgets.
 	/// </summary>
-	public class SliderStyle: WidgetStyle
+	public class SliderStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the style applied to the slider's draggable knob button.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle KnobStyle { get; set; }
 
 		/// <summary>

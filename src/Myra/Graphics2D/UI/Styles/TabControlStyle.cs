@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of tab control widgets.
@@ -8,11 +10,13 @@
 		/// <summary>
 		/// Gets or sets the style applied to individual tab header buttons.
 		/// </summary>
+		[Browsable(false)]
 		public ImageTextButtonStyle TabItemStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the tab content area.
 		/// </summary>
+		[Browsable(false)]
 		public WidgetStyle ContentStyle { get; set; }
 
 		/// <summary>
@@ -33,6 +37,7 @@
 		/// <summary>
 		/// Gets or sets the style applied to the close button on tab headers, if present.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle CloseButtonStyle { get; set; }
 
 		/// <summary>
