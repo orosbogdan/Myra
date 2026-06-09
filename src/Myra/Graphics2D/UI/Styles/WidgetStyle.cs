@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Base style class that defines common visual properties for widgets.
@@ -43,51 +45,61 @@
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background.
 		/// </summary>
+		[Category("Appearance/Background")]
 		public IBrush Background { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background when the mouse is over it.
 		/// </summary>
+		[Category("Appearance/Background")]
 		public IBrush OverBackground { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background when it is disabled.
 		/// </summary>
+		[Category("Appearance/Background")]
 		public IBrush DisabledBackground { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background when it has focus.
 		/// </summary>
+		[Category("Appearance/Background")]
 		public IBrush FocusedBackground { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background when it is pressed.
 		/// </summary>
+		[Category("Appearance/Background")]
 		public IBrush PressedBackground { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border.
 		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush Border { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when the mouse is over it.
 		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush OverBorder { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it is disabled.
 		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush DisabledBorder { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it has focus.
 		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush FocusedBorder { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it is pressed.
 		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush PressedBorder { get; set; }
 
 		/// <summary>

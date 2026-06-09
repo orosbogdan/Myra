@@ -281,7 +281,6 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the outer margin around the widget.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness Margin
 		{
 			get
@@ -305,7 +304,6 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the thickness of the border around the widget.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness BorderThickness
 		{
 			get
@@ -329,7 +327,6 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the inner padding inside the widget's borders.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness Padding
 		{
 			get
@@ -512,7 +509,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue("1, 1")]
-		[DesignerFolded]
 		public Vector2 Scale
 		{
 			get => _scale;
@@ -533,7 +529,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue("0.5, 0.5")]
-		[DesignerFolded]
 		public Vector2 TransformOrigin
 		{
 			get => _transformOrigin;
@@ -554,7 +549,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue(0.0f)]
-		[DesignerFolded]
 		public float Rotation
 		{
 			get => _rotation;
@@ -680,7 +674,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget in its normal state.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
 		public IBrush Background
 		{
 			get => _backgrounds[WidgetVisualStateNormal];
@@ -690,7 +684,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when the mouse is hovering over it.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
 		public IBrush OverBackground
 		{
 			get => _backgrounds[WidgetVisualStateOver];
@@ -700,7 +694,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when it is disabled.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
 		public IBrush DisabledBackground
 		{
 			get => _backgrounds[WidgetVisualStateDisabled];
@@ -710,7 +704,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when it has keyboard focus.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
 		public IBrush FocusedBackground
 		{
 			get => _backgrounds[WidgetVisualStateFocused];
@@ -720,7 +714,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's background when it is pressed.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
 		public IBrush PressedBackground
 		{
 			get => _backgrounds[WidgetVisualStatePressed];
@@ -730,7 +724,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border in its normal state.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush Border
 		{
 			get => _borders[WidgetVisualStateNormal];
@@ -740,7 +734,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when the mouse is over it.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush OverBorder
 		{
 			get => _borders[WidgetVisualStateOver];
@@ -750,7 +744,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it is disabled.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush DisabledBorder
 		{
 			get => _borders[WidgetVisualStateDisabled];
@@ -760,7 +754,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it has focus.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush FocusedBorder
 		{
 			get => _borders[WidgetVisualStateFocused];
@@ -770,7 +764,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used for the widget's border when it is pressed.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush PressedBorder
 		{
 			get => _borders[WidgetVisualStatePressed];

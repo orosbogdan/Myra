@@ -62,7 +62,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the renderable to display in the image widget's normal state.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Renderable")]
 		[StylePropertyPath("Image")]
 		public IImage Renderable
 		{
@@ -86,7 +86,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the renderable to display when the image widget is disabled.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Renderable")]
 		[StylePropertyPath("DisabledImage")]
 		public IImage DisabledRenderable
 		{
@@ -110,7 +110,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the renderable to display when the mouse is over the image widget.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Renderable")]
 		[StylePropertyPath("OverImage")]
 		public IImage OverRenderable
 		{
@@ -134,7 +134,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the renderable to display when the image widget has focus.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Renderable")]
 		[StylePropertyPath("FocusedImage")]
 		public IImage FocusedRenderable
 		{
@@ -158,7 +158,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the renderable to display when the image widget is pressed.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Renderable")]
 		[StylePropertyPath("PressedImage")]
 		public IImage PressedRenderable
 		{

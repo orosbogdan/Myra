@@ -48,6 +48,9 @@ namespace Myra.Graphics2D.UI
 			SupportsCommands = false
 		};
 
+		// Text color state array for different widget states
+		private readonly Color?[] _textColors = new Color?[WidgetVisualStateTotal];
+
 		// Cursor and selection state
 		private Point? _lastCursorPosition;
 		private int _cursorIndex;  // Zero-based position of cursor in text
@@ -195,22 +198,54 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets or sets the color of the text.
+		/// Gets or sets the color of the text in the text box's normal state.
 		/// </summary>
-		[Category("Appearance")]
-		public Color TextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color TextColor
+		{
+			get => _textColors[WidgetVisualStateNormal].Value;
+			set => _textColors[WidgetVisualStateNormal] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the color of the text when the text box is disabled.
 		/// </summary>
-		[Category("Appearance")]
-		public Color? DisabledTextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color? DisabledTextColor
+		{
+			get => _textColors[WidgetVisualStateDisabled];
+			set => _textColors[WidgetVisualStateDisabled] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the color of the text when the text box has focus.
 		/// </summary>
-		[Category("Appearance")]
-		public Color? FocusedTextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color? FocusedTextColor
+		{
+			get => _textColors[WidgetVisualStateFocused];
+			set => _textColors[WidgetVisualStateFocused] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text when the mouse is over the text box, or null to use the default.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? OverTextColor
+		{
+			get => _textColors[WidgetVisualStateOver];
+			set => _textColors[WidgetVisualStateOver] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text when the text box is pressed, or null to use the default.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? PressedTextColor
+		{
+			get => _textColors[WidgetVisualStatePressed];
+			set => _textColors[WidgetVisualStatePressed] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the image displayed as the text cursor.
@@ -1640,24 +1675,20 @@ namespace Myra.Graphics2D.UI
 			var bounds = ActualBounds;
 			RenderSelection(context);
 
-			// Determine text color based on state: hint/disabled/focused
-			var textColor = TextColor;
+			// Get text color based on current widget state
+			var nullableColor = GetCurrentVisual(_textColors);
+			if (nullableColor == null)
+			{
+				return;
+			}
+
+			var textColor = nullableColor.Value;
 			var oldOpacity = context.Opacity;
 
 			if (HintTextEnabled)
 			{
 				// Hint text is semi-transparent
 				context.Opacity *= 0.5f;
-			}
-			else if (!Enabled && DisabledTextColor != null)
-			{
-				// Use special color for disabled state
-				textColor = DisabledTextColor.Value;
-			}
-			else if (IsKeyboardFocused && FocusedTextColor != null)
-			{
-				// Use special color when focused
-				textColor = FocusedTextColor.Value;
 			}
 
 			// Align text within bounds based on TextVerticalAlignment
@@ -1795,6 +1826,8 @@ namespace Myra.Graphics2D.UI
 			TextColor = textBoxStyle.TextColor;
 			DisabledTextColor = textBoxStyle.DisabledTextColor;
 			FocusedTextColor = textBoxStyle.FocusedTextColor;
+			OverTextColor = textBoxStyle.OverTextColor;
+			PressedTextColor = textBoxStyle.PressedTextColor;
 
 			Cursor = textBoxStyle.Cursor;
 			Selection = textBoxStyle.Selection;
@@ -1848,6 +1881,8 @@ namespace Myra.Graphics2D.UI
 			TextColor = textBox.TextColor;
 			DisabledTextColor = textBox.DisabledTextColor;
 			FocusedTextColor = textBox.FocusedTextColor;
+			OverTextColor = textBox.OverTextColor;
+			PressedTextColor = textBox.PressedTextColor;
 			Cursor = textBox.Cursor;
 			Selection = textBox.Selection;
 			BlinkIntervalInMs = textBox.BlinkIntervalInMs;

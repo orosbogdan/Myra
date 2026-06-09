@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of image widgets.
@@ -8,26 +10,31 @@
 		/// <summary>
 		/// Gets or sets the image displayed by the image widget.
 		/// </summary>
+		[Category("Appearance/Image")]
 		public IImage Image { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image displayed when the widget is disabled.
 		/// </summary>
+		[Category("Appearance/Image")]
 		public IImage DisabledImage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image displayed when the mouse is over the widget, or null to use the default image.
 		/// </summary>
+		[Category("Appearance/Image")]
 		public IImage OverImage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image displayed when the widget has focus.
 		/// </summary>
+		[Category("Appearance/Image")]
 		public IImage FocusedImage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image displayed when the widget is pressed.
 		/// </summary>
+		[Category("Appearance/Image")]
 		public IImage PressedImage { get; set; }
 
 		/// <summary>

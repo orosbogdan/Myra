@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using System.ComponentModel;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -18,26 +19,31 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the color of the label's text.
 		/// </summary>
+		[Category("Appearance/TextColor")]
 		public Color TextColor { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the label's text when the widget is disabled, or null to use the default.
 		/// </summary>
+		[Category("Appearance/TextColor")]
 		public Color? DisabledTextColor { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the label's text when the widget has focus, or null to use the default.
 		/// </summary>
+		[Category("Appearance/TextColor")]
 		public Color? FocusedTextColor { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the label's text when the mouse is over the widget, or null to use the default.
 		/// </summary>
+		[Category("Appearance/TextColor")]
 		public Color? OverTextColor { get; set; }
 
 		/// <summary>
 		/// Gets or sets the color of the label's text when the widget is pressed, or null to use the default.
 		/// </summary>
+		[Category("Appearance/TextColor")]
 		public Color? PressedTextColor { get; set; }
 
 		/// <summary>

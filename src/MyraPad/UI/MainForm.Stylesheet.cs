@@ -1,5 +1,6 @@
 ﻿using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.Styles;
+using System;
 using System.Collections;
 
 namespace MyraPad.UI
@@ -110,7 +111,14 @@ namespace MyraPad.UI
 					continue;
 				}
 
-				AddStylesExplorerRecursive(newNode, property.GetValue(style));
+				var styleValue = property.GetValue(style);
+				if (styleValue == null)
+				{
+					styleValue = Activator.CreateInstance(property.PropertyType);
+					property.SetValue(style, styleValue);
+				}
+
+				AddStylesExplorerRecursive(newNode, styleValue);
 			}
 		}
 

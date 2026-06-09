@@ -177,7 +177,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the text color in the label's normal state.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color TextColor
 		{
 			get => _colors[WidgetVisualStateNormal].Value;
@@ -187,7 +187,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the text color when the mouse is over the label.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color? OverTextColor
 		{
 			get => _colors[WidgetVisualStateOver];
@@ -197,7 +197,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the text color when the label is disabled.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color? DisabledTextColor
 		{
 			get => _colors[WidgetVisualStateDisabled];
@@ -207,7 +207,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the text color when the label has focus.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color? FocusedTextColor
 		{
 			get => _colors[WidgetVisualStateFocused];
@@ -217,7 +217,7 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the text color when the label is pressed.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color? PressedTextColor
 		{
 			get => _colors[WidgetVisualStatePressed];
