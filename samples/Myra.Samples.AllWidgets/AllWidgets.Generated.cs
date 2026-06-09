@@ -8,17 +8,9 @@ using Myra.Graphics2D.UI.Properties;
 using FontStashSharp.RichText;
 using AssetManagementBase;
 
-#if STRIDE
-using Stride.Core.Mathematics;
-#elif PLATFORM_AGNOSTIC
 using System.Drawing;
 using System.Numerics;
 using Color = FontStashSharp.FSColor;
-#else
-// MonoGame/FNA
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-#endif
 
 namespace Myra.Samples.AllWidgets
 {

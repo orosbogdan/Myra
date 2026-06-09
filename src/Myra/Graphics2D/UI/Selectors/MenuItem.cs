@@ -49,9 +49,11 @@ namespace Myra.Graphics2D.UI
 
 		internal readonly Menu SubMenu = new VerticalMenu();
 
-		/// <summary>
-		/// Gets or sets the text displayed for this menu item. An ampersand (&amp;) marks a mnemonic character.
-		/// </summary>
+    public void Cleanup()
+    {
+       SubMenu.Cleanup();
+    }
+        
 		[DefaultValue(null)]
 		public string Text
 		{

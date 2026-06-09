@@ -167,11 +167,21 @@ namespace Myra.Graphics2D.UI
 				InternalChild.HoverIndexCanBeNull = value;
 			}
 		}
+ 
+    public void Cleanup()
+    {
 
-		/// <summary>
-		/// Gets or sets the desktop that contains this menu.
-		/// </summary>
-		public override Desktop Desktop
+        _layout.Child.CleanProportions();
+
+        Items.CollectionChanged -= ItemsOnCollectionChanged;
+        InternalChild.HoverIndexChanged -= OnHoverIndexChanged;
+        InternalChild.SelectedIndexChanged -= OnSelectedIndexChanged;
+        InternalChild.TouchUp -= InternalChild_TouchUp;
+
+        Items.Clear();
+
+    }
+    public override Desktop Desktop
 		{
 			get
 			{
