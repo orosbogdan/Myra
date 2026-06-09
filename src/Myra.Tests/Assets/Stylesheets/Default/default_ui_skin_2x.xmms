@@ -13,8 +13,8 @@
     <TextBoxStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Cursor="cursor" Selection="selection" Background="textfield" />
   </TextBoxStyles>
   <ButtonStyles>
-    <ButtonStyle PressedBackground="button-down" Background="button" OverBackground="button-over" />
-    <ButtonStyle PressedBackground="button-blue-down" Id="blue" Background="button-blue" OverBackground="button-blue-down" />
+    <ButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down" />
+    <ButtonStyle Id="blue" Background="button-blue" OverBackground="button-blue-down" PressedBackground="button-blue-down" />
   </ButtonStyles>
   <CheckBoxStyles>
     <CheckButtonStyle>
@@ -23,15 +23,15 @@
   </CheckBoxStyles>
   <RadioButtonStyles>
     <CheckButtonStyle>
-      <ImageStyle PressedImage="vis-radio-tick" Image="vis-radio-tick-disabled" />
+      <ImageStyle Image="vis-radio-tick-disabled" PressedImage="vis-radio-tick" />
     </CheckButtonStyle>
   </RadioButtonStyles>
   <SpinButtonStyles>
     <SpinButtonStyle Background="textfield">
-      <UpButtonStyle PressedBackground="button-down" Width="24" Height="24" Background="button" OverBackground="button-over">
+      <UpButtonStyle Width="24" Height="24" Background="button" OverBackground="button-over" PressedBackground="button-down">
         <ImageStyle Image="select-up" />
       </UpButtonStyle>
-      <DownButtonStyle PressedBackground="button-down" Width="24" Height="24" Background="button" OverBackground="button-over">
+      <DownButtonStyle Width="24" Height="24" Background="button" OverBackground="button-over" PressedBackground="button-down">
         <ImageStyle Image="select-down" />
       </DownButtonStyle>
       <TextBoxStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Cursor="cursor" Selection="selection" />
@@ -40,14 +40,14 @@
   <HorizontalSliderStyles>
     <SliderStyle Background="slider">
       <KnobStyle>
-        <ImageStyle PressedImage="slider-knob-down" Image="slider-knob" OverImage="slider-knob-over" />
+        <ImageStyle Image="slider-knob" OverImage="slider-knob-over" PressedImage="slider-knob-down" />
       </KnobStyle>
     </SliderStyle>
   </HorizontalSliderStyles>
   <VerticalSliderStyles>
     <SliderStyle Background="slider-vertical">
       <KnobStyle>
-        <ImageStyle PressedImage="slider-knob-down" Image="slider-knob" OverImage="slider-knob-over" />
+        <ImageStyle Image="slider-knob" OverImage="slider-knob-over" PressedImage="slider-knob-down" />
       </KnobStyle>
     </SliderStyle>
   </VerticalSliderStyles>
@@ -58,29 +58,29 @@
     <ProgressBarStyle Filler="progressbar-filled-vertical" Width="32" Background="progressbar-vertical" />
   </VerticalProgressBarStyles>
   <HorizontalSeparatorStyles>
-    <SeparatorStyle Image="separator-menu" Thickness="8" />
+    <SeparatorStyle Thickness="8" Image="separator-menu" />
   </HorizontalSeparatorStyles>
   <VerticalSeparatorStyles>
-    <SeparatorStyle Image="separator" Thickness="6" />
+    <SeparatorStyle Thickness="6" Image="separator" />
   </VerticalSeparatorStyles>
   <ComboBoxStyles>
     <ComboBoxStyle Background="default-select">
       <ListBoxStyle Background="select-box-list-bg">
-        <ListItemStyle PressedBackground="button-down" OverBackground="button-over" />
-        <SeparatorStyle Image="separator-menu" Thickness="4" Padding="0, 4" />
+        <ListItemStyle OverBackground="button-over" PressedBackground="button-down" />
+        <SeparatorStyle Thickness="4" Image="separator-menu" Padding="0, 4" />
       </ListBoxStyle>
       <LabelStyle TextColor="White" Font="default-font" />
     </ComboBoxStyle>
   </ComboBoxStyles>
   <ListBoxStyles>
     <ListBoxStyle Background="button">
-      <ListItemStyle PressedBackground="list-selection" OverBackground="button-over" Padding="10, 0" />
-      <SeparatorStyle Image="separator-menu" Thickness="8" Padding="0, 4" />
+      <ListItemStyle OverBackground="button-over" PressedBackground="list-selection" Padding="10, 0" />
+      <SeparatorStyle Thickness="8" Image="separator-menu" Padding="0, 4" />
     </ListBoxStyle>
   </ListBoxStyles>
   <TabControlStyles>
     <TabControlStyle ButtonSpacing="0" HeaderSpacing="0" TabSelectorPosition="Top">
-      <TabItemStyle PressedBackground="list-selection" OverBackground="button-over" Padding="10, 0">
+      <TabItemStyle OverBackground="button-over" PressedBackground="list-selection" Padding="10, 0">
         <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" />
       </TabItemStyle>
       <ContentStyle Background="window" Padding="10" />
@@ -89,7 +89,7 @@
   <TreeStyles>
     <TreeStyle SelectionBackground="tree-selection" SelectionHoverBackground="button-over">
       <MarkStyle>
-        <ImageStyle PressedImage="tree-minus" Image="tree-plus" />
+        <ImageStyle Image="tree-plus" PressedImage="tree-minus" />
       </MarkStyle>
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" />
     </TreeStyle>
@@ -110,7 +110,7 @@
   <HorizontalMenuStyles>
     <MenuStyle SelectionHoverBackground="button-over" SelectionBackground="button-down" SpecialCharColor="Red" Background="button">
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="20, 0" />
-      <SeparatorStyle Image="separator" Thickness="6" />
+      <SeparatorStyle Thickness="6" Image="separator" />
     </MenuStyle>
   </HorizontalMenuStyles>
   <VerticalMenuStyles>
@@ -118,30 +118,30 @@
       <ImageStyle Padding="20, 0, 0, 0" />
       <LabelStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="20, 0" />
       <ShortcutStyle TextColor="White" DisabledTextColor="Gray" Font="default-font" Padding="0, 0, 20, 0" />
-      <SeparatorStyle Image="separator-menu" Thickness="8" Padding="0, 4" />
+      <SeparatorStyle Thickness="8" Image="separator-menu" Padding="0, 4" />
     </MenuStyle>
   </VerticalMenuStyles>
   <WindowStyles>
     <WindowStyle Background="window" Padding="10">
       <TitleStyle TextColor="White" Font="default-font" />
-      <CloseButtonStyle PressedBackground="button-red" OverBackground="button-over" Padding="10, 0">
+      <CloseButtonStyle OverBackground="button-over" PressedBackground="button-red" Padding="10, 0">
         <ImageStyle Image="icon-close" />
       </CloseButtonStyle>
     </WindowStyle>
   </WindowStyles>
   <FileDialogStyles>
     <FileDialogStyle SelectionBackground="tree-selection" SelectionHoverBackground="button-over" IconFolder="icon-folder" IconDrive="icon-drive" Width="1300" Height="800" Background="window" Padding="10">
-      <BackButtonStyle PressedBackground="button-down" Background="button" OverBackground="button-over">
+      <BackButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down">
         <ImageStyle Image="icon-arrow-left" />
       </BackButtonStyle>
-      <ForwardButtonStyle PressedBackground="button-down" Background="button" OverBackground="button-over">
+      <ForwardButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down">
         <ImageStyle Image="icon-arrow-right" />
       </ForwardButtonStyle>
-      <ParentButtonStyle PressedBackground="button-down" Background="button" OverBackground="button-over">
+      <ParentButtonStyle Background="button" OverBackground="button-over" PressedBackground="button-down">
         <ImageStyle Image="icon-folder-parent" />
       </ParentButtonStyle>
       <TitleStyle TextColor="White" Font="default-font" />
-      <CloseButtonStyle PressedBackground="button-red" OverBackground="button-over" Padding="10, 0">
+      <CloseButtonStyle OverBackground="button-over" PressedBackground="button-red" Padding="10, 0">
         <ImageStyle Image="icon-close" />
       </CloseButtonStyle>
     </FileDialogStyle>
@@ -149,9 +149,18 @@
   <ColorPickerDialogStyles>
     <ColorPickerDialogStyle CheckerBoard="color-picker-checkerboard" SelectionBackground="button-down" SelectionHoverBackground="button-over" Wheel="color-picker-wheel" Gradient="color-picker-gradient" VSPickerKnob="vspicker-knob" Width="900" Height="700" Background="window" Padding="10">
       <TitleStyle TextColor="White" Font="default-font" />
-      <CloseButtonStyle PressedBackground="button-red" OverBackground="button-over" Padding="10, 0">
+      <CloseButtonStyle OverBackground="button-over" PressedBackground="button-red" Padding="10, 0">
         <ImageStyle Image="icon-close" />
       </CloseButtonStyle>
     </ColorPickerDialogStyle>
   </ColorPickerDialogStyles>
+  <PanelStyles>
+    <WidgetStyle />
+  </PanelStyles>
+  <HorizontalStackPanelStyles>
+    <WidgetStyle />
+  </HorizontalStackPanelStyles>
+  <VerticalStackPanelStyles>
+    <WidgetStyle />
+  </VerticalStackPanelStyles>
 </Stylesheet>

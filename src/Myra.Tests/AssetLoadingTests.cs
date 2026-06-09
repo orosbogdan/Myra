@@ -160,7 +160,6 @@ namespace Myra.Tests
 			var assetManager = CreateAssetManager();
 
 			var stylesheet = assetManager.LoadStylesheet("Stylesheets/Default/default_ui_skin.xmms");
-
 			var brush = assetManager.LoadBrush("button", stylesheet);
 
 			Assert.NotNull(brush);

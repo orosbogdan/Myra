@@ -358,6 +358,28 @@ namespace Myra.Graphics2D.UI.Styles
 		}
 
 		/// <summary>
+		/// Gets or sets the default style for horizontal stack panels.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle HorizontalStackPanelStyle
+		{
+			get => GetDefaultStyle(HorizontalStackPanelStyles);
+
+			set => SetDefaultStyle(HorizontalStackPanelStyles, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the default style for vertical stack panels.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle VerticalStackPanelStyle
+		{
+			get => GetDefaultStyle(VerticalStackPanelStyles);
+
+			set => SetDefaultStyle(VerticalStackPanelStyles, value);
+		}
+
+		/// <summary>
 		/// Gets the dictionary of named label styles, keyed by style identifier.
 		/// </summary>
 		public Dictionary<string, LabelStyle> LabelStyles { get; } = new Dictionary<string, LabelStyle>();
@@ -492,6 +514,16 @@ namespace Myra.Graphics2D.UI.Styles
 		/// </summary>
 		public Dictionary<string, WidgetStyle> PanelStyles { get; } = new Dictionary<string, WidgetStyle>();
 
+		/// <summary>
+		/// Gets the dictionary of named horizontal stack panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> HorizontalStackPanelStyles { get; } = new Dictionary<string, WidgetStyle>();
+
+		/// <summary>
+		/// Gets the dictionary of named vertical stack panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> VerticalStackPanelStyles { get; } = new Dictionary<string, WidgetStyle>();
+
 		static Stylesheet()
 		{
 			LegacyClassNames["TextBlockStyle"] = "LabelStyle";
@@ -511,7 +543,7 @@ namespace Myra.Graphics2D.UI.Styles
 			T result = null;
 			if (!styles.TryGetValue(DefaultStyleName, out result))
 			{
-				return null;
+				throw new Exception("Stylesheet doesnt define default style for " + typeof(T).Name + ".");
 			}
 
 			return result;
@@ -519,14 +551,7 @@ namespace Myra.Graphics2D.UI.Styles
 
 		private static void SetDefaultStyle<T>(Dictionary<string, T> styles, T value) where T : WidgetStyle
 		{
-			if (value == null)
-			{
-				styles.Remove(DefaultStyleName);
-			}
-			else
-			{
-				styles[DefaultStyleName] = value;
-			}
+			styles[DefaultStyleName] = value;
 		}
 
 		/// <summary>
