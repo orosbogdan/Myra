@@ -49,6 +49,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the font used to render the label's text.
 		/// </summary>
+		[Category("Appearance")]
 		public SpriteFontBase Font { get; set; }
 
 		/// <summary>

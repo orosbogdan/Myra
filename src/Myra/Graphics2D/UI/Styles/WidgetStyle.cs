@@ -10,36 +10,43 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the style identifier.
 		/// </summary>
+		[Category("Layout")]
 		public string Id { get; set; }
 
 		/// <summary>
 		/// Gets or sets the fixed width of the widget in pixels, or null for auto-sizing.
 		/// </summary>
+		[Category("Layout")]
 		public int? Width { get; set; }
 
 		/// <summary>
 		/// Gets or sets the fixed height of the widget in pixels, or null for auto-sizing.
 		/// </summary>
+		[Category("Layout")]
 		public int? Height { get; set; }
 
 		/// <summary>
 		/// Gets or sets the minimum width of the widget in pixels, or null for no minimum.
 		/// </summary>
+		[Category("Layout")]
 		public int? MinWidth { get; set; }
 
 		/// <summary>
 		/// Gets or sets the minimum height of the widget in pixels, or null for no minimum.
 		/// </summary>
+		[Category("Layout")]
 		public int? MinHeight { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum width of the widget in pixels, or null for no maximum.
 		/// </summary>
+		[Category("Layout")]
 		public int? MaxWidth { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum height of the widget in pixels, or null for no maximum.
 		/// </summary>
+		[Category("Layout")]
 		public int? MaxHeight { get; set; }
 
 		/// <summary>
@@ -105,16 +112,19 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the space outside the widget's border.
 		/// </summary>
+		[Category("Layout")]
 		public Thickness Margin { get; set; }
 
 		/// <summary>
 		/// Gets or sets the thickness of the widget's border.
 		/// </summary>
+		[Category("Layout")]
 		public Thickness BorderThickness { get; set; }
 
 		/// <summary>
 		/// Gets or sets the space inside the widget's border but outside its content.
 		/// </summary>
+		[Category("Layout")]
 		public Thickness Padding { get; set; }
 
 		/// <summary>

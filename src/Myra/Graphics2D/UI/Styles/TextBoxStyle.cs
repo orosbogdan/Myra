@@ -49,21 +49,25 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the font used to render the text box's text.
 		/// </summary>
+		[Category("Appearance")]
 		public SpriteFontBase Font { get; set; }
 
 		/// <summary>
 		/// Gets or sets the font used to render the hint/placeholder text.
 		/// </summary>
+		[Category("Appearance")]
 		public SpriteFontBase MessageFont { get; set; }
 
 		/// <summary>
 		/// Gets or sets the image used to draw the text cursor.
 		/// </summary>
+		[Category("Appearance")]
 		public IImage Cursor { get; set; }
 
 		/// <summary>
 		/// Gets or sets the brush used to highlight selected text.
 		/// </summary>
+		[Category("Appearance")]
 		public IBrush Selection { get; set; }
 
 		/// <summary>
