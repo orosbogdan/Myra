@@ -3,8 +3,10 @@ using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
 using System.Xml.Serialization;
-using Myra.Attributes;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
+
 
 
 #if MONOGAME || FNA
@@ -349,10 +351,11 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ScrollViewer"/> class.
+		/// Initializes a new instance of the <see cref="ScrollViewer"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the scroll viewer.</param>
-		public ScrollViewer(string styleName = Stylesheet.DefaultStyleName)
+		public ScrollViewer(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout = new SingleItemLayout<Widget>(this);
 			ChildrenLayout = _layout;
@@ -365,7 +368,15 @@ namespace Myra.Graphics2D.UI
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScrollViewer"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the scroll viewer.</param>
+		public ScrollViewer(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void MoveThumb(int delta)
@@ -516,18 +527,21 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified style to the scroll viewer.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyScrollViewerStyle(ScrollViewerStyle style)
-		{
-			HorizontalScrollBackground = style.HorizontalScrollBackground;
-			HorizontalScrollKnob = style.HorizontalScrollKnob;
-			VerticalScrollBackground = style.VerticalScrollBackground;
-			VerticalScrollKnob = style.VerticalScrollKnob;
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ScrollViewerStyles;
 
-			ApplyWidgetStyle(style);
+		/// <summary>
+		/// Applies the specified widget style to this scroll viewer.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var scrollViewerStyle = (ScrollViewerStyle)style;
+			HorizontalScrollBackground = scrollViewerStyle.HorizontalScrollBackground;
+			HorizontalScrollKnob = scrollViewerStyle.HorizontalScrollKnob;
+			VerticalScrollBackground = scrollViewerStyle.VerticalScrollBackground;
+			VerticalScrollKnob = scrollViewerStyle.VerticalScrollKnob;
 		}
 
 		/// <summary>
@@ -635,7 +649,7 @@ namespace Myra.Graphics2D.UI
 					HorizontalScrollKnob.Size.Y);
 
 				// Available height for vertical scrollbar (reduced if horizontal scrollbar is shown)
-				var bh = bounds.Height - (_horizontalScrollingOn ? hsHeight : 0);
+				var bh = bounds.Height - ((_horizontalScrollingOn && ShowHorizontalScrollBar) ? hsHeight : 0);
 
 				// Position vertical scrollbar frame on the right edge of the bounds
 				_verticalScrollbarFrame = new Rectangle(
@@ -743,16 +757,6 @@ namespace Myra.Graphics2D.UI
 		private void DesktopTouchUp(object sender, MyraEventArgs args)
 		{
 			_startBoundsPos = null;
-		}
-
-		/// <summary>
-		/// Applies internal styling to the scroll viewer based on the stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyScrollViewerStyle(stylesheet.ScrollViewerStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

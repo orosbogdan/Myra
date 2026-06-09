@@ -7,6 +7,10 @@ using System.Xml.Serialization;
 using Myra.MML;
 using Myra.Events;
 using Myra.Attributes;
+using Myra.Graphics2D.UI.Styles;
+using System.Collections;
+
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -362,9 +366,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler HoverIndexChanged = null;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Grid"/> class.
+		/// Initializes a new instance of the <see cref="Grid"/> class with the specified stylesheet and style.
 		/// </summary>
-		public Grid()
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply.</param>
+		public Grid(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			_layout.ColumnsProportions.CollectionChanged += OnProportionsChanged;
@@ -374,6 +380,15 @@ namespace Myra.Graphics2D.UI
 			GridLinesColor = Color.White;
 			HoverIndexCanBeNull = true;
 			CanSelectNothing = false;
+
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Grid"/> class.
+		/// </summary>
+		public Grid(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -477,6 +492,17 @@ namespace Myra.Graphics2D.UI
 			}
 
 			return RowsProportions[row];
+		}
+
+		/// <summary>
+		/// Invalidates the child layout and clears grid-specific state.
+		/// </summary>
+		protected override void InvalidateChildren()
+		{
+			base.InvalidateChildren();
+
+			HoverRowIndex = null;
+			SelectedRowIndex = null;
 		}
 
 		private void RenderSelection(RenderContext context)
@@ -699,7 +725,8 @@ namespace Myra.Graphics2D.UI
 				if (SelectedRowIndex != HoverRowIndex)
 				{
 					SelectedRowIndex = HoverRowIndex;
-				} else if (CanSelectNothing)
+				}
+				else if (CanSelectNothing)
 				{
 					SelectedRowIndex = null;
 				}
@@ -710,7 +737,8 @@ namespace Myra.Graphics2D.UI
 				if (SelectedColumnIndex != HoverColumnIndex)
 				{
 					SelectedColumnIndex = HoverColumnIndex;
-				} else if (CanSelectNothing)
+				}
+				else if (CanSelectNothing)
 				{
 					SelectedColumnIndex = null;
 				}
@@ -739,15 +767,40 @@ namespace Myra.Graphics2D.UI
 			HoverIndexCanBeNull = grid.HoverIndexCanBeNull;
 			CanSelectNothing = grid.CanSelectNothing;
 
-			foreach(var prop in grid.ColumnsProportions)
+			foreach (var prop in grid.ColumnsProportions)
 			{
 				ColumnsProportions.Add(prop);
 			}
 
-			foreach(var prop in grid.RowsProportions)
+			foreach (var prop in grid.RowsProportions)
 			{
 				RowsProportions.Add(prop);
 			}
+		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.GridStyles;
+
+		internal override bool CanStyleBeNull => true;
+
+		/// <summary>
+		/// Applies the specified widget style to this grid.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var gridStyle = (GridStyle)style;
+
+			ShowGridLines = gridStyle.ShowGridLines;
+			GridLinesColor = gridStyle.GridLinesColor;
+			ColumnSpacing = gridStyle.ColumnSpacing;
+			RowSpacing = gridStyle.RowSpacing;
+			SelectionBackground = gridStyle.SelectionBackground;
+			SelectionHoverBackground = gridStyle.SelectionHoverBackground;
+			GridSelectionMode = gridStyle.GridSelectionMode;
+			HoverIndexCanBeNull = gridStyle.HoverIndexCanBeNull;
+			CanSelectNothing = gridStyle.CanSelectNothing;
 		}
 
 		/// <summary>

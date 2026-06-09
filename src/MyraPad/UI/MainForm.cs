@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra;
 using Myra.Attributes;
-using Myra.Events;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.File;
@@ -121,6 +120,8 @@ namespace MyraPad.UI
 		private readonly Dictionary<string, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
 		// Tree view widget for displaying the widget hierarchy in the explorer panel
 		private readonly TreeView _treeViewExplorer;
+		private readonly TreeView _treeViewStylesheet;
+		private readonly TreeView _treeViewStyleExplorer;
 		// Auto-complete context menu that appears while typing XML tags
 		private VerticalMenu _autoCompleteMenu = null;
 		// Flag to track if the last click in the explorer was a right-click (for context menu)
@@ -321,7 +322,7 @@ namespace MyraPad.UI
 
 			_menuFileNew.Selected += NewItemOnClicked;
 			_menuFileOpen.Selected += OpenItemOnClicked;
-			_menuFileReload.Selected += OnMenuFileReloadSelected;
+			_menuFileReload.Selected += (s, e) => Reload();
 			_menuFileSave.Selected += SaveItemOnClicked;
 			_menuFileSaveAs.Selected += SaveAsItemOnClicked;
 			_menuFileExportToCS.Selected += ExportCsItemOnSelected;
@@ -346,9 +347,10 @@ namespace MyraPad.UI
 
 			_textBoxFilter.TextChanged += _textBoxFilter_TextChanged;
 
-			PropertyGrid.PropertyChanged += PropertyGridOnPropertyChanged;
+			PropertyGrid.PropertyChanged += (s, e) => OnPropertyChanged();
 			PropertyGrid.CustomValuesProvider = RecordValuesProvider;
 			PropertyGrid.CustomSetter = RecordSetter;
+			PropertyGrid.CustomWidgetProvider = CreateCustomEditor;
 			PropertyGrid.Settings.AssetManager = MyraEnvironment.DefaultAssetManager;
 
 			_topSplitPane.SetSplitterPosition(0, state != null ? state.TopSplitterPosition1 : 0.2f);
@@ -368,6 +370,24 @@ namespace MyraPad.UI
 			_treeViewExplorer.TouchUp += _treeViewExplorer_TouchUp;
 
 			_panelExplorer.Content = _treeViewExplorer;
+
+			_treeViewStylesheet = new TreeView
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch,
+			};
+
+			_treeViewStylesheet.SelectionChanged += _treeViewStylesheet_SelectionChanged;
+			_panelStyles.Content = _treeViewStylesheet;
+
+			_treeViewStyleExplorer = new TreeView
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch
+			};
+
+			_treeViewStyleExplorer.SelectionChanged += _treeViewStyleExplorer_SelectionChanged;
+			_panelStyleExplorer.Content = _treeViewStyleExplorer;
 
 			RichTextDefaults.FontResolver = p =>
 			{
@@ -419,6 +439,8 @@ namespace MyraPad.UI
 			{
 				Options = new Options();
 			}
+
+			RemoveStylesheetTab();
 
 			UpdateTitle();
 		}
@@ -492,7 +514,7 @@ namespace MyraPad.UI
 				}
 
 				// Synchronize the text editor with the updated project structure
-				_textSource.Text = _project.Save();
+				_textSource.Text = _project.ToXml();
 			}
 			catch (Exception ex)
 			{
@@ -701,7 +723,7 @@ namespace MyraPad.UI
 					}
 					else if (Desktop.IsKeyDown(Keys.R))
 					{
-						OnMenuFileReloadSelected(this, MyraEventArgs.Empty);
+						Reload();
 					}
 					else if (Desktop.IsKeyDown(Keys.S))
 					{
@@ -812,7 +834,19 @@ namespace MyraPad.UI
 				return null;
 			}
 
-			var styleNames = Project.Stylesheet.GetStylesByWidgetName(widget.GetType().Name);
+			var stylesDict = widget.GetStylesDictionary(Project.Stylesheet);
+			if (stylesDict == null)
+			{
+				return null;
+			}
+
+			var stylesList = new List<string>();
+			foreach (var key in stylesDict.Keys)
+			{
+				stylesList.Add(key.ToString());
+			}
+
+			var styleNames = stylesList.ToArray(); ;
 			if (styleNames == null || styleNames.Length < 2)
 			{
 				// Dont show this property if there's only one style(Default) or less
@@ -860,6 +894,166 @@ namespace MyraPad.UI
 			return true;
 		}
 
+		private Widget CreateImageEditor(Record record, object obj)
+		{
+			var panel = new HorizontalStackPanel
+			{
+				Spacing = 8
+			};
+
+			// Color preview swatch
+			var image = new Image
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Center,
+				Height = 16
+			};
+
+			StackPanel.SetProportionType(image, ProportionType.Fill);
+			panel.Widgets.Add(image);
+
+			var value = record.GetValue(obj);
+			var asImage = value as IImage;
+			if (asImage != null)
+			{
+				image.Renderable = asImage;
+
+				if (record.Type != typeof(IBrush))
+				{
+					// It's image; keep aspect ratio
+					image.HorizontalAlignment = HorizontalAlignment.Center;
+
+					var aspectRatio = (float)asImage.Size.X / asImage.Size.Y;
+					image.Width = (int)(aspectRatio * image.Height);
+				}
+			}
+			else
+			{
+				var asHasColor = value as IHasColor;
+				if (asHasColor != null)
+				{
+					image.Renderable = Stylesheet.Current.WhiteRegion;
+					image.Color = asHasColor.Color;
+				}
+			}
+
+			// "Change..." button to open color picker
+			var button = new Button
+			{
+				Tag = value,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				Content = new Label
+				{
+					Text = "Change...",
+					HorizontalAlignment = HorizontalAlignment.Center,
+				}
+			};
+			panel.Widgets.Add(button);
+
+			button.Click += (s, a) =>
+			{
+				var value = (IBrush)record.GetValue(obj);
+				var dlg = new ImageEditorDialog
+				{
+					Image = value
+				};
+
+				dlg.Closed += (s, a) =>
+				{
+					if (!dlg.Result)
+					{
+						return;
+					}
+
+					if (dlg.Image == null || record.Type.IsAssignableFrom(dlg.Image.GetType()))
+					{
+						// This code skips setting new value if dlg.Image is IBrush and the property excepts IImage
+						record.SetValue(obj, dlg.Image);
+
+						_propertyGrid.Rebuild();
+						OnPropertyChanged();
+					}
+				};
+
+				dlg.ShowModal(Desktop);
+			};
+
+			return panel;
+		}
+
+		private Widget CreateFontEditor(Record record, object obj)
+		{
+			var value = (SpriteFontBase)record.GetValue(obj);
+
+			var panel = new HorizontalStackPanel
+			{
+				Spacing = 8
+			};
+
+			// Color preview swatch
+			var textFont = new TextBox
+			{
+				Readonly = true,
+				Text = value?.ToString()
+			};
+
+			StackPanel.SetProportionType(textFont, ProportionType.Fill);
+			panel.Widgets.Add(textFont);
+
+			// "Change..." button to open color picker
+			var button = new Button
+			{
+				Tag = value,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				Content = new Label
+				{
+					Text = "Change...",
+					HorizontalAlignment = HorizontalAlignment.Center,
+				}
+			};
+			panel.Widgets.Add(button);
+
+			button.Click += (s, a) =>
+			{
+				var value = (SpriteFontBase)record.GetValue(obj);
+				var dlg = new FontEditorDialog
+				{
+					Font = value
+				};
+
+				dlg.Closed += (s, a) =>
+				{
+					if (!dlg.Result)
+					{
+						return;
+					}
+
+					record.SetValue(obj, dlg.Font);
+					_propertyGrid.Rebuild();
+					OnPropertyChanged();
+				};
+
+				dlg.ShowModal(Desktop);
+			};
+
+			return panel;
+		}
+
+		private Widget CreateCustomEditor(Record record, object obj)
+		{
+			if (typeof(IBrush).IsAssignableFrom(record.Type))
+			{
+				return CreateImageEditor(record, obj);
+			}
+
+			if (typeof(SpriteFontBase).IsAssignableFrom(record.Type))
+			{
+				return CreateFontEditor(record, obj);
+			}
+
+			return null;
+		}
+
 		// Clears the auto-complete menu reference when it is closed
 		private void Desktop_ContextMenuClosed(object sender, GenericEventArgs<Widget> e)
 		{
@@ -874,7 +1068,7 @@ namespace MyraPad.UI
 		// Refreshes the XML editor text to match the current project state
 		private void UpdateSource()
 		{
-			var data = Project != null ? Project.Save() : string.Empty;
+			var data = Project != null ? Project.ToXml() : string.Empty;
 			if (data == _textSource.Text)
 			{
 				return;
@@ -889,7 +1083,7 @@ namespace MyraPad.UI
 			try
 			{
 				var project = Project.LoadFromXml(_textSource.Text, AssetManager);
-				_textSource.Text = _project.Save();
+				_textSource.Text = _project.ToXml();
 			}
 			catch (Exception ex)
 			{
@@ -912,144 +1106,6 @@ namespace MyraPad.UI
 		private void _textSource_KeyDown(object sender, GenericEventArgs<Keys> e)
 		{
 			_applyAutoIndent = e.Data == Keys.Enter;
-		}
-
-		/// <summary>
-		/// Iterates through a widget's external resources and applies the given processor function to each
-		/// </summary>
-		private static void ProcessResourcesPaths(Widget w, Func<string, bool> resourceProcessor)
-		{
-			var type = w.GetType();
-			foreach (var res in w.Resources)
-			{
-				var propertyInfo = type.GetProperty(res.Key);
-				if (propertyInfo == null)
-				{
-					continue;
-				}
-
-				// Skip brushes for now
-				if (propertyInfo.PropertyType == typeof(IBrush))
-				{
-					continue;
-				}
-
-				var result = resourceProcessor(res.Key);
-				if (!result)
-				{
-					break;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Updates resource paths in widgets to be relative to the new project location; prompts user for confirmation
-		/// </summary>
-		private void UpdateResourcesPaths(string oldPath, string newPath, Action<bool> onFinished)
-		{
-			try
-			{
-				// Currently only support moving from no external assets to having project-relative paths
-				if (!string.IsNullOrEmpty(oldPath))
-				{
-					onFinished(false);
-					return;
-				}
-
-				// Check if the project contains any external resources (fonts, images, etc.)
-				var hasExternalResources = false;
-
-				Project.Root.ProcessWidgets(w =>
-				{
-					ProcessResourcesPaths(w, k =>
-					{
-						// Found at least one external resource
-						hasExternalResources = true;
-						return false;
-					});
-
-					// Stop iterating if we found resources
-					return !hasExternalResources;
-				});
-
-				if (!hasExternalResources)
-				{
-					onFinished(false);
-					return;
-				}
-
-				// Prompt the user to confirm resource path updates
-				var dialog = Dialog.CreateMessageBox("Resources Paths Update", "Would you like to update resources paths so it become relative to the project location?");
-				dialog.Closed += (s, a) =>
-				{
-					if (dialog.Result)
-					{
-						var updated = false;
-
-						var folder = Path.GetDirectoryName(newPath);
-						// Iterate through all widgets and update absolute paths to relative paths
-						UIUtils.ProcessWidgets(Project.Root, widget =>
-						{
-							var newResources = new Dictionary<string, string>();
-
-							ProcessResourcesPaths(widget, key =>
-							{
-								try
-								{
-									var path = widget.Resources[key];
-
-									// Only convert absolute paths to relative
-									if (Path.IsPathRooted(path))
-									{
-										path = PathUtils.TryToMakePathRelativeTo(path, folder);
-										newResources[key] = path;
-									}
-								}
-								catch (Exception)
-								{
-									// Skip resources that can't be converted
-								}
-
-								return true;
-							});
-
-							// Apply the converted paths to the widget
-							foreach (var pair in newResources)
-							{
-								if (widget.Resources[pair.Key] != pair.Value)
-								{
-									updated = true;
-									widget.Resources[pair.Key] = pair.Value;
-								}
-							}
-
-							return true;
-						});
-
-						// Sync the XML editor with the updated resources
-						if (updated)
-						{
-							try
-							{
-								_suppressProjectRefresh = true;
-								UpdateSource();
-							}
-							finally
-							{
-								_suppressProjectRefresh = false;
-							}
-						}
-					}
-
-					onFinished(true);
-				};
-
-				dialog.ShowModal(Desktop);
-			}
-			catch (Exception)
-			{
-				onFinished(false);
-			}
 		}
 
 		/// <summary>
@@ -1405,7 +1461,6 @@ namespace MyraPad.UI
 						{
 							var result = "<" + menuItem.Text;
 							var skip = result.Length;
-							var needsClose = false;
 
 							// Simple widgets and proportions are self-closing
 							if (SimpleWidgets.Contains(menuItem.Text) ||
@@ -1437,7 +1492,6 @@ namespace MyraPad.UI
 								}
 								result += "</" + menuItem.Text + ">";
 								++skip;
-								needsClose = true;
 							}
 
 							// Replace the typed text with the completed widget tag
@@ -1555,8 +1609,7 @@ namespace MyraPad.UI
 			UpdateCursor();
 		}
 
-		// Reloads the current project file, clearing all cached assets
-		private void OnMenuFileReloadSelected(object sender, MyraEventArgs e)
+		private void Reload()
 		{
 			AssetManager.Cache.Clear();
 			_fontCache.Clear();
@@ -1710,41 +1763,48 @@ namespace MyraPad.UI
 			}
 		}
 
-		/// <summary>
-		/// Updates the XML when a widget property is modified in the property grid
-		/// </summary>
-		private void PropertyGridOnPropertyChanged(object sender, GenericEventArgs<string> eventArgs)
+		private void OnPropertyChanged()
 		{
 			IsDirty = true;
 
-			// Serialize the modified widget object back to XML
-			var xml = _project.SaveObjectToXml(PropertyGrid.Object, ExtractTag(CurrentTag), ParentType);
-
-			// If the original tag needs a closing tag, ensure the new XML has one too
-			if (_needsCloseTag)
+			if (PropertyGrid.Object is WidgetStyle)
 			{
-				xml = xml.Replace("/>", ">");
+				// Stylesheet property changed
+				QueueRefreshProject();
 			}
-
-			// Replace the old XML tag with the new serialized XML
-			if (_currentTagStart != null && _currentTagEnd != null)
+			else
 			{
-				try
+				// Project property changed
+				// Serialize the modified widget object back to XML
+				var xml = _project.SaveObjectToXml(PropertyGrid.Object, ExtractTag(CurrentTag), ParentType);
+
+				// If the original tag needs a closing tag, ensure the new XML has one too
+				if (_needsCloseTag)
 				{
-					_suppressProjectRefresh = true;
-					// Replace the current tag with the updated XML
-					_textSource.Replace(_currentTagStart.Value,
-						_currentTagEnd.Value - _currentTagStart.Value + 1,
-						xml);
-					QueueRefreshProject();
-				}
-				finally
-				{
-					_suppressProjectRefresh = false;
+					xml = xml.Replace("/>", ">");
 				}
 
-				// Update the end position of the current tag after replacement
-				_currentTagEnd = _currentTagStart.Value + xml.Length - 1;
+				// Replace the old XML tag with the new serialized XML
+				if (_currentTagStart != null && _currentTagEnd != null)
+				{
+					try
+					{
+						_suppressProjectRefresh = true;
+
+						// Replace the current tag with the updated XML
+						_textSource.Replace(_currentTagStart.Value,
+							_currentTagEnd.Value - _currentTagStart.Value + 1,
+							xml);
+						QueueRefreshProject();
+					}
+					finally
+					{
+						_suppressProjectRefresh = false;
+					}
+
+					// Update the end position of the current tag after replacement
+					_currentTagEnd = _currentTagStart.Value + xml.Length - 1;
+				}
 			}
 		}
 
@@ -1942,6 +2002,16 @@ namespace MyraPad.UI
 				{
 					Project = NewProject;
 
+					if (HasCustomStylesheet)
+					{
+						// Show stylesheet tab
+						AddStylesheetTab();
+					}
+					else
+					{
+						RemoveStylesheetTab();
+					}
+
 					// Apply the stylesheet's desktop background if available
 					if (Project.Stylesheet != null && Project.Stylesheet.DesktopStyle != null)
 					{
@@ -1973,7 +2043,7 @@ namespace MyraPad.UI
 		private void New(string rootType)
 		{
 			// Use the template and substitute the root container type
-			var source = MyraPad.Resources.NewProjectTemplate.Replace("$containerType", rootType);
+			var source = Resources.NewProjectTemplate.Replace("$containerType", rootType);
 
 			_textSource.Text = source;
 
@@ -2007,22 +2077,26 @@ namespace MyraPad.UI
 				return;
 			}
 
-			// Update resource paths to be relative to the new file location
-			UpdateResourcesPaths(FilePath, filePath, updated =>
+			// Write the XML content to the file
+			File.WriteAllText(filePath, _textSource.Text);
+
+			if (HasCustomStylesheet)
 			{
-				// Write the XML content to the file
-				File.WriteAllText(filePath, _textSource.Text);
-
-				// Update the project path and state
-				FilePath = filePath;
-				IsDirty = false;
-
-				// Refresh the project if resources were updated
-				if (updated)
+				// Save stylesheet too
+				var stylesheetPath = Project.StylesheetPath;
+				if (!Path.IsPathRooted(stylesheetPath))
 				{
-					QueueRefreshProject();
+					var folder = Path.GetDirectoryName(filePath);
+					stylesheetPath = Path.Combine(folder, stylesheetPath);
 				}
-			});
+
+				var stylesheetData = Project.Stylesheet.ToXml();
+				File.WriteAllText(stylesheetPath, stylesheetData);
+			}
+
+			// Update the project path and state
+			FilePath = filePath;
+			IsDirty = false;
 		}
 
 		// Saves the current project to a file; prompts for a filename if this is a new project or Save As is selected
@@ -2274,6 +2348,5 @@ namespace MyraPad.UI
 				}
 			}
 		}
-
 	}
 }

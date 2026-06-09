@@ -4,7 +4,7 @@ using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Events;
-
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -32,9 +32,17 @@ namespace Myra.Graphics2D.UI
 
 		internal List<TreeViewNode> AllNodes => _allNodes;
 
+		internal TreeStyle TreeStyle { get; set; }
+
+		/// <summary>
+		/// Gets the number of child nodes directly under this tree view.
+		/// </summary>
+		public int SubNodesCount => Children.Count;
+
 		/// <summary>
 		/// Gets the number of top-level child nodes.
 		/// </summary>
+		[Obsolete("Use SubNodesCount")]
 		public int ChildNodesCount => Children.Count;
 
 		/// <summary>
@@ -91,16 +99,25 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler SelectionChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public TreeView(string styleName = Stylesheet.DefaultStyleName)
+		public TreeView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			AcceptsKeyboardFocus = true;
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TreeView"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public TreeView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -287,7 +304,7 @@ namespace Myra.Graphics2D.UI
 		/// <returns>The newly created tree node.</returns>
 		public TreeViewNode AddSubNode(Widget content)
 		{
-			var result = new TreeViewNode(this, StyleName)
+			var result = new TreeViewNode(this)
 			{
 				Content = content
 			};
@@ -480,27 +497,21 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this tree view.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the tree style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			base.InternalSetStyle(stylesheet, name);
-			ApplyTreeViewStyle(stylesheet.TreeStyles.SafelyGetStyle(name));
-		}
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TreeStyles;
 
 		/// <summary>
-		/// Applies the specified tree style to this tree view, including selection backgrounds.
+		/// Applies the specified widget style to this tree view.
 		/// </summary>
-		/// <param name="style">The tree style to apply.</param>
-		public void ApplyTreeViewStyle(TreeStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			SelectionBackground = style.SelectionBackground;
-			SelectionHoverBackground = style.SelectionHoverBackground;
+			var treeStyle = (TreeStyle)style;
+
+			TreeStyle = new TreeStyle(treeStyle);
+			SelectionBackground = treeStyle.SelectionBackground;
+			SelectionHoverBackground = treeStyle.SelectionHoverBackground;
 		}
 
 		/// <summary>

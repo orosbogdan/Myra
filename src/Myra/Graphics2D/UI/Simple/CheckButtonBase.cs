@@ -79,6 +79,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(0)]
+		[StylePropertyPath("ImageTextSpacing")]
 		public int CheckContentSpacing
 		{
 			get => _layout.Spacing;
@@ -89,6 +90,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed when the check button is unchecked.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("ImageStyle/Image")]
 		public IImage UncheckedImage
 		{
 			get => _uncheckedImage;
@@ -108,6 +110,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the image displayed when the check button is checked.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("ImageStyle/PressedImage")]
 		public IImage CheckedImage
 		{
 			get => _checkedImage;
@@ -170,7 +173,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		protected override void InternalOnTouchDown()
 		{
-			SetValueByUser(!IsPressed);
+			SetIsPressedByUser(!IsPressed);
 		}
 
 		/// <summary>
@@ -198,27 +201,28 @@ namespace Myra.Graphics2D.UI
 
 			if (k == Keys.Space)
 			{
-				SetValueByUser(!IsPressed);
+				SetIsPressedByUser(!IsPressed);
 			}
 		}
 
 		/// <summary>
-		/// Applies the specified style to the check button and its images.
+		/// Applies the specified widget style to this check button.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyCheckButtonStyle(ImageTextButtonStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyButtonStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.ImageStyle != null)
+			var checkButtonStyle = (CheckButtonStyle)style;
+			if (checkButtonStyle.ImageStyle != null)
 			{
-				_check.ApplyPressableImageStyle(style.ImageStyle);
+				_check.ApplyImageStyle(checkButtonStyle.ImageStyle);
 
-				UncheckedImage = style.ImageStyle.Image;
-				CheckedImage = style.ImageStyle.PressedImage;
+				UncheckedImage = checkButtonStyle.ImageStyle.Image;
+				CheckedImage = checkButtonStyle.ImageStyle.PressedImage;
 			}
 
-			CheckContentSpacing = style.ImageTextSpacing;
+			CheckContentSpacing = checkButtonStyle.ImageTextSpacing;
 		}
 
 		private void UpdateChildren()

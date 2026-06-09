@@ -31,7 +31,10 @@ namespace Myra.Samples.CustomWidgets
 			MyraEnvironment.Game = this;
 
 			var scene3d = new Scene3D();
-			var scrollViewer = new ScrollViewer();
+			var scrollViewer = new ScrollViewer
+			{
+				ShowHorizontalScrollBar = false
+			};
 
 			_propertyGrid = new PropertyGrid
 			{

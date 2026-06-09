@@ -4,6 +4,8 @@ using System;
 using FontStashSharp;
 using Myra.Utility;
 using FontStashSharp.RichText;
+using System.Collections;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -22,6 +24,7 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Label : Widget
 	{
+		private readonly Color?[] _colors = new Color?[WidgetVisualStateTotal];
 		private readonly RichTextLayout _richText = new RichTextLayout
 		{
 			SupportsCommands = true
@@ -169,36 +172,56 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(TextHorizontalAlignment.Left)]
-		public TextHorizontalAlignment TextAlign
-		{
-			get; set;
-		}
+		public TextHorizontalAlignment TextAlign { get; set; }
 
 		/// <summary>
-		/// Gets or sets the color of the text.
+		/// Gets or sets the text color in the label's normal state.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color TextColor
 		{
-			get; set;
+			get => _colors[WidgetVisualStateNormal].Value;
+			set => _colors[WidgetVisualStateNormal] = value;
 		}
 
 		/// <summary>
-		/// Gets or sets the color of the text when the label is disabled.
+		/// Gets or sets the text color when the mouse is over the label.
 		/// </summary>
-		[Category("Appearance")]
-		public Color? DisabledTextColor
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets or sets the color of the text when the cursor is over the label.
-		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/TextColor")]
 		public Color? OverTextColor
 		{
-			get; set;
+			get => _colors[WidgetVisualStateOver];
+			set => _colors[WidgetVisualStateOver] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the text color when the label is disabled.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? DisabledTextColor
+		{
+			get => _colors[WidgetVisualStateDisabled];
+			set => _colors[WidgetVisualStateDisabled] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the text color when the label has focus.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? FocusedTextColor
+		{
+			get => _colors[WidgetVisualStateFocused];
+			set => _colors[WidgetVisualStateFocused] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the text color when the label is pressed.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? PressedTextColor
+		{
+			get => _colors[WidgetVisualStatePressed];
+			set => _colors[WidgetVisualStatePressed] = value;
 		}
 
 		/// <summary>
@@ -212,23 +235,23 @@ namespace Myra.Graphics2D.UI
 			set => _richText.SupportsCommands = value;
 		}
 
-		internal Color? PressedTextColor
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Label"/> class with the specified stylesheet and style.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public Label(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
-			get; set;
-		}
-
-		internal bool IsPressed
-		{
-			get; set;
+			TextColor = Color.Black;
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Label"/> class with the specified style.
 		/// </summary>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public Label(string styleName = Stylesheet.DefaultStyleName)
+		public Label(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			SetStyle(styleName);
 		}
 
 		/// <summary>
@@ -242,23 +265,14 @@ namespace Myra.Graphics2D.UI
 				return;
 			}
 
-			var color = TextColor;
-			var useChunkColor = true;
-			if (!Enabled && DisabledTextColor != null)
+			var nullableColor = GetCurrentVisual(_colors);
+			if (nullableColor == null)
 			{
-				color = DisabledTextColor.Value;
-				useChunkColor = false;
+				return;
 			}
-			else if (IsPressed && PressedTextColor != null)
-			{
-				color = PressedTextColor.Value;
-				useChunkColor = false;
-			}
-			else if (IsMouseInside && OverTextColor != null)
-			{
-				color = OverTextColor.Value;
-				useChunkColor = false;
-			}
+
+			var color = nullableColor.Value;
+			var useChunkColor = color == TextColor;
 
 			var textToDraw = _richText;
 
@@ -352,30 +366,30 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified label style to the label.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyLabelStyle(LabelStyle style)
-		{
-			ApplyWidgetStyle(style);
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.LabelStyles;
 
-			TextColor = style.TextColor;
-			DisabledTextColor = style.DisabledTextColor;
-			OverTextColor = style.OverTextColor;
-			PressedTextColor = style.PressedTextColor;
-			Font = style.Font;
+		/// <summary>
+		/// Applies the specified widget style to this label.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var labelStyle = (LabelStyle)style;
+			TextColor = labelStyle.TextColor;
+			DisabledTextColor = labelStyle.DisabledTextColor;
+			FocusedTextColor = labelStyle.FocusedTextColor;
+			OverTextColor = labelStyle.OverTextColor;
+			PressedTextColor = labelStyle.PressedTextColor;
+			Font = labelStyle.Font;
 		}
 
 		/// <summary>
-		/// Applies a named label style from the stylesheet to the label.
+		/// Applies the specified label style to this label.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the label style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyLabelStyle(stylesheet.LabelStyles.SafelyGetStyle(name));
-		}
+		/// <param name="style">The label style to apply.</param>
+		public void ApplyLabelStyle(LabelStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Copies all properties from another widget to this label.
@@ -394,10 +408,11 @@ namespace Myra.Graphics2D.UI
 			AutoEllipsisMethod = label.AutoEllipsisMethod;
 			AutoEllipsisString = label.AutoEllipsisString;
 			TextAlign = label.TextAlign;
-			TextColor = label.TextColor;
-			DisabledTextColor = label.DisabledTextColor;
-			OverTextColor = label.OverTextColor;
-			PressedTextColor = label.PressedTextColor;
+
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
+			{
+				_colors[i] = label._colors[i];
+			}
 		}
 	}
 }

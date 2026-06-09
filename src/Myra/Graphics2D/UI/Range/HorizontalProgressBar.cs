@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
@@ -53,23 +53,24 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HorizontalProgressBar"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="HorizontalProgressBar"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public HorizontalProgressBar(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public HorizontalProgressBar(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Top;
 		}
 
 		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this horizontal progress bar.
+		/// Initializes a new instance of the <see cref="HorizontalProgressBar"/> class with the specified style.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the horizontal progress bar style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public HorizontalProgressBar(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			ApplyProgressBarStyle(stylesheet.HorizontalProgressBarStyles.SafelyGetStyle(name));
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.HorizontalProgressBarStyles;
 	}
 }

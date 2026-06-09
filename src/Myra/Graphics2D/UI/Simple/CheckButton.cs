@@ -1,15 +1,13 @@
-﻿using Myra.Attributes;
-using Myra.Events;
+﻿using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
-using System;
 using System.ComponentModel;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A check button widget that can be checked or unchecked independently.
 	/// </summary>
-	[StyleTypeName("CheckBox")]
 	public class CheckButton : CheckButtonBase
 	{
 		/// <summary>
@@ -40,25 +38,23 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CheckButton"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="CheckButton"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public CheckButton(string styleName = Stylesheet.DefaultStyleName)
+		public CheckButton(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
-		/// Applies a named check button style from the stylesheet to the check button.
+		/// Initializes a new instance of the <see cref="CheckButton"/> class with the specified style.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the check button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public CheckButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			base.InternalSetStyle(stylesheet, name);
-
-			var style = stylesheet.CheckBoxStyles.SafelyGetStyle(name);
-			ApplyCheckButtonStyle(style);
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.CheckBoxStyles;
 	}
 }

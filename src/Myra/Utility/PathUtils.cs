@@ -19,7 +19,7 @@ namespace Myra.Utility
 
 				path = folderPathUri.MakeRelativeUri(fullPathUri).ToString();
 			}
-			catch (Exception)
+			catch
 			{
 			}
 

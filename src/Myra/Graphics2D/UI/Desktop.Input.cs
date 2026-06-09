@@ -375,7 +375,7 @@ namespace Myra.Graphics2D.UI
 				{
 					UpdateTouchInput();
 				}
-				catch (Exception)
+				catch
 				{
 				}
 #endif

@@ -3,13 +3,8 @@
 	/// <summary>
 	/// Style class that defines the visual appearance of separator widgets.
 	/// </summary>
-	public class SeparatorStyle: WidgetStyle
+	public class SeparatorStyle : ImageStyle
 	{
-		/// <summary>
-		/// Gets or sets the image used to render the separator line.
-		/// </summary>
-		public IImage Image { get; set; }
-
 		/// <summary>
 		/// Gets or sets the thickness of the separator line in pixels.
 		/// </summary>
@@ -26,9 +21,8 @@
 		/// Initializes a new instance of the <see cref="SeparatorStyle"/> class by copying properties from another style.
 		/// </summary>
 		/// <param name="style">The source separator style to copy from.</param>
-		public SeparatorStyle(SeparatorStyle style): base(style)
+		public SeparatorStyle(SeparatorStyle style) : base(style)
 		{
-			Image = style.Image;
 			Thickness = style.Thickness;
 		}
 

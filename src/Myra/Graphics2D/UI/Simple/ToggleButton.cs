@@ -1,8 +1,8 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
+﻿using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
-using System;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
 
 
 #if MONOGAME || FNA
@@ -18,7 +18,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A toggle button widget that can be toggled between two states.
 	/// </summary>
-	[StyleTypeName("Button")]
 	public class ToggleButton : ButtonBase
 	{
 		private readonly SingleItemLayout<Widget> _layout;
@@ -62,15 +61,26 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ToggleButton"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="ToggleButton"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public ToggleButton(string styleName = Stylesheet.DefaultStyleName)
+		public ToggleButton(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout = new SingleItemLayout<Widget>(this);
 			ChildrenLayout = _layout;
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ToggleButton"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public ToggleButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
+		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ButtonStyles;
 
 		/// <summary>
 		/// Called when a touch point is released on the toggle button.
@@ -84,7 +94,7 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		protected override void InternalOnTouchDown()
 		{
-			SetValueByUser(!IsPressed);
+			SetIsPressedByUser(!IsPressed);
 		}
 
 		/// <summary>
@@ -102,18 +112,8 @@ namespace Myra.Graphics2D.UI
 
 			if (k == Keys.Space)
 			{
-				SetValueByUser(!IsPressed);
+				SetIsPressedByUser(!IsPressed);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named button style from the stylesheet to the toggle button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyButtonStyle(stylesheet.ButtonStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

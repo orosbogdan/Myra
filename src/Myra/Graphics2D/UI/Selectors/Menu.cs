@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
@@ -78,6 +77,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the font used to render menu item text.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("LabelStyle/Font")]
 		public SpriteFontBase LabelFont
 		{
 			get
@@ -95,7 +95,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the color of menu item text.
 		/// </summary>
 		[Category("Appearance")]
-		[StylePropertyPath("/LabelStyle/TextColor")]
+		[StylePropertyPath("LabelStyle/TextColor")]
 		public Color LabelColor
 		{
 			get
@@ -254,7 +254,6 @@ namespace Myra.Graphics2D.UI
 
 			set
 			{
-
 				if (Orientation == Orientation.Horizontal)
 				{
 					InternalChild.SelectedColumnIndex = value;
@@ -356,10 +355,11 @@ namespace Myra.Graphics2D.UI
 		protected Grid InternalChild => _layout.Child;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Menu"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Menu"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		protected Menu(string styleName)
+		protected Menu(Stylesheet stylesheet, string styleName)
 		{
 			_layout = new SingleItemLayout<Grid>(this)
 			{
@@ -397,7 +397,15 @@ namespace Myra.Graphics2D.UI
 			VerticalAlignment = VerticalAlignment.Stretch;
 			HoverIndexCanBeNull = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Menu"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		protected Menu(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -546,7 +554,7 @@ namespace Myra.Graphics2D.UI
 				{
 					if (MenuStyle.ImageStyle != null)
 					{
-						menuItem.ImageWidget.ApplyPressableImageStyle(MenuStyle.ImageStyle);
+						menuItem.ImageWidget.ApplyImageStyle(MenuStyle.ImageStyle);
 					}
 					menuItem.Label.ApplyLabelStyle(MenuStyle.LabelStyle);
 					if (MenuStyle.ShortcutStyle != null)
@@ -695,7 +703,7 @@ namespace Myra.Graphics2D.UI
 		private void InternalChild_TouchUp(object sender, MyraEventArgs e)
 		{
 			var menuItem = SelectedMenuItem;
-			if (menuItem != null && !menuItem.CanOpen)
+			if (menuItem != null && !menuItem.CanOpen && menuItem.Enabled)
 			{
 				Close();
 				menuItem.FireSelected();
@@ -918,19 +926,19 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Applies the specified menu style to the menu and all its items.
+		/// Applies the specified widget style to this menu.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyMenuStyle(MenuStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			var clone = new MenuStyle(style);
+			base.ApplyStyle(style);
 
-			ApplyWidgetStyle(clone);
-
+			var menuStyle = (MenuStyle)style;
+			var clone = new MenuStyle(menuStyle);
 			MenuStyle = clone;
 
-			InternalChild.SelectionHoverBackground = style.SelectionHoverBackground;
-			InternalChild.SelectionBackground = style.SelectionBackground;
+			InternalChild.SelectionHoverBackground = menuStyle.SelectionHoverBackground;
+			InternalChild.SelectionBackground = menuStyle.SelectionBackground;
 		}
 	}
 }

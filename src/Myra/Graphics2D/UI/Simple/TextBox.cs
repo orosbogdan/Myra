@@ -8,6 +8,8 @@ using Myra.Graphics2D.UI.TextEdit;
 using FontStashSharp;
 using FontStashSharp.RichText;
 using Myra.Events;
+using System.Collections;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -45,6 +47,9 @@ namespace Myra.Graphics2D.UI
 			CalculateGlyphs = true,
 			SupportsCommands = false
 		};
+
+		// Text color state array for different widget states
+		private readonly Color?[] _textColors = new Color?[WidgetVisualStateTotal];
 
 		// Cursor and selection state
 		private Point? _lastCursorPosition;
@@ -193,22 +198,54 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets or sets the color of the text.
+		/// Gets or sets the color of the text in the text box's normal state.
 		/// </summary>
-		[Category("Appearance")]
-		public Color TextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color TextColor
+		{
+			get => _textColors[WidgetVisualStateNormal].Value;
+			set => _textColors[WidgetVisualStateNormal] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the color of the text when the text box is disabled.
 		/// </summary>
-		[Category("Appearance")]
-		public Color? DisabledTextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color? DisabledTextColor
+		{
+			get => _textColors[WidgetVisualStateDisabled];
+			set => _textColors[WidgetVisualStateDisabled] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the color of the text when the text box has focus.
 		/// </summary>
-		[Category("Appearance")]
-		public Color? FocusedTextColor { get; set; }
+		[Category("Appearance/TextColor")]
+		public Color? FocusedTextColor
+		{
+			get => _textColors[WidgetVisualStateFocused];
+			set => _textColors[WidgetVisualStateFocused] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text when the mouse is over the text box, or null to use the default.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? OverTextColor
+		{
+			get => _textColors[WidgetVisualStateOver];
+			set => _textColors[WidgetVisualStateOver] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text when the text box is pressed, or null to use the default.
+		/// </summary>
+		[Category("Appearance/TextColor")]
+		public Color? PressedTextColor
+		{
+			get => _textColors[WidgetVisualStatePressed];
+			set => _textColors[WidgetVisualStatePressed] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the image displayed as the text cursor.
@@ -407,10 +444,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler CursorPositionChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public TextBox(string styleName = Stylesheet.DefaultStyleName)
+		public TextBox(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			AcceptsKeyboardFocus = true;
 
@@ -419,7 +457,7 @@ namespace Myra.Graphics2D.UI
 
 			ClipToBounds = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			BlinkIntervalInMs = 450;
 
@@ -427,6 +465,14 @@ namespace Myra.Graphics2D.UI
 
 			if (MyraEnvironment.EventHandlingModel == EventHandlingStrategy.EventBubbling)
 				this.TouchDoubleClick += TextBox_TouchDoubleClickStopPropagation;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextBox"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public TextBox(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		// Prevent double-click from propagating to parent widgets
@@ -801,7 +847,7 @@ namespace Myra.Graphics2D.UI
 						{
 							clipboardText = Clipboard.GetText();
 						}
-						catch (Exception)
+						catch
 						{
 							clipboardText = MyraEnvironment.InternalClipboard;
 						}
@@ -1012,7 +1058,7 @@ namespace Myra.Graphics2D.UI
 				{
 					Clipboard.SetText(clipboardText);
 				}
-				catch (Exception)
+				catch
 				{
 					// Fallback if system clipboard is unavailable
 					MyraEnvironment.InternalClipboard = clipboardText;
@@ -1629,24 +1675,20 @@ namespace Myra.Graphics2D.UI
 			var bounds = ActualBounds;
 			RenderSelection(context);
 
-			// Determine text color based on state: hint/disabled/focused
-			var textColor = TextColor;
+			// Get text color based on current widget state
+			var nullableColor = GetCurrentVisual(_textColors);
+			if (nullableColor == null)
+			{
+				return;
+			}
+
+			var textColor = nullableColor.Value;
 			var oldOpacity = context.Opacity;
 
 			if (HintTextEnabled)
 			{
 				// Hint text is semi-transparent
 				context.Opacity *= 0.5f;
-			}
-			else if (!Enabled && DisabledTextColor != null)
-			{
-				// Use special color for disabled state
-				textColor = DisabledTextColor.Value;
-			}
-			else if (IsKeyboardFocused && FocusedTextColor != null)
-			{
-				// Use special color when focused
-				textColor = FocusedTextColor.Value;
 			}
 
 			// Align text within bounds based on TextVerticalAlignment
@@ -1770,33 +1812,34 @@ namespace Myra.Graphics2D.UI
 			_richTextLayout.Width = _wrap ? width : default(int?);
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TextBoxStyles;
+
 		/// <summary>
-		/// Applies a text box style to the text box, setting colors, cursor, selection, and font.
+		/// Applies the specified widget style to this text box.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var textBoxStyle = (TextBoxStyle)style;
+			TextColor = textBoxStyle.TextColor;
+			DisabledTextColor = textBoxStyle.DisabledTextColor;
+			FocusedTextColor = textBoxStyle.FocusedTextColor;
+			OverTextColor = textBoxStyle.OverTextColor;
+			PressedTextColor = textBoxStyle.PressedTextColor;
+
+			Cursor = textBoxStyle.Cursor;
+			Selection = textBoxStyle.Selection;
+
+			Font = textBoxStyle.Font;
+		}
+
+		/// <summary>
+		/// Applies the specified text box style to this text box.
 		/// </summary>
 		/// <param name="style">The text box style to apply.</param>
-		public void ApplyTextBoxStyle(TextBoxStyle style)
-		{
-			ApplyWidgetStyle(style);
-
-			TextColor = style.TextColor;
-			DisabledTextColor = style.DisabledTextColor;
-			FocusedTextColor = style.FocusedTextColor;
-
-			Cursor = style.Cursor;
-			Selection = style.Selection;
-
-			Font = style.Font;
-		}
-
-		/// <summary>
-		/// Applies a named text box style from the stylesheet to the text box.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the text box style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyTextBoxStyle(stylesheet.TextBoxStyles.SafelyGetStyle(name));
-		}
+		public void ApplyTextBoxStyle(TextBoxStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Gets the width of the character at the specified text index.
@@ -1838,6 +1881,8 @@ namespace Myra.Graphics2D.UI
 			TextColor = textBox.TextColor;
 			DisabledTextColor = textBox.DisabledTextColor;
 			FocusedTextColor = textBox.FocusedTextColor;
+			OverTextColor = textBox.OverTextColor;
+			PressedTextColor = textBox.PressedTextColor;
 			Cursor = textBox.Cursor;
 			Selection = textBox.Selection;
 			BlinkIntervalInMs = textBox.BlinkIntervalInMs;

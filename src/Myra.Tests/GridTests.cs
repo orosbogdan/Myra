@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AssetManagementBase;
+using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 using Xunit;
 
@@ -9,9 +10,8 @@ namespace Myra.Tests
 	{
 		private static Project LoadFromResource(string name)
 		{
-			var xml = Utility.ReadResourceAsString("Resources.GridTests." + name);
-
-			return Project.LoadFromXml(xml);
+			var assetManager = Utility.CreateAssetManager();
+			return assetManager.LoadProject("GridTests/" + name);
 		}
 
 		[Fact]

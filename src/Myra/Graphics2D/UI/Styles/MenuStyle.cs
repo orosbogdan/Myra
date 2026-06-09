@@ -6,6 +6,8 @@ using Stride.Core.Mathematics;
 using Color = FontStashSharp.FSColor;
 #endif
 
+using System.ComponentModel;
+
 namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
@@ -16,21 +18,25 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the style applied to menu item icons.
 		/// </summary>
-		public PressableImageStyle ImageStyle { get; set; }
+		[Browsable(false)]
+		public ImageStyle ImageStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu item text labels.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle LabelStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu item shortcut key text.
 		/// </summary>
+		[Browsable(false)]
 		public LabelStyle ShortcutStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to menu separator lines.
 		/// </summary>
+		[Browsable(false)]
 		public SeparatorStyle SeparatorStyle { get; set; }
 
 		/// <summary>
@@ -61,7 +67,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <param name="style">The source menu style to copy from.</param>
 		public MenuStyle(MenuStyle style) : base(style)
 		{
-			ImageStyle = style.ImageStyle != null ? new PressableImageStyle(style.ImageStyle) : null;
+			ImageStyle = style.ImageStyle != null ? new ImageStyle(style.ImageStyle) : null;
 			LabelStyle = style.LabelStyle != null ? new LabelStyle(style.LabelStyle) : null;
 			ShortcutStyle = style.ShortcutStyle != null ? new LabelStyle(style.ShortcutStyle) : null;
 			SeparatorStyle = style.SeparatorStyle != null ? new SeparatorStyle(style.SeparatorStyle) : null;

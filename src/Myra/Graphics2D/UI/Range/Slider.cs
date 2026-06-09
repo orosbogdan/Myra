@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
@@ -21,8 +20,8 @@ namespace Myra.Graphics2D.UI
 	{
 		private readonly SingleItemLayout<Button> _layout;
 
-		private float _value, _wheelStep;
-		private bool _wheelAdjustment, _acceptWheelInput;
+		private float _value, _wheelStep = 1.0f;
+		private bool _wheelAdjustment;
 
 		/// <summary>
 		/// Gets the orientation of the slider (horizontal or vertical).
@@ -98,7 +97,6 @@ namespace Myra.Graphics2D.UI
 			set
 			{
 				_wheelAdjustment = value;
-				_acceptWheelInput = value;
 			}
 		}
 
@@ -122,10 +120,11 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets a value indicating whether the slider accepts mouse wheel input.
 		/// </summary>
-		protected internal override bool AcceptsMouseWheel {
+		protected internal override bool AcceptsMouseWheel
+		{
 			get
 			{
-				return _acceptWheelInput;
+				return _wheelAdjustment;
 			}
 		}
 
@@ -208,10 +207,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler<ValueChangedEventArgs<float>> ValueChangedByUser;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Slider"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Slider"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply.</param>
-		protected Slider(string styleName)
+		protected Slider(Stylesheet stylesheet, string styleName)
 		{
 			_layout = new SingleItemLayout<Button>(this)
 			{
@@ -224,9 +224,17 @@ namespace Myra.Graphics2D.UI
 
 			ChildrenLayout = _layout;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			Maximum = 100;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Slider"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply.</param>
+		protected Slider(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private int GetHint()
@@ -243,21 +251,22 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Applies the specified slider style to this slider.
+		/// Applies the specified widget style to this slider.
 		/// </summary>
-		/// <param name="style">The slider style to apply.</param>
-		public void ApplySliderStyle(SliderStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.KnobStyle != null)
+			var sliderStyle = (SliderStyle)style;
+			if (sliderStyle.KnobStyle != null)
 			{
-				ImageButton.ApplyButtonStyle(style.KnobStyle);
+				ImageButton.ApplyButtonStyle(sliderStyle.KnobStyle);
 
-				if (style.KnobStyle.ImageStyle != null)
+				if (sliderStyle.KnobStyle.ImageStyle != null)
 				{
 					var image = (Image)ImageButton.Content;
-					image.ApplyPressableImageStyle(style.KnobStyle.ImageStyle);
+					image.ApplyImageStyle(sliderStyle.KnobStyle.ImageStyle);
 				}
 			}
 		}
@@ -295,15 +304,15 @@ namespace Myra.Graphics2D.UI
 		public override void OnMouseWheel(float delta)
 		{
 			base.OnMouseWheel(delta);
-			
-			if(_wheelAdjustment)
+
+			if (_wheelAdjustment)
 			{
 				var prevValue = _value;
-				
+
 				if (delta < 0)
 				{
 					Value -= WheelStep;
-				}				
+				}
 				else
 				{
 					Value += WheelStep;

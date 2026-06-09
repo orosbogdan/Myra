@@ -1,15 +1,11 @@
-﻿using Myra.Attributes;
-using Myra.Graphics2D.UI.Styles;
-using System;
-using System.ComponentModel;
-using System.Xml.Serialization;
+﻿using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
 	/// <summary>
 	/// A radio button widget that can be part of a group where only one button can be selected at a time.
 	/// </summary>
-	[StyleTypeName("RadioButton")]
 	public class RadioButton : CheckButtonBase
 	{
 		/// <summary>
@@ -53,13 +49,24 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="RadioButton"/> class with the specified stylesheet and style.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public RadioButton(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
+		{
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RadioButton"/> class with the specified style.
 		/// </summary>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public RadioButton(string styleName = Stylesheet.DefaultStyleName)
+		public RadioButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			SetStyle(styleName);
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.RadioButtonStyles;
 
 		/// <summary>
 		/// Handles the pressed state change, deselecting other radio buttons in the same parent when this button is pressed.
@@ -85,16 +92,6 @@ namespace Myra.Graphics2D.UI
 
 				asRadio.IsPressed = false;
 			}
-		}
-
-		/// <summary>
-		/// Applies a named radio button style from the stylesheet to the radio button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the radio button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyCheckButtonStyle(stylesheet.RadioButtonStyles.SafelyGetStyle(name));
 		}
 	}
 }

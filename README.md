@@ -13,7 +13,7 @@ Myra is a UI library for [MonoGame](http://www.monogame.net/), [FNA](https://git
 * **Myra.PlatformAgnostic.** Version of the library that could be used in any C# game engine.
 
 ## Documentation
-[https://rds1983.github.io/Myra](https://rds1983.github.io/Myra)
+[https://myraui.github.io/Myra/](https://myraui.github.io/Myra/)
 
 ## Support
 Use the following resources if you need help with Myra or have any questions:

@@ -1,4 +1,5 @@
 ﻿using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
@@ -19,21 +20,22 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerticalSplitPane"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="VerticalSplitPane"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public VerticalSplitPane(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public VerticalSplitPane(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 		}
 
 		/// <summary>
-		/// Applies internal styling to the vertical split pane based on the stylesheet.
+		/// Initializes a new instance of the <see cref="VerticalSplitPane"/> class with the specified style.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public VerticalSplitPane(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			ApplySplitPaneStyle(stylesheet.VerticalSplitPaneStyles.SafelyGetStyle(name));
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.VerticalSplitPaneStyles;
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
-using Myra.Attributes;
+using System.Collections;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -16,7 +16,6 @@ namespace Myra.Graphics2D.UI
 	/// <summary>
 	/// A window dialog with OK and Cancel buttons for user interaction.
 	/// </summary>
-	[StyleTypeName("Window")]
 	public class Dialog : Window
 	{
 		/// <summary>
@@ -41,10 +40,11 @@ namespace Myra.Graphics2D.UI
 		public Keys ConfirmKey { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Dialog"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Dialog"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public Dialog(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public Dialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			ConfirmKey = Keys.Enter;
 
@@ -84,7 +84,18 @@ namespace Myra.Graphics2D.UI
 			};
 
 			buttonsPanel.Widgets.Add(ButtonCancel);
+
 			Children.Add(buttonsPanel);
+
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Dialog"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public Dialog(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>

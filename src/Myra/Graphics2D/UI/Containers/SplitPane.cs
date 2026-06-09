@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
@@ -49,15 +48,24 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler ProportionsChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SplitPane"/> class.
+		/// Initializes a new instance of the <see cref="SplitPane"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the split pane.</param>
-		protected SplitPane(string styleName)
+		protected SplitPane(Stylesheet stylesheet, string styleName)
 		{
 			ChildrenLayout = _layout;
 			_widgets.CollectionChanged += WidgetsOnCollectionChanged;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SplitPane"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the split pane.</param>
+		protected SplitPane(string styleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -368,14 +376,15 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Applies the specified style to the split pane and its splitter handles.
+		/// Applies the specified widget style to this split pane.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplySplitPaneStyle(SplitPaneStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			HandleStyle = style.HandleStyle;
+			var splitPaneStyle = (SplitPaneStyle)style;
+			HandleStyle = splitPaneStyle.HandleStyle;
 			Reset();
 		}
 

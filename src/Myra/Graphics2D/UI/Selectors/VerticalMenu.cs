@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
+using System.Collections;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -60,14 +62,25 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerticalMenu"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="VerticalMenu"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public VerticalMenu(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public VerticalMenu(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VerticalMenu"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public VerticalMenu(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
+		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.VerticalMenuStyles;
 
 		/// <summary>
 		/// Handles keyboard input for vertical menu navigation using up and down arrow keys.
@@ -86,16 +99,6 @@ namespace Myra.Graphics2D.UI
 					MoveHover(1);
 					break;
 			}
-		}
-
-		/// <summary>
-		/// Applies a named vertical menu style from the stylesheet to the menu.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the vertical menu style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyMenuStyle(stylesheet.VerticalMenuStyles.SafelyGetStyle(name));
 		}
 	}
 }

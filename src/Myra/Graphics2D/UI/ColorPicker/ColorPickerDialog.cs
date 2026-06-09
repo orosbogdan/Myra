@@ -1,4 +1,5 @@
 using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -38,16 +39,25 @@ namespace Myra.Graphics2D.UI.ColorPicker
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class.
+		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class with the specified stylesheet and style.
 		/// </summary>
-		public ColorPickerDialog(): base(null)
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public ColorPickerDialog(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			ColorPickerPanel = new ColorPickerPanel();
 
 			Title = "Color Picker";
 			Content = ColorPickerPanel;
 
-			SetStyle(Stylesheet.DefaultStyleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ColorPickerDialog"/> class.
+		/// </summary>
+		public ColorPickerDialog() : this(Stylesheet.Current, Stylesheet.DefaultStyleName)
+		{
 		}
 
 		/// <summary>
@@ -61,30 +71,24 @@ namespace Myra.Graphics2D.UI.ColorPicker
 			{
 				var colorDisplay = ColorPickerPanel.GetUserColorImage(i);
 				var color = colorDisplay.Color;
-				var alpha = (int) (colorDisplay.Opacity * 255);
+				var alpha = (int)(colorDisplay.Opacity * 255);
 				ColorPickerPanel.UserColors[i] = new Color(color.R, color.G, color.B, alpha);
 			}
 		}
 
-		/// <summary>
-		/// Applies a color picker dialog style to the dialog.
-		/// </summary>
-		/// <param name="style">The color picker dialog style to apply.</param>
-		public void ApplyColorPickerDialogStyle(ColorPickerDialogStyle style)
-		{
-			ApplyWindowStyle(style);
 
-			ColorPickerPanel.ApplyColorPickerDialogStyle(style);
-		}
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ColorPickerDialogStyles;
 
 		/// <summary>
-		/// Applies internal styling to the color picker dialog based on the stylesheet.
+		/// Applies the specified widget style to this color picker dialog.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyColorPickerDialogStyle(stylesheet.ColorPickerDialogStyles.SafelyGetStyle(name));
+			base.ApplyStyle(style);
+
+			var colorPickerDialogStyle = (ColorPickerDialogStyle)style;
+			ColorPickerPanel.ApplyColorPickerDialogStyle(colorPickerDialogStyle);
 		}
 	}
 }

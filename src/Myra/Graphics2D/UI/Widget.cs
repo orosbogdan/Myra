@@ -7,7 +7,7 @@ using Myra.MML;
 using Myra.Graphics2D.UI.Properties;
 using Myra.Attributes;
 using Myra.Events;
-
+using System.Collections;
 
 
 #if MONOGAME || FNA
@@ -47,6 +47,21 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public partial class Widget : BaseObject, ITransformable
 	{
+		/// <summary>The widget is in its normal state.</summary>
+		internal const int WidgetVisualStateNormal = 0;
+		/// <summary>The widget is disabled.</summary>
+		internal const int WidgetVisualStateDisabled = 1;
+		/// <summary>The mouse is over the widget.</summary>
+		internal const int WidgetVisualStateOver = 2;
+		/// <summary>The widget has keyboard focus.</summary>
+		internal const int WidgetVisualStateFocused = 3;
+		/// <summary>The widget is pressed/active.</summary>
+		internal const int WidgetVisualStatePressed = 4;
+		/// <summary>The total number of visual states.</summary>
+		internal const int WidgetVisualStateTotal = 5;
+
+		private readonly IBrush[] _backgrounds = new IBrush[WidgetVisualStateTotal];
+		private readonly IBrush[] _borders = new IBrush[WidgetVisualStateTotal];
 		private MouseCursorType? _mouseCursorType;
 		private Vector2? _startPos;
 		private Point _startLeftTop;
@@ -76,6 +91,7 @@ namespace Myra.Graphics2D.UI
 		private float _rotation = 0.0f;
 		private bool _transformDirty = true;
 		private Transform _transform;
+		private bool _isPressed = false;
 
 		/// <summary>
 		/// Internal use only. (MyraPad)
@@ -265,7 +281,6 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the outer margin around the widget.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness Margin
 		{
 			get
@@ -286,16 +301,9 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets or sets the brush used to draw the border around the widget.
-		/// </summary>
-		[Category("Layout")]
-		public IBrush Border { get; set; }
-
-		/// <summary>
 		/// Gets or sets the thickness of the border around the widget.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness BorderThickness
 		{
 			get
@@ -319,7 +327,6 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the inner padding inside the widget's borders.
 		/// </summary>
 		[Category("Layout")]
-		[DesignerFolded]
 		public Thickness Padding
 		{
 			get
@@ -502,7 +509,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue("1, 1")]
-		[DesignerFolded]
 		public Vector2 Scale
 		{
 			get => _scale;
@@ -523,7 +529,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue("0.5, 0.5")]
-		[DesignerFolded]
 		public Vector2 TransformOrigin
 		{
 			get => _transformOrigin;
@@ -544,7 +549,6 @@ namespace Myra.Graphics2D.UI
 		/// </summary>
 		[Category("Transform")]
 		[DefaultValue(0.0f)]
-		[DesignerFolded]
 		public float Rotation
 		{
 			get => _rotation;
@@ -670,52 +674,126 @@ namespace Myra.Graphics2D.UI
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget in its normal state.
 		/// </summary>
-		[Category("Appearance")]
-		public IBrush Background { get; set; }
+		[Category("Appearance/Background")]
+		public IBrush Background
+		{
+			get => _backgrounds[WidgetVisualStateNormal];
+			set => _backgrounds[WidgetVisualStateNormal] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when the mouse is hovering over it.
 		/// </summary>
-		[Category("Appearance")]
-		public IBrush OverBackground { get; set; }
+		[Category("Appearance/Background")]
+		public IBrush OverBackground
+		{
+			get => _backgrounds[WidgetVisualStateOver];
+			set => _backgrounds[WidgetVisualStateOver] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when it is disabled.
 		/// </summary>
-		[Category("Appearance")]
-		public IBrush DisabledBackground { get; set; }
+		[Category("Appearance/Background")]
+		public IBrush DisabledBackground
+		{
+			get => _backgrounds[WidgetVisualStateDisabled];
+			set => _backgrounds[WidgetVisualStateDisabled] = value;
+		}
 
 		/// <summary>
 		/// Gets or sets the brush used to draw the background of the widget when it has keyboard focus.
 		/// </summary>
-		[Category("Appearance")]
-		public IBrush FocusedBackground { get; set; }
+		[Category("Appearance/Background")]
+		public IBrush FocusedBackground
+		{
+			get => _backgrounds[WidgetVisualStateFocused];
+			set => _backgrounds[WidgetVisualStateFocused] = value;
+		}
 
 		/// <summary>
-		/// Gets or sets the brush used to draw the border of the widget when the mouse is hovering over it.
+		/// Gets or sets the brush used for the widget's background when it is pressed.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Background")]
+		public IBrush PressedBackground
+		{
+			get => _backgrounds[WidgetVisualStatePressed];
+			set => _backgrounds[WidgetVisualStatePressed] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border in its normal state.
+		/// </summary>
+		[Category("Appearance/Border")]
+		public IBrush Border
+		{
+			get => _borders[WidgetVisualStateNormal];
+			set => _borders[WidgetVisualStateNormal] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when the mouse is over it.
+		/// </summary>
+		[Category("Appearance/Border")]
 		public IBrush OverBorder
 		{
-			get; set;
+			get => _borders[WidgetVisualStateOver];
+			set => _borders[WidgetVisualStateOver] = value;
 		}
 
 		/// <summary>
-		/// Gets or sets the brush used to draw the border of the widget when it is disabled.
+		/// Gets or sets the brush used for the widget's border when it is disabled.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush DisabledBorder
 		{
-			get; set;
+			get => _borders[WidgetVisualStateDisabled];
+			set => _borders[WidgetVisualStateDisabled] = value;
 		}
 
 		/// <summary>
-		/// Gets or sets the brush used to draw the border of the widget when it has keyboard focus.
+		/// Gets or sets the brush used for the widget's border when it has focus.
 		/// </summary>
-		[Category("Appearance")]
+		[Category("Appearance/Border")]
 		public IBrush FocusedBorder
 		{
-			get; set;
+			get => _borders[WidgetVisualStateFocused];
+			set => _borders[WidgetVisualStateFocused] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets the brush used for the widget's border when it is pressed.
+		/// </summary>
+		[Category("Appearance/Border")]
+		public IBrush PressedBorder
+		{
+			get => _borders[WidgetVisualStatePressed];
+			set => _borders[WidgetVisualStatePressed] = value;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the button is currently in the pressed state.
+		/// </summary>
+		[Browsable(false)]
+		[XmlIgnore]
+		public virtual bool IsPressed
+		{
+			get => _isPressed;
+			set
+			{
+				if (value == _isPressed)
+				{
+					return;
+				}
+
+				_isPressed = value;
+				foreach (var child in ChildrenCopy)
+				{
+					child.IsPressed = value;
+				}
+
+				OnPressedChanged();
+			}
 		}
 
 		/// <summary>
@@ -834,11 +912,6 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the over-background element should be drawn for this widget.
-		/// </summary>
-		protected virtual bool UseOverBackground => IsMouseInside;
-
-		/// <summary>
 		/// Gets or sets an action to be invoked before the widget is rendered.
 		/// </summary>
 		[Browsable(false)]
@@ -853,6 +926,21 @@ namespace Myra.Graphics2D.UI
 		public Action<RenderContext> AfterRender;
 
 		/// <summary>
+		/// Gets a value indicating whether the over background should be used for the widget's current state.
+		/// </summary>
+		protected virtual bool UseOverBackground => IsMouseInside;
+
+		/// <summary>
+		/// Occurs when the widget's pressed state changes.
+		/// </summary>
+		public event MyraEventHandler PressedChanged;
+
+		/// <summary>
+		/// Occurs when the widget's pressed state is being changed by user interaction, before the change is committed.
+		/// </summary>
+		public event MyraEventHandler<ValueChangingEventArgs<bool>> PressedChangingByUser;
+
+		/// <summary>
 		/// Initializes a new instance of the Widget class.
 		/// </summary>
 		public Widget()
@@ -865,52 +953,66 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets the current background brush based on the widget's state (disabled, focused, or hovered).
+		/// Gets the current visual element based on the widget's state, selecting from the provided array of visual values.
 		/// </summary>
-		/// <returns>The appropriate background brush for the current state, or null if none is set.</returns>
-		public virtual IBrush GetCurrentBackground()
+		/// <typeparam name="T">The type of visual element.</typeparam>
+		/// <param name="values">Array of visual values indexed by WidgetVisualState constants.</param>
+		/// <returns>The current visual element appropriate for the widget's current state.</returns>
+		protected T GetCurrentVisual<T>(T[] values)
 		{
-			var result = Background;
+			var result = values[WidgetVisualStateNormal];
 
-			if (!Enabled && DisabledBackground != null)
+			do
 			{
-				result = DisabledBackground;
-			}
-			else if (Enabled && IsKeyboardFocused && FocusedBackground != null)
-			{
-				result = FocusedBackground;
-			}
-			else if (UseOverBackground && OverBackground != null)
-			{
-				result = OverBackground;
-			}
+				if (Enabled)
+				{
+					if (IsPressed && values[WidgetVisualStatePressed] != null)
+					{
+						result = values[WidgetVisualStatePressed];
+						break;
+					}
+
+					if (IsKeyboardFocused && values[WidgetVisualStateFocused] != null)
+					{
+						result = values[WidgetVisualStateFocused];
+						break;
+					}
+
+					if (UseOverBackground && values[WidgetVisualStateOver] != null)
+					{
+						result = values[WidgetVisualStateOver];
+						break;
+					}
+				}
+				else
+				{
+					if (values[WidgetVisualStateDisabled] != null)
+					{
+						result = values[WidgetVisualStateDisabled];
+						break;
+					}
+					else if (values[WidgetVisualStateOver] != null)
+					{
+						result = values[WidgetVisualStateOver];
+						break;
+					}
+				}
+			} while (false);
 
 			return result;
 		}
 
 		/// <summary>
-		/// Gets the current border brush based on the widget's state (disabled, focused, or hovered).
+		/// Gets the brush to use for the widget's background based on its current state.
 		/// </summary>
-		/// <returns>The appropriate border brush for the current state, or null if none is set.</returns>
-		public virtual IBrush GetCurrentBorder()
-		{
-			var result = Border;
+		/// <returns>The current background brush appropriate for the widget's state.</returns>
+		public IBrush GetCurrentBackground() => GetCurrentVisual(_backgrounds);
 
-			if (!Enabled && DisabledBorder != null)
-			{
-				result = DisabledBorder;
-			}
-			else if (Enabled && IsKeyboardFocused && FocusedBorder != null)
-			{
-				result = FocusedBorder;
-			}
-			else if (IsMouseInside && OverBorder != null)
-			{
-				result = OverBorder;
-			}
-
-			return result;
-		}
+		/// <summary>
+		/// Gets the brush to use for the widget's border based on its current state.
+		/// </summary>
+		/// <returns>The current border brush appropriate for the widget's state.</returns>
+		public IBrush GetCurrentBorder() => GetCurrentVisual(_borders);
 
 		/// <summary>
 		/// Brings the widget to the front (top of the z-order) within its parent or desktop.
@@ -1312,11 +1414,78 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
+		internal virtual IDictionary GetStylesDictionary(Stylesheet stylesheet) => null;
+
+		internal virtual bool CanStyleBeNull => false;
+
+		internal WidgetStyle GetStyle(Stylesheet stylesheet, string name)
+		{
+			var asDict = GetStylesDictionary(stylesheet);
+			if (asDict == null)
+			{
+				throw new Exception($"Class {GetType()} can't be styled.");
+			}
+
+			if (!asDict.Contains(name))
+			{
+				if (CanStyleBeNull)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Stylesheet property lacks style {name} for {GetType()}.");
+				}
+			}
+
+			var styleObj = asDict[name];
+			if (!(styleObj is WidgetStyle))
+			{
+				throw new Exception($"Style object of type {styleObj.GetType()} can't be cast to WidgetStyle.");
+			}
+
+			var style = (WidgetStyle)styleObj;
+			if (style == null)
+			{
+				if (CanStyleBeNull)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Style object of type {styleObj.GetType()} is null.");
+				}
+			}
+
+			return style;
+		}
+
 		/// <summary>
-		/// Applies the properties from a widget style to this widget.
+		/// Sets the style for this widget by name from the specified stylesheet.
+		/// </summary>
+		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
+		/// <param name="name">The name of the style to apply.</param>
+		public void SetStyle(Stylesheet stylesheet, string name)
+		{
+			if (stylesheet == null || name == null)
+			{
+				return;
+			}
+
+			var style = GetStyle(stylesheet, name);
+
+			if (style != null)
+			{
+				StyleName = name;
+				ApplyStyle(style);
+			}
+		}
+
+		/// <summary>
+		/// Applies the specified widget style to this widget.
 		/// </summary>
 		/// <param name="style">The widget style to apply.</param>
-		public void ApplyWidgetStyle(WidgetStyle style)
+		protected virtual void ApplyStyle(WidgetStyle style)
 		{
 			Width = style.Width;
 			Height = style.Height;
@@ -1329,11 +1498,13 @@ namespace Myra.Graphics2D.UI
 			OverBackground = style.OverBackground;
 			DisabledBackground = style.DisabledBackground;
 			FocusedBackground = style.FocusedBackground;
+			PressedBackground = style.PressedBackground;
 
 			Border = style.Border;
 			OverBorder = style.OverBorder;
 			DisabledBorder = style.DisabledBorder;
 			FocusedBorder = style.FocusedBorder;
+			PressedBorder = style.PressedBorder;
 
 			Margin = style.Margin;
 			BorderThickness = style.BorderThickness;
@@ -1341,37 +1512,10 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Sets the widget's style using a specific stylesheet and style name.
+		/// Applies the base widget style properties to this widget.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		public void SetStyle(Stylesheet stylesheet, string name)
-		{
-			StyleName = name;
-
-			if (StyleName != null)
-			{
-				InternalSetStyle(stylesheet, StyleName);
-			}
-		}
-
-		/// <summary>
-		/// Sets the widget's style using the current stylesheet and the specified style name.
-		/// </summary>
-		/// <param name="name">The name of the style to apply from the current stylesheet.</param>
-		public void SetStyle(string name)
-		{
-			SetStyle(Stylesheet.Current, name);
-		}
-
-		/// <summary>
-		/// Applies a named style from a stylesheet to this widget.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the styles to apply.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		protected virtual void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-		}
+		/// <param name="style">The widget style to apply.</param>
+		public void ApplyWidgetStyle(WidgetStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Fires the KeyDown event for the specified key.
@@ -1532,7 +1676,7 @@ namespace Myra.Graphics2D.UI
 				newTop = _startLeftTop.Y + (int)delta.Y;
 			}
 
-			var parentBounds = Parent != null ? Parent.Bounds : Desktop.InternalBounds;
+			var parentBounds = Parent != null ? Parent.ActualBounds : Desktop.InternalBounds;
 			if (newLeft < 0)
 			{
 				newLeft = 0;
@@ -1651,6 +1795,34 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
+		/// Raises the PressedChanged event.
+		/// </summary>
+		public virtual void OnPressedChanged()
+		{
+			PressedChanged.Invoke(this, InputEventType.PressedChanged);
+		}
+
+		/// <summary>
+		/// Sets the IsPressed state as a result of user interaction, raising the PressedChangingByUser event first.
+		/// </summary>
+		/// <param name="value">The new pressed state value.</param>
+		protected void SetIsPressedByUser(bool value)
+		{
+			if (value != IsPressed && PressedChangingByUser != null)
+			{
+				var args = new ValueChangingEventArgs<bool>(_isPressed, value);
+				PressedChangingByUser(this, args);
+
+				if (args.Cancel)
+				{
+					return;
+				}
+			}
+
+			IsPressed = value;
+		}
+
+		/// <summary>
 		/// Performs hit testing to determine which widget at the given global position should receive input events.
 		/// </summary>
 		/// <param name="p">The position in global coordinates to test.</param>
@@ -1737,7 +1909,6 @@ namespace Myra.Graphics2D.UI
 			MaxHeight = w.MaxHeight;
 			Height = w.Height;
 			Margin = w.Margin;
-			Border = w.Border;
 			BorderThickness = w.BorderThickness;
 			Padding = w.Padding;
 			HorizontalAlignment = w.HorizontalAlignment;
@@ -1754,18 +1925,17 @@ namespace Myra.Graphics2D.UI
 			DragHandle = w.DragHandle;
 			IsModal = w.IsModal;
 			Opacity = w.Opacity;
-			Background = w.Background;
-			OverBackground = w.OverBackground;
-			DisabledBackground = w.DisabledBackground;
-			FocusedBackground = w.FocusedBackground;
-			OverBorder = w.OverBorder;
-			DisabledBorder = w.DisabledBorder;
-			FocusedBorder = w.FocusedBorder;
 			ClipToBounds = w.ClipToBounds;
 			Tag = w.Tag;
 			AcceptsKeyboardFocus = w.AcceptsKeyboardFocus;
 			BeforeRender = w.BeforeRender;
 			AfterRender = w.AfterRender;
+
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
+			{
+				_backgrounds[i] = w._backgrounds[i];
+				_borders[i] = w._borders[i];
+			}
 		}
 	}
 }

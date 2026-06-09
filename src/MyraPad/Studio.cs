@@ -7,9 +7,7 @@ using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.ColorPicker;
 using MyraPad.UI;
 using Myra;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Schema;
+using AssetManagementBase;
 
 namespace MyraPad
 {
@@ -25,6 +23,7 @@ namespace MyraPad
 		public static Studio Instance => _instance;
 
 		public static MainForm MainForm => Instance._ui;
+		public static AssetManager AssetManager => MainForm.AssetManager;
 
 		public Project Project => _ui.Project;
 

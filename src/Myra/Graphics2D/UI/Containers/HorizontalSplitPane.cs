@@ -1,4 +1,5 @@
 ﻿using Myra.Graphics2D.UI.Styles;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
@@ -13,21 +14,22 @@ namespace Myra.Graphics2D.UI
 		public override Orientation Orientation => Orientation.Horizontal;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HorizontalSplitPane"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="HorizontalSplitPane"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public HorizontalSplitPane(string styleName = Stylesheet.DefaultStyleName) : base(styleName)
+		public HorizontalSplitPane(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, styleName)
 		{
 		}
 
 		/// <summary>
-		/// Applies internal styling to the horizontal split pane based on the stylesheet.
+		/// Initializes a new instance of the <see cref="HorizontalSplitPane"/> class with the specified style.
 		/// </summary>
-		/// <param name="stylesheet">The stylesheet to apply.</param>
-		/// <param name="name">The name of the style.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public HorizontalSplitPane(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
 		{
-			ApplySplitPaneStyle(stylesheet.HorizontalSplitPaneStyles.SafelyGetStyle(name));
 		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.HorizontalSplitPaneStyles;
 	}
 }

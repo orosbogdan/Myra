@@ -1,4 +1,6 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class that defines the visual appearance of file dialog widgets.
@@ -8,16 +10,19 @@
 		/// <summary>
 		/// Gets or sets the style applied to the back navigation button.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle BackButtonStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the forward navigation button.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle ForwardButtonStyle { get; set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the parent folder navigation button.
 		/// </summary>
+		[Browsable(false)]
 		public ImageButtonStyle ParentButtonStyle { get; set; }
 
 		/// <summary>

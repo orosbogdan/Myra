@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
@@ -82,27 +81,37 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler ValueChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProgressBar"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="ProgressBar"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply.</param>
-		protected ProgressBar(string styleName)
+		protected ProgressBar(Stylesheet stylesheet, string styleName)
 		{
 			Maximum = 100;
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
-		/// Applies the specified progress bar style to this progress bar.
+		/// Initializes a new instance of the <see cref="ProgressBar"/> class with the specified style.
 		/// </summary>
-		/// <param name="style">The progress bar style to apply.</param>
-		public void ApplyProgressBarStyle(ProgressBarStyle style)
+		/// <param name="styleName">The name of the style to apply.</param>
+		protected ProgressBar(string styleName) : this(Stylesheet.Current, styleName)
 		{
-			ApplyWidgetStyle(style);
+		}
 
-			if (style.Filler == null)
+		/// <summary>
+		/// Applies the specified widget style to this progress bar.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var progressBarStyle = (ProgressBarStyle)style;
+			if (progressBarStyle.Filler == null)
 				return;
 
-			Filler = style.Filler;
+			Filler = progressBarStyle.Filler;
 		}
 
 		/// <summary>

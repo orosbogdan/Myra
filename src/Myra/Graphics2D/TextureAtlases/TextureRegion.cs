@@ -17,9 +17,14 @@ namespace Myra.Graphics2D.TextureAtlases
 	/// <summary>
 	/// Represents a rectangular region within a texture.
 	/// </summary>
-	public class TextureRegion: IImage
+	public class TextureRegion : IImage
 	{
 		private readonly Rectangle _bounds;
+
+		/// <summary>
+		/// Gets or sets the name of the texture region.
+		/// </summary>
+		public string Name { get; set; }
 
 #if MONOGAME || FNA || STRIDE
 		private readonly Texture2D _texture;
@@ -60,17 +65,6 @@ namespace Myra.Graphics2D.TextureAtlases
 			}
 		}
 
-#if MONOGAME || FNA || STRIDE
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
-		/// </summary>
-		/// <param name="texture">The texture to use.</param>
-		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0, texture.Width, texture.Height))
-		{
-		}
-
-#endif
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextureRegion"/> class with the specified texture and bounds.
 		/// </summary>
@@ -106,6 +100,26 @@ namespace Myra.Graphics2D.TextureAtlases
 			_bounds = bounds;
 		}
 
+#if MONOGAME || FNA || STRIDE
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
+		/// </summary>
+		/// <param name="texture">The texture to use.</param>
+		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0, texture.Width, texture.Height))
+		{
+		}
+#else
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextureRegion"/> class that covers the whole texture.
+		/// </summary>
+		/// <param name="texture">The texture to use.</param>
+		public TextureRegion(Texture2D texture) : this(texture, new Rectangle(0, 0,
+			MyraEnvironment.Platform.Renderer.TextureManager.GetTextureSize(texture).X,
+			MyraEnvironment.Platform.Renderer.TextureManager.GetTextureSize(texture).Y))
+		{
+		}
+#endif
+
 		/// <summary>
 		/// Draws the texture region to the specified render context at the given destination.
 		/// </summary>
@@ -116,5 +130,11 @@ namespace Myra.Graphics2D.TextureAtlases
 		{
 			context.Draw(Texture, dest, Bounds, color);
 		}
+
+		/// <summary>
+		/// Returns the name of the texture region.
+		/// </summary>
+		/// <returns>The region name.</returns>
+		public override string ToString() => Name;
 	}
 }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using MonoGame.Utilities;
+﻿using MonoGame.Utilities;
 using Myra.Events;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
+using System.Collections.Generic;
+using System.IO;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI.File
 {
@@ -182,10 +182,12 @@ namespace Myra.Graphics2D.UI.File
 		public IImage IconDrive { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode.
+		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode, stylesheet, and style.
 		/// </summary>
 		/// <param name="mode">The file dialog mode (open file, save file, or choose folder).</param>
-		public FileDialog(FileDialogMode mode) : base(null)
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public FileDialog(FileDialogMode mode, Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(stylesheet, null)
 		{
 			_mode = mode;
 
@@ -243,7 +245,16 @@ namespace Myra.Graphics2D.UI.File
 
 			UpdateEnabled();
 
-			SetStyle(Stylesheet.DefaultStyleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileDialog"/> class with the specified mode.
+		/// </summary>
+		/// <param name="mode">The file dialog mode (open file, save file, or choose folder).</param>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public FileDialog(FileDialogMode mode, string styleName = Stylesheet.DefaultStyleName) : this(mode, Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -619,23 +630,26 @@ namespace Myra.Graphics2D.UI.File
 			return false;
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.FileDialogStyles;
+
 		/// <summary>
-		/// Applies the specified file dialog style to this dialog instance.
+		/// Applies the specified widget style to this file dialog.
 		/// </summary>
-		/// <param name="style">The file dialog style to apply.</param>
-		public void ApplyFileDialogStyle(FileDialogStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWindowStyle(style);
+			base.ApplyStyle(style);
 
-			_buttonBack.ApplyImageButtonStyle(style.BackButtonStyle);
-			_buttonForward.ApplyImageButtonStyle(style.ForwardButtonStyle);
-			_buttonParent.ApplyImageButtonStyle(style.ParentButtonStyle);
+			var fileDialogStyle = (FileDialogStyle)style;
+			_buttonBack.ApplyImageButtonStyle(fileDialogStyle.BackButtonStyle);
+			_buttonForward.ApplyImageButtonStyle(fileDialogStyle.ForwardButtonStyle);
+			_buttonParent.ApplyImageButtonStyle(fileDialogStyle.ParentButtonStyle);
 
-			_gridFiles.SelectionBackground = style.SelectionBackground;
-			_gridFiles.SelectionHoverBackground = style.SelectionHoverBackground;
+			_gridFiles.SelectionBackground = fileDialogStyle.SelectionBackground;
+			_gridFiles.SelectionHoverBackground = fileDialogStyle.SelectionHoverBackground;
 
-			IconDrive = style.IconDrive;
-			IconFolder = style.IconFolder;
+			IconDrive = fileDialogStyle.IconDrive;
+			IconFolder = fileDialogStyle.IconFolder;
 
 			foreach (var widget in _listPlaces.Widgets)
 			{
@@ -650,16 +664,6 @@ namespace Myra.Graphics2D.UI.File
 
 				image.Renderable = pathInfo.IsDrive ? IconDrive : IconFolder;
 			}
-		}
-
-		/// <summary>
-		/// Internal method to set the style of the dialog from a stylesheet.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style definition.</param>
-		/// <param name="name">The name of the style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyFileDialogStyle(stylesheet.FileDialogStyles.SafelyGetStyle(name));
 		}
 	}
 }

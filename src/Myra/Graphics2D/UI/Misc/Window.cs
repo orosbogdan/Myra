@@ -1,11 +1,12 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
 using System.Xml.Serialization;
-using Myra.Attributes;
 using FontStashSharp;
 using Myra.Events;
+using System.Collections;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -69,6 +70,7 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the font used to render the title text.
 		/// </summary>
 		[Category("Appearance")]
+		[StylePropertyPath("TitleStyle/Font")]
 		public SpriteFontBase TitleFont
 		{
 			get
@@ -195,10 +197,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler Closed;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Window"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="Window"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public Window(string styleName = Stylesheet.DefaultStyleName)
+		public Window(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			_layout.Spacing = 8;
 			ChildrenLayout = _layout;
@@ -236,7 +239,15 @@ namespace Myra.Graphics2D.UI
 
 			Children.Add(TitlePanel);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Window"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public Window(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		/// <summary>
@@ -286,26 +297,29 @@ namespace Myra.Graphics2D.UI
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified window style to the window and its components.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyWindowStyle(WindowStyle style)
-		{
-			ApplyWidgetStyle(style);
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.WindowStyles;
 
-			if (style.TitleStyle != null)
+		/// <summary>
+		/// Applies the specified widget style to this window.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var windowStyle = (WindowStyle)style;
+			if (windowStyle.TitleStyle != null)
 			{
-				_titleLabel.ApplyLabelStyle(style.TitleStyle);
+				_titleLabel.ApplyLabelStyle(windowStyle.TitleStyle);
 			}
 
-			if (style.CloseButtonStyle != null)
+			if (windowStyle.CloseButtonStyle != null)
 			{
-				CloseButton.ApplyButtonStyle(style.CloseButtonStyle);
-				if (style.CloseButtonStyle.ImageStyle != null)
+				CloseButton.ApplyButtonStyle(windowStyle.CloseButtonStyle);
+				if (windowStyle.CloseButtonStyle.ImageStyle != null)
 				{
 					var image = (Image)CloseButton.Content;
-					image.ApplyPressableImageStyle(style.CloseButtonStyle.ImageStyle);
+					image.ApplyImageStyle(windowStyle.CloseButtonStyle.ImageStyle);
 				}
 			}
 		}
@@ -392,16 +406,6 @@ namespace Myra.Graphics2D.UI
 			}
 
 			Closed.Invoke(this, InputEventType.Closing);
-		}
-
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this window.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the window style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyWindowStyle(stylesheet.WindowStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

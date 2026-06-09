@@ -10,12 +10,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-    - name: Extract Version
-      shell: pwsh
-      run: |
-        $version = select-string -Path 'Directory.Build.Props' -Pattern '<VersionPrefix>(.*)<\/VersionPrefix>' -AllMatches | % { $_.Matches } | % { $_.Groups[1].Value }
-        echo "VERSION=$version"
-        echo "VERSION=$version" >> $Env:GITHUB_ENV
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -48,13 +42,6 @@ jobs:
     - name: Publish MyraPad to NuGet
       run: nuget.exe push src\MyraPad\bin\MonoGame\Release\myrapad.*.nupkg ${{secrets.NUGET_APIKEY}} -Source https://api.nuget.org/v3/index.json
       continue-on-error: true
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      with:
-        tag_name: ${{ env.VERSION }}
-        release_name: ${{ env.VERSION }}
-        draft: false
-        prerelease: false
+    - name: Publish MyraViewer to NuGet
+      run: nuget.exe push src\MyraViewer\bin\MonoGame\Release\myraviewer.*.nupkg ${{secrets.NUGET_APIKEY}} -Source https://api.nuget.org/v3/index.json
+      continue-on-error: true

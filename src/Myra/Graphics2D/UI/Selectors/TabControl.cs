@@ -2,6 +2,7 @@
 using Myra.Graphics2D.UI.Styles;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using System.Collections;
 
 namespace Myra.Graphics2D.UI
 {
@@ -112,10 +113,11 @@ namespace Myra.Graphics2D.UI
 		public override bool ClipToBounds { get => base.ClipToBounds; set => base.ClipToBounds = value; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TabControl"/> class.
+		/// Initializes a new instance of the <see cref="TabControl"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the tab control.</param>
-		public TabControl(string styleName = Stylesheet.DefaultStyleName) : base(new Grid())
+		public TabControl(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName) : base(new Grid())
 		{
 			HorizontalAlignment = HorizontalAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
@@ -137,7 +139,15 @@ namespace Myra.Graphics2D.UI
 
 			ClipToBounds = true;
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TabControl"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the tab control.</param>
+		public TabControl(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ItemOnChanged(object sender, MyraEventArgs eventArgs)
@@ -287,7 +297,8 @@ namespace Myra.Graphics2D.UI
 			{
 				button.Tag = item;
 				_gridButtons.Widgets.Insert(index, button);
-			} else
+			}
+			else
 			{
 				var topItemPanel = new HorizontalStackPanel();
 				topItemPanel.Tag = item;
@@ -310,7 +321,7 @@ namespace Myra.Graphics2D.UI
 					if (style.CloseButtonStyle.ImageStyle != null)
 					{
 						var closeImage = (Image)closeButton.Content;
-						closeImage.ApplyPressableImageStyle(style.CloseButtonStyle.ImageStyle);
+						closeImage.ApplyImageStyle(style.CloseButtonStyle.ImageStyle);
 					}
 				}
 
@@ -407,39 +418,32 @@ namespace Myra.Graphics2D.UI
 			SelectedIndex = index;
 		}
 
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TabControlStyles;
+
 		/// <summary>
-		/// Applies the specified style to the tab control and its tab items.
+		/// Applies the specified widget style to this tab control.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyTabControlStyle(TabControlStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			TabControlStyle = style;
+			var tabControlStyle = (TabControlStyle)style;
+			TabControlStyle = new TabControlStyle(tabControlStyle);
 
-			TabSelectorPosition = style.TabSelectorPosition;
-			InternalChild.RowSpacing = style.HeaderSpacing;
-			_gridButtons.ColumnSpacing = style.ButtonSpacing;
+			TabSelectorPosition = tabControlStyle.TabSelectorPosition;
+			InternalChild.RowSpacing = tabControlStyle.HeaderSpacing;
+			_gridButtons.ColumnSpacing = tabControlStyle.ButtonSpacing;
 
-			_panelContent.ApplyWidgetStyle(style.ContentStyle);
+			_panelContent.ApplyWidgetStyle(tabControlStyle.ContentStyle);
 
 			foreach (var item in Items)
 			{
-				item.Button.ApplyButtonStyle(style.TabItemStyle);
+				item.Button.ApplyButtonStyle(tabControlStyle.TabItemStyle);
 
-				var label = (Label)item.LabelWidget;
-				label.ApplyLabelStyle(style.TabItemStyle.LabelStyle);
+				var label = item.LabelWidget;
+				label.ApplyLabelStyle(tabControlStyle.TabItemStyle.LabelStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named tab control style from the stylesheet to the tab control.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the tab control style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyTabControlStyle(stylesheet.TabControlStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

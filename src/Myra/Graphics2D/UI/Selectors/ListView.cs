@@ -2,12 +2,12 @@
 using System.ComponentModel;
 using System.Xml.Serialization;
 using Myra.Graphics2D.UI.Styles;
-using Myra.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using Myra.Utility;
-using System.Reflection;
 using Myra.Events;
+using Myra.Attributes;
+
 
 
 #if MONOGAME || FNA
@@ -372,12 +372,13 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler SelectedIndexChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ListView"/> class.
+		/// Initializes a new instance of the <see cref="ListView"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the list view.</param>
-		public ListView(string styleName = Stylesheet.DefaultStyleName)
+		public ListView(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
-			_scrollViewer = new ScrollViewer();
+			_scrollViewer = new ScrollViewer(stylesheet);
 			ChildrenLayout = new SingleItemLayout<ScrollViewer>(this)
 			{
 				Child = _scrollViewer
@@ -390,7 +391,15 @@ namespace Myra.Graphics2D.UI
 
 			_widgets = new WidgetsCollection(this);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ListView"/> class.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply to the list view.</param>
+		public ListView(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
 		}
 
 		private void ButtonOnClick(object sender, MyraEventArgs eventArgs)
@@ -507,7 +516,7 @@ namespace Myra.Graphics2D.UI
 			var widget = SelectedItem;
 			var p = _box.ToLocal(widget.ToGlobal(widget.Bounds.Location));
 
-			var lineHeight = ListBoxStyle.ListItemStyle.LabelStyle.Font.LineHeight;
+			var lineHeight = widget.ActualBounds.Height;
 
 			var sp = _scrollViewer.ScrollPosition;
 
@@ -536,33 +545,32 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Applies the specified style to the list view and its items.
+		/// Applies the specified list box style to this list view.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyListBoxStyle(ListBoxStyle style)
-		{
-			ApplyWidgetStyle(style);
+		/// <param name="listBoxStyle">The list box style to apply.</param>
+		public void ApplyListViewStyle(ListBoxStyle listBoxStyle) => ApplyStyle(listBoxStyle);
 
-			ListBoxStyle = style;
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.ListBoxStyles;
+
+		/// <summary>
+		/// Applies the specified widget style to this list view.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var listBoxStyle = (ListBoxStyle)style;
+			ListBoxStyle = new ListBoxStyle(listBoxStyle);
 
 			foreach (var item in Widgets)
 			{
 				var asButton = item.Parent as ListViewButton;
 				if (asButton != null)
 				{
-					asButton.ApplyButtonStyle(style.ListItemStyle);
+					asButton.ApplyButtonStyle(listBoxStyle.ListItemStyle);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Applies a named list view style from the stylesheet to the list view.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the list view style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyListBoxStyle(stylesheet.ListBoxStyles.SafelyGetStyle(name));
 		}
 
 		private Widget GetChildByIndex(int index)

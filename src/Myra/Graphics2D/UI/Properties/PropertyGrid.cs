@@ -10,12 +10,12 @@ using System.Xml.Serialization;
 using Myra.MML;
 using Myra.Graphics2D.UI.File;
 using System.IO;
-using Myra.Attributes;
 using FontStashSharp;
-using FontStashSharp.RichText;
 using Myra.Graphics2D.Brushes;
 using AssetManagementBase;
 using Myra.Events;
+using Myra.Attributes;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -83,14 +83,13 @@ namespace Myra.Graphics2D.UI.Properties
 			{
 				ChildrenLayout = _layout;
 
-				_layout.ColumnSpacing = 4;
-				_layout.RowSpacing = 4;
+				_layout.ColumnSpacing = 8;
+				_layout.RowSpacing = 8;
 
 				// Two columns: expand/collapse toggle (Auto) and category label (Fill)
-				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-				_layout.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
-				_layout.RowsProportions.Add(new Proportion(ProportionType.Auto));
-				_layout.RowsProportions.Add(new Proportion(ProportionType.Auto));
+				_layout.ColumnsProportions.Add(Proportion.Auto);
+				_layout.ColumnsProportions.Add(Proportion.Fill);
+				_layout.DefaultRowProportion = Proportion.Auto;
 
 				// Create nested PropertyGrid to display this category's properties
 				_propertyGrid = new PropertyGrid(parent.PropertyGridStyle, category, parentProperty, parent)
@@ -107,7 +106,7 @@ namespace Myra.Graphics2D.UI.Properties
 				var imageStyle = parent.PropertyGridStyle.MarkStyle.ImageStyle;
 				if (imageStyle != null)
 				{
-					markImage.ApplyPressableImageStyle(imageStyle);
+					markImage.ApplyImageStyle(imageStyle);
 				}
 
 				_mark = new ToggleButton(null)
@@ -410,17 +409,19 @@ namespace Myra.Graphics2D.UI.Properties
 			_parentGrid = parentGrid;
 
 			_parentProperty = parentProperty;
+
 			// Two-column layout: property names (left) and value editors (right)
-			_layout.ColumnSpacing = 8;
+			_layout.ColumnSpacing = 32;
 			_layout.RowSpacing = 8;
-			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));
-			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1));
+			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1.0f));
+			_layout.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1.0f));
+			_layout.DefaultRowProportion = Proportion.Auto;
 
 			Category = category;
 
 			if (style != null)
 			{
-				ApplyPropertyGridStyle(style);
+				ApplyStyle(style);
 			}
 
 			HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -557,21 +558,17 @@ namespace Myra.Graphics2D.UI.Properties
 		}
 
 		// Creates a color editor with preview swatch and picker dialog button
-		private Grid CreateColorEditor(Record record, bool hasSetter)
+		private Widget CreateColorEditor(Record record, bool hasSetter)
 		{
 			var propertyType = record.Type;
 			var value = record.GetValue(_object);
 
-			var subGrid = new Grid
+			var subGrid = new HorizontalStackPanel
 			{
-				ColumnSpacing = 8,
-				HorizontalAlignment = HorizontalAlignment.Stretch
+				Spacing = 8
 			};
 
 			var isColor = propertyType == typeof(Color);
-
-			subGrid.ColumnsProportions.Add(new Proportion());
-			subGrid.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
 
 			// Get current color from property (handle both Color and Color?)
 			var color = Color.Transparent;
@@ -588,12 +585,12 @@ namespace Myra.Graphics2D.UI.Properties
 			var image = new Image
 			{
 				Renderable = Stylesheet.Current.WhiteRegion,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Center,
-				Width = 32,
 				Height = 16,
 				Color = color
 			};
-
+			StackPanel.SetProportionType(image, ProportionType.Fill);
 			subGrid.Widgets.Add(image);
 
 			// "Change..." button to open color picker dialog
@@ -607,8 +604,6 @@ namespace Myra.Graphics2D.UI.Properties
 					Text = "Change..."
 				}
 			};
-			Grid.SetColumn(button, 1);
-
 			subGrid.Widgets.Add(button);
 
 			if (hasSetter)
@@ -645,20 +640,16 @@ namespace Myra.Graphics2D.UI.Properties
 		}
 
 		// Creates editor for SolidBrush properties: shows color swatch and opens color picker dialog
-		private Grid CreateBrushEditor(Record record, bool hasSetter)
+		private Widget CreateBrushEditor(Record record, bool hasSetter)
 		{
 			var propertyType = record.Type;
 
-			var value = record.GetValue(_object) as SolidBrush;
+			var value = record.GetValue(_object) as IHasColor;
 
-			var subGrid = new Grid
+			var panel = new HorizontalStackPanel
 			{
-				ColumnSpacing = 8,
-				HorizontalAlignment = HorizontalAlignment.Stretch
+				Spacing = 8
 			};
-
-			subGrid.ColumnsProportions.Add(new Proportion());
-			subGrid.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
 
 			// Get brush color, or transparent if brush is null
 			var color = Color.Transparent;
@@ -677,7 +668,7 @@ namespace Myra.Graphics2D.UI.Properties
 				Color = color
 			};
 
-			subGrid.Widgets.Add(image);
+			panel.Widgets.Add(image);
 
 			// "Change..." button to open color picker
 			var button = new Button
@@ -690,9 +681,8 @@ namespace Myra.Graphics2D.UI.Properties
 					HorizontalAlignment = HorizontalAlignment.Center,
 				}
 			};
-			Grid.SetColumn(button, 1);
-
-			subGrid.Widgets.Add(button);
+			StackPanel.SetProportionType(button, ProportionType.Fill);
+			panel.Widgets.Add(button);
 
 			if (hasSetter)
 			{
@@ -712,12 +702,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 						image.Color = dlg.Color;
 						SetValue(record, _object, new SolidBrush(dlg.Color));
-						// Store color in BaseObject resources if applicable
-						var baseObject = _object as BaseObject;
-						if (baseObject != null)
-						{
-							baseObject.Resources[record.Name] = dlg.Color.ToHexString();
-						}
+
 						FireChanged(propertyType.Name);
 					};
 
@@ -729,7 +714,7 @@ namespace Myra.Graphics2D.UI.Properties
 				button.Enabled = false;
 			}
 
-			return subGrid;
+			return panel;
 		}
 
 		// Creates a dropdown editor for enum properties with support for nullable enums
@@ -935,7 +920,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 						FireChanged(record.Name);
 					}
-					catch (Exception)
+					catch
 					{
 						// TODO: Rework this ugly type conversion solution
 					}
@@ -1029,13 +1014,8 @@ namespace Myra.Graphics2D.UI.Properties
 			subGrid.ColumnsProportions.Add(new Proportion());
 
 			// Retrieve current file path from BaseObject resources or custom getter
-			var baseObject = _object as BaseObject;
-			var path = string.Empty;
-			if (baseObject != null)
-			{
-				baseObject.Resources.TryGetValue(record.Name, out path);
-			}
-			else if (Settings.ImagePropertyValueGetter != null)
+			var path = _object.ToString();
+			if (Settings.ImagePropertyValueGetter != null)
 			{
 				path = Settings.ImagePropertyValueGetter(record.Name);
 			}
@@ -1096,6 +1076,7 @@ namespace Myra.Graphics2D.UI.Properties
 						try
 						{
 							var filePath = dlg.FilePath;
+
 							// Make path relative to BasePath if applicable
 							if (!string.IsNullOrEmpty(Settings.BasePath))
 							{
@@ -1106,21 +1087,15 @@ namespace Myra.Graphics2D.UI.Properties
 							var newValue = loader(filePath);
 							textBox.Text = filePath;
 							SetValue(record, _object, newValue);
-							// Store path in resources
-							if (baseObject != null)
-							{
-								baseObject.Resources[record.Name] = filePath;
-							}
-							else if (Settings.ImagePropertyValueSetter != null)
+							if (Settings.ImagePropertyValueSetter != null)
 							{
 								Settings.ImagePropertyValueSetter(record.Name, filePath);
 							}
 
 							FireChanged(propertyType.Name);
 						}
-						catch (Exception)
+						catch
 						{
-
 						}
 					};
 
@@ -1230,7 +1205,7 @@ namespace Myra.Graphics2D.UI.Properties
 
 							FireChanged(propertyType.Name);
 						}
-						catch (Exception)
+						catch
 						{
 						}
 					};
@@ -1270,7 +1245,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 				var propertyType = record.Type;
 
-				Proportion rowProportion;
 				CustomValues customValues = null;
 
 				// Flag indicating if property should have a collapsible nested grid for its sub-properties
@@ -1400,7 +1374,7 @@ namespace Myra.Graphics2D.UI.Properties
 					var nameLabel = new Label
 					{
 						Text = name,
-						VerticalAlignment = VerticalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Center
 					};
 
 					Grid.SetColumn(nameLabel, 0);
@@ -1416,8 +1390,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 					Children.Add(valueWidget);
 
-					rowProportion = new Proportion(ProportionType.Auto);
-					_layout.RowsProportions.Add(rowProportion);
 					++y;
 				}
 
@@ -1434,8 +1406,6 @@ namespace Myra.Graphics2D.UI.Properties
 
 							Children.Add(subGrid);
 
-							rowProportion = new Proportion(ProportionType.Auto);
-							_layout.RowsProportions.Add(rowProportion);
 							++y;
 						}
 
@@ -1635,24 +1605,21 @@ namespace Myra.Graphics2D.UI.Properties
 					subGrid.Mark.IsPressed = true;
 				}
 
-				var rp = new Proportion(ProportionType.Auto);
-				_layout.RowsProportions.Add(rp);
-
 				y++;
 			}
 		}
 
-		/// <summary>
-		/// Applies the specified tree style to the property grid and all child elements.
-		/// Stores the style for use when creating child widgets and categories.
-		/// </summary>
-		/// <param name="style">The tree style to apply.</param>
-		public void ApplyPropertyGridStyle(TreeStyle style)
-		{
-			// Apply style to this widget and store for child widget creation
-			ApplyWidgetStyle(style);
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.TreeStyles;
 
-			PropertyGridStyle = style;
+		/// <summary>
+		/// Applies the specified widget style to this property grid.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+			var treeStyle = (TreeStyle)style;
+			PropertyGridStyle = treeStyle;
 		}
 	}
 }

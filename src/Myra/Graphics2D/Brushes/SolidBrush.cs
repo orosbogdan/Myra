@@ -1,7 +1,8 @@
 ﻿using FontStashSharp.RichText;
 using System;
 using Myra.Graphics2D.UI.Styles;
-
+using Myra.Utility;
+using Myra.MML;
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -17,7 +18,7 @@ namespace Myra.Graphics2D.Brushes
 	/// <summary>
 	/// A brush that fills areas with a solid color.
 	/// </summary>
-	public class SolidBrush : IBrush
+	public class SolidBrush : IBrush, IHasColor
 	{
 		private Color _color = Color.White;
 
@@ -86,5 +87,11 @@ namespace Myra.Graphics2D.Brushes
 				white.Draw(context, dest, c);
 			}
 		}
+
+		/// <summary>
+		/// Returns a string representation of the brush's color.
+		/// </summary>
+		/// <returns>A string containing the color information.</returns>
+		public override string ToString() => Color.ToColorString();
 	}
 }

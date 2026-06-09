@@ -9,10 +9,7 @@ using Myra.MML;
 using System.Collections.Generic;
 using Myra.Attributes;
 using System.Linq;
-using Myra.Graphics2D.TextureAtlases;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI.Properties;
-using FontStashSharp;
 using Myra.Utility;
 using Myra.Graphics2D.UI.File;
 using AssetManagementBase;
@@ -89,24 +86,6 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Project
 	{
-		// RAII pattern utility: temporarily changes stylesheet and restores on Dispose
-		// Used to apply a specific stylesheet during loading/saving without permanently changing global stylesheet
-		private struct StylesheetChanger: IDisposable
-		{
-			private readonly Stylesheet _oldStylesheet;
-
-			public StylesheetChanger(Stylesheet newStylesheet)
-			{
-				_oldStylesheet = Stylesheet.Current;
-				Stylesheet.Current = newStylesheet;
-			}
-
-			public void Dispose()
-			{
-				Stylesheet.Current = _oldStylesheet;
-			}
-		}
-
 		/// <summary>Constant name for proportion values.</summary>
 		public const string ProportionName = "Proportion";
 		/// <summary>Constant name for default proportion values.</summary>
@@ -174,11 +153,19 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Project"/> class.
+		/// Initializes a new instance of the <see cref="Project"/> class with the specified stylesheet.
 		/// </summary>
-		public Project()
+		/// <param name="stylesheet">The stylesheet to use for this project.</param>
+		public Project(Stylesheet stylesheet)
 		{
-			Stylesheet = Stylesheet.Current;
+			Stylesheet = stylesheet ?? throw new ArgumentNullException(nameof(stylesheet));
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Project"/> class using the current stylesheet.
+		/// </summary>
+		public Project() : this(Stylesheet.Current)
+		{
 		}
 
 		/// <summary>
@@ -284,30 +271,11 @@ namespace Myra.Graphics2D.UI
 		/// Gets or sets the extra widget assemblies and namespaces to include during project loading and saving.
 		/// </summary>
 		public static Dictionary<Assembly, string[]> ExtraWidgetAssembliesAndNamespaces = new Dictionary<Assembly, string[]>();
-		
+
 		// Creates a load context for deserializing UI projects from XML.
 		// Sets up asset loading, widget type resolution, and legacy name mapping.
-		internal static LoadContext CreateLoadContext(AssetManager assetManager)
+		internal static LoadContext CreateLoadContext(AssetManager assetManager, Stylesheet stylesheet)
 		{
-			// Creates resource instances (brushes, textures, fonts) by name using asset manager
-			Func<Type, string, object> resourceGetter = (t, name) =>
-			{
-				if (t == typeof(IBrush))
-				{
-					return new SolidBrush(name);
-				}
-				else if (t == typeof(IImage))
-				{
-					return assetManager.LoadTextureRegion(name);
-				}
-				else if (t == typeof(SpriteFontBase))
-				{
-					return assetManager.LoadFont(name);
-				}
-
-				throw new Exception(string.Format("Type {0} isn't supported", t.Name));
-			};
-
 			// Collect widget assemblies: both Myra core types and user-supplied custom widgets
 			Dictionary<Assembly, string[]> assemblies = new Dictionary<Assembly, string[]>(ExtraWidgetAssembliesAndNamespaces);
 			assemblies.Add(typeof(Widget).Assembly, new string[] { typeof(Widget).Namespace, typeof(PropertyGrid).Namespace });
@@ -316,8 +284,9 @@ namespace Myra.Graphics2D.UI
 			{
 				Assemblies = assemblies,
 				LegacyClassNames = LegacyClassNames,
-				ObjectCreator = (t, el) => CreateItem(t, el),
-				ResourceGetter = resourceGetter
+				ObjectCreator = (t, el) => CreateItem(t, el, stylesheet),
+				AssetManager = assetManager,
+				Stylesheet = stylesheet
 			};
 		}
 
@@ -325,7 +294,7 @@ namespace Myra.Graphics2D.UI
 		/// Saves the project to an XML string.
 		/// </summary>
 		/// <returns>An XML string representation of the project.</returns>
-		public string Save()
+		public string ToXml()
 		{
 			var saveContext = CreateSaveContext();
 			var root = saveContext.Save(this);
@@ -336,100 +305,66 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Loads a project from an XDocument with an optional handler.
-		/// If project has external stylesheet, temporarily switches to it during loading.
+		/// Saves the project to an XML string. This method is obsolete; use <see cref="ToXml"/> instead.
 		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
-		/// <param name="xDoc">The XDocument to load from.</param>
-		/// <param name="assetManager">The asset manager for loading resources. Required if the project has an external stylesheet.</param>
-		/// <param name="handler">Optional handler for loading events.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml<T>(XDocument xDoc, AssetManager assetManager = null, T handler = null) where T : class
+		/// <returns>An XML string representation of the project.</returns>
+		[Obsolete("Use ToXml")]
+		public string Save() => ToXml();
+
+		/// <summary>
+		/// Loads a project from an XML string representation.
+		/// </summary>
+		/// <param name="data">The XML string containing the project definition.</param>
+		/// <param name="assetManager">The asset manager used to load resources referenced by the project. If null, resources will not be loaded.</param>
+		/// <param name="customStylesheet">An optional custom stylesheet to apply to the project. If not provided, the stylesheet path from the project's XML will be used.</param>
+		/// <returns>A new Project instance loaded from the provided XML data, or null if loading fails.</returns>
+		public static Project LoadFromXml(string data, AssetManager assetManager = null, Stylesheet customStylesheet = null)
 		{
+			var xDoc = XDocument.Parse(data, LoadOptions.SetLineInfo);
+
 			// Check if project specifies external stylesheet
-			var stylesheet = Stylesheet.Current;
-			var stylesheetPathAttr = xDoc.Root.Attribute("StylesheetPath");
-			if (stylesheetPathAttr != null)
+			Stylesheet stylesheet;
+			if (customStylesheet == null)
 			{
-				stylesheet = assetManager.LoadStylesheet(stylesheetPathAttr.Value);
-			}
-
-			var result = new Project();
-
-			// If external stylesheet, temporarily switch to it for loading
-			if (stylesheetPathAttr != null)
-			{
-				if (assetManager == null)
+				var stylesheetPathAttr = xDoc.Root.Attribute("StylesheetPath");
+				if (stylesheetPathAttr != null)
 				{
-					throw new Exception($"assetManager couldn't be null if the project has external stylesheet");
+					if (assetManager == null)
+					{
+						throw new Exception($"assetManager couldn't be null if the project has external stylesheet");
+					}
+
+					stylesheet = assetManager.LoadStylesheet(stylesheetPathAttr.Value);
 				}
-
-				result.Stylesheet = stylesheet;
-				using(var stylesheetChanger = new StylesheetChanger(stylesheet))
+				else
 				{
-					var loadContext = CreateLoadContext(assetManager);
-					loadContext.Load(result, xDoc.Root, handler);
-					result.ObjectsNodes = loadContext.ObjectsNodes;
+					stylesheet = Stylesheet.Current;
 				}
 			}
 			else
 			{
-				// Use current stylesheet
-				var loadContext = CreateLoadContext(assetManager);
-				loadContext.Load(result, xDoc.Root, handler);
-				result.ObjectsNodes = loadContext.ObjectsNodes;
+				stylesheet = customStylesheet;
 			}
 
+			var result = new Project(stylesheet);
+
+			var loadContext = CreateLoadContext(assetManager, stylesheet);
+			loadContext.Load(result, xDoc.Root);
+			result.ObjectsNodes = loadContext.ObjectsNodes;
+
 			return result;
-		}
-
-		/// <summary>
-		/// Loads a project from XML string data with an optional handler.
-		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <param name="handler">Optional handler for loading events.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml<T>(string data, AssetManager assetManager = null, T handler = null) where T : class
-		{
-			return LoadFromXml(XDocument.Parse(data, LoadOptions.SetLineInfo), assetManager, handler);
-		}
-
-		/// <summary>
-		/// Loads a project from an XDocument.
-		/// </summary>
-		/// <param name="xDoc">The XDocument to load from.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml(XDocument xDoc, AssetManager assetManager = null)
-		{
-			return LoadFromXml<object>(xDoc, assetManager, null);
-		}
-
-		/// <summary>
-		/// Loads a project from XML string data.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <returns>The loaded project.</returns>
-		public static Project LoadFromXml(string data, AssetManager assetManager = null)
-		{
-			return LoadFromXml<object>(XDocument.Parse(data, LoadOptions.SetLineInfo), assetManager, null);
 		}
 
 		/// <summary>
 		/// Loads a single object from XML string data.
 		/// Determines object type from XML tag name, resolving legacy names and special types.
 		/// </summary>
-		/// <typeparam name="T">The type of the handler.</typeparam>
 		/// <param name="data">The XML data as a string.</param>
 		/// <param name="assetManager">The asset manager for loading resources.</param>
 		/// <param name="stylesheet">The stylesheet to apply to loaded objects.</param>
-		/// <param name="handler">Optional handler for loading events.</param>
 		/// <param name="parentType">The parent type context for loading.</param>
 		/// <returns>The loaded object.</returns>
-		public static object LoadObjectFromXml<T>(string data, AssetManager assetManager = null, Stylesheet stylesheet = null, T handler = null, Type parentType = null) where T : class
+		public static object LoadObjectFromXml(string data, AssetManager assetManager = null, Stylesheet stylesheet = null, Type parentType = null)
 		{
 			XDocument xDoc = XDocument.Parse(data, LoadOptions.SetLineInfo);
 
@@ -465,47 +400,11 @@ namespace Myra.Graphics2D.UI
 			}
 
 			// Create and load object, applying stylesheet context if provided
-			object item = null;
-			if (stylesheet != null)
-			{
-				using (var stylesheetChanger = new StylesheetChanger(stylesheet))
-				{
-					item = CreateItem(itemType, xDoc.Root);
-					var loadContext = CreateLoadContext(assetManager);
-					loadContext.Load(item, xDoc.Root, handler);
-				}
-			}
-			else
-			{
-				item = CreateItem(itemType, xDoc.Root);
-				var loadContext = CreateLoadContext(assetManager);
-				loadContext.Load(item, xDoc.Root, handler);
-			}
+			var item = CreateItem(itemType, xDoc.Root, stylesheet);
+			var loadContext = CreateLoadContext(assetManager, stylesheet);
+			loadContext.Load(item, xDoc.Root);
 
 			return item;
-		}
-
-		/// <summary>
-		/// Loads a single object from XML string data using the specified stylesheet.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <param name="stylesheet">The stylesheet to apply to loaded objects.</param>
-		/// <returns>The loaded object.</returns>
-		public static object LoadObjectFromXml(string data, AssetManager assetManager, Stylesheet stylesheet)
-		{
-			return LoadObjectFromXml<object>(data, assetManager, stylesheet, null);
-		}
-
-		/// <summary>
-		/// Loads a single object from XML string data using this project's stylesheet.
-		/// </summary>
-		/// <param name="data">The XML data as a string.</param>
-		/// <param name="assetManager">The asset manager for loading resources.</param>
-		/// <returns>The loaded object.</returns>
-		public object LoadObjectFromXml(string data, AssetManager assetManager)
-		{
-			return LoadObjectFromXml(data, assetManager, Stylesheet);
 		}
 
 		/// <summary>
@@ -523,46 +422,54 @@ namespace Myra.Graphics2D.UI
 		}
 
 		// Instantiates an object of the given type, handling special case of Widget constructors that accept StyleName parameter
-		private static object CreateItem(Type type, XElement element)
+		private static object CreateItem(Type type, XElement element, Stylesheet stylesheet)
 		{
 			if (typeof(Widget).IsAssignableFrom(type))
 			{
 				// Check if widget constructor accepts a style name parameter (string)
-				var acceptsStyleName = false;
+				var acceptsStyle = false;
 				foreach (var c in type.GetConstructors())
 				{
 					var p = c.GetParameters();
-					if (p != null && p.Length == 1)
+					if (p != null && p.Length == 2)
 					{
-						if (p[0].ParameterType == typeof(string))
+						if (p[0].ParameterType == typeof(Stylesheet) && p[1].ParameterType == typeof(string))
 						{
-							acceptsStyleName = true;
+							acceptsStyle = true;
 							break;
 						}
 					}
 				}
 
-				if (acceptsStyleName)
+				if (acceptsStyle)
 				{
-					// Extract StyleName from XML attribute, defaulting if not found or invalid
+					if (stylesheet == null)
+					{
+						throw new NullReferenceException(nameof(stylesheet));
+					}
+
+					// Extract StyleName from XML attribute, defaulting if not found
 					var styleName = Stylesheet.DefaultStyleName;
 					var styleNameAttr = element.Attribute("StyleName");
 					if (styleNameAttr != null)
 					{
-						var stylesNames = Stylesheet.Current.GetStylesByWidgetName(type.Name);
-						if (stylesNames != null && stylesNames.Contains(styleNameAttr.Value))
-						{
-							styleName = styleNameAttr.Value;
-						}
-						else
-						{
-							// Remove invalid style name attribute
-							styleNameAttr.Remove();
-						}
+						styleName = styleNameAttr.Value;
 					}
 
 					// Create widget with style name parameter
-					return (Widget)Activator.CreateInstance(type, styleName);
+					try
+					{
+						return (Widget)Activator.CreateInstance(type, stylesheet, styleName);
+					}
+					catch (TargetInvocationException ex)
+					{
+						if (ex.InnerException != null)
+						{
+							throw ex.InnerException;
+						}
+
+						throw ex;
+					}
 				}
 			}
 
@@ -574,7 +481,7 @@ namespace Myra.Graphics2D.UI
 		// Used to skip serializing properties that are already defined by the applied style.
 		private static bool HasStylesheetValue(Widget w, PropertyInfo property, Stylesheet stylesheet)
 		{
-			if (stylesheet == null)
+			if (stylesheet == null || w.GetStylesDictionary(stylesheet) == null)
 			{
 				return false;
 			}
@@ -586,35 +493,21 @@ namespace Myra.Graphics2D.UI
 				styleName = Stylesheet.DefaultStyleName;
 			}
 
-			// Determine the styles dictionary property name for this widget type
-			var typeName = w.GetType().Name;
-			var styleTypeNameAttribute = w.GetType().FindAttribute<StyleTypeNameAttribute>();
-			if (styleTypeNameAttribute != null)
+			object obj = null;
+			try
 			{
-				typeName = styleTypeNameAttribute.Name;
+				obj = w.GetStyle(stylesheet, styleName);
 			}
-
-			// Get the stylesheet's Styles collection for this widget type
-			var stylesDictPropertyName = typeName + "Styles";
-			var stylesDictProperty = stylesheet.GetType().GetRuntimeProperty(stylesDictPropertyName);
-			if (stylesDictProperty == null)
+			catch
 			{
+				// If there's an exception, return false(meaning the widget property doesnt have the stylesheet value)
 				return false;
 			}
 
-			var stylesDict = (IDictionary)stylesDictProperty.GetValue(stylesheet);
-			if (stylesDict == null)
+			if (obj == null)
 			{
 				return false;
 			}
-
-			// Get the style object, fallback to default if style name not found
-			if (!stylesDict.Contains(styleName))
-			{
-				styleName = Stylesheet.DefaultStyleName;
-			}
-
-			object obj = stylesDict[styleName];
 
 			// Navigate to the property in stylesheet using reflection (supports nested paths)
 			PropertyInfo styleProperty = null;
@@ -656,12 +549,23 @@ namespace Myra.Graphics2D.UI
 			// Compare values: if they match, property is inherited from stylesheet
 			var styleValue = styleProperty.GetValue(obj);
 			var value = property.GetValue(w);
-			if (!Equals(styleValue, value))
+
+			if (styleValue == null && value == null)
+			{
+				return true;
+			}
+			else if (styleValue == null || value == null)
 			{
 				return false;
 			}
 
-			return true;
+			if (BaseContext.IsTypeExternalAsset(property.PropertyType))
+			{
+				// Just compare strings
+				return styleValue.ToString() == value.ToString();
+			}
+
+			return Equals(styleValue, value);
 		}
 
 		/// <summary>

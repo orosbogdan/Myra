@@ -50,6 +50,7 @@ namespace MyraPad
 				{
 					_projectXmls.TryDequeue(out projectXml);
 				}
+
 				if (!string.IsNullOrEmpty(projectXml))
 				{
 					try
@@ -63,6 +64,9 @@ namespace MyraPad
 						Studio.MainForm.QueueClearExplorer();
 						Studio.MainForm.QueueSetStatusText(ex.Message);
 					}
+
+					// Skip object refresh if we reloaded the whole project
+					_objectXmls.Clear();
 				}
 
 				var objectXml = string.Empty;
@@ -78,7 +82,7 @@ namespace MyraPad
 						try
 						{
 							Studio.MainForm.QueueSetStatusText("Reloading Object...");
-							Studio.MainForm.NewObject = Studio.MainForm.Project.LoadObjectFromXml(objectXml, Studio.MainForm.AssetManager);
+							Studio.MainForm.NewObject = Project.LoadObjectFromXml(objectXml, Studio.MainForm.AssetManager, Studio.MainForm.Project.Stylesheet);
 							Studio.MainForm.QueueSetStatusText(string.Empty);
 						}
 						catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using AssetManagementBase;
-using System;
+using Myra.Graphics2D.TextureAtlases;
+using FontStashSharp;
 
 namespace Myra
 {
@@ -11,6 +12,7 @@ namespace Myra
 	{
 		private static AssetManager _assetManager;
 		private static Stylesheet _defaultStylesheet, _defaultStylesheet2x;
+		private static TextureRegion _whiteRegion;
 
 		private static AssetManager AssetManager
 		{
@@ -56,6 +58,26 @@ namespace Myra
 
 				_defaultStylesheet2x = AssetManager.LoadStylesheet("default_ui_skin_2x.xmms");
 				return _defaultStylesheet2x;
+			}
+		}
+
+		/// <summary>
+		/// Gets a default white texture region used for placeholder graphics and fills.
+		/// </summary>
+		public static TextureRegion WhiteRegion
+		{
+			get
+			{
+				if (_whiteRegion == null)
+				{
+#if !PLATFORM_AGNOSTIC
+					_whiteRegion = new TextureRegion(SpriteFontBase.GetWhite(MyraEnvironment.GraphicsDevice));
+#else
+					_whiteRegion = new TextureRegion(SpriteFontBase.GetWhite(MyraEnvironment.Platform.Renderer.TextureManager));
+#endif
+				}
+
+				return _whiteRegion;
 			}
 		}
 

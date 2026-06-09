@@ -2,22 +2,10 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Xml.Linq;
+using System.ComponentModel;
 using Myra.MML;
-using System.Collections;
-using System.Reflection;
-using FontStashSharp;
 using Myra.Graphics2D.TextureAtlases;
-using FontStashSharp.RichText;
-using Myra.Graphics2D.Brushes;
-
-#if MONOGAME || FNA
-using Microsoft.Xna.Framework;
-#elif STRIDE
-using Stride.Core.Mathematics;
-#else
-using Color = FontStashSharp.FSColor;
-using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
-#endif
+using Myra.Attributes;
 
 namespace Myra.Graphics2D.UI.Styles
 {
@@ -27,15 +15,15 @@ namespace Myra.Graphics2D.UI.Styles
 	/// </summary>
 	public class Stylesheet
 	{
-		private static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
-		private static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
+		internal static readonly Dictionary<string, string> LegacyClassNames = new Dictionary<string, string>();
+		internal static readonly Dictionary<string, string> LegacyPropertyNames = new Dictionary<string, string>();
 
 		/// <summary>
 		/// The default style identifier used when no specific style name is provided.
 		/// </summary>
 		public const string DefaultStyleName = "";
 
-		private static Stylesheet _current;
+		internal static Stylesheet _current;
 
 		/// <summary>
 		/// Gets or sets the current active stylesheet used globally.
@@ -59,55 +47,38 @@ namespace Myra.Graphics2D.UI.Styles
 			}
 		}
 
-		private readonly Dictionary<string, LabelStyle> _labelStyles = new Dictionary<string, LabelStyle>();
-		private readonly Dictionary<string, LabelStyle> _tooltipStyles = new Dictionary<string, LabelStyle>();
-		private readonly Dictionary<string, TextBoxStyle> _textBoxStyles = new Dictionary<string, TextBoxStyle>();
-		private readonly Dictionary<string, ButtonStyle> _buttonStyles = new Dictionary<string, ButtonStyle>();
-		private readonly Dictionary<string, ImageTextButtonStyle> _checkBoxStyles = new Dictionary<string, ImageTextButtonStyle>();
-		private readonly Dictionary<string, ImageTextButtonStyle> _radioButtonStyles = new Dictionary<string, ImageTextButtonStyle>();
-		private readonly Dictionary<string, SpinButtonStyle> _spinButtonStyles = new Dictionary<string, SpinButtonStyle>();
-		private readonly Dictionary<string, SliderStyle> _horizontalSliderStyles = new Dictionary<string, SliderStyle>();
-		private readonly Dictionary<string, SliderStyle> _verticalSliderStyles = new Dictionary<string, SliderStyle>();
-		private readonly Dictionary<string, ProgressBarStyle> _horizontalProgressBarStyles =
-			new Dictionary<string, ProgressBarStyle>();
-		private readonly Dictionary<string, ProgressBarStyle> _verticalProgressBarStyles =
-			new Dictionary<string, ProgressBarStyle>();
-		private readonly Dictionary<string, SeparatorStyle> _horizontalSeparatorStyles =
-			new Dictionary<string, SeparatorStyle>();
-		private readonly Dictionary<string, SeparatorStyle> _verticalSeparatorStyles =
-			new Dictionary<string, SeparatorStyle>();
-		private readonly Dictionary<string, ComboBoxStyle> _comboBoxStyles = new Dictionary<string, ComboBoxStyle>();
-		private readonly Dictionary<string, ListBoxStyle> _listBoxStyles = new Dictionary<string, ListBoxStyle>();
-		private readonly Dictionary<string, TabControlStyle> _tabControlStyles = new Dictionary<string, TabControlStyle>();
-		private readonly Dictionary<string, TreeStyle> _treeStyles = new Dictionary<string, TreeStyle>();
-		private readonly Dictionary<string, SplitPaneStyle> _horizontalSplitPaneStyles =
-			new Dictionary<string, SplitPaneStyle>();
-		private readonly Dictionary<string, SplitPaneStyle> _verticalSplitPaneStyles =
-			new Dictionary<string, SplitPaneStyle>();
-		private readonly Dictionary<string, ScrollViewerStyle> _scrollViewerStyles = new Dictionary<string, ScrollViewerStyle>();
-		private readonly Dictionary<string, MenuStyle> _horizontalMenuStyles = new Dictionary<string, MenuStyle>();
-		private readonly Dictionary<string, MenuStyle> _verticalMenuStyles = new Dictionary<string, MenuStyle>();
-		private readonly Dictionary<string, WindowStyle> _windowStyles = new Dictionary<string, WindowStyle>();
-		private readonly Dictionary<string, FileDialogStyle> _fileDialogStyles = new Dictionary<string, FileDialogStyle>();
-		private readonly Dictionary<string, ColorPickerDialogStyle> _colorPickerDialogStyles = new Dictionary<string, ColorPickerDialogStyle>();
-
 		private TextureRegion _whiteRegion;
 
 		/// <summary>
 		/// Gets the texture atlas containing all texture regions used in the stylesheet.
+		/// Skip load, since it is loaded manually
 		/// </summary>
-		public TextureRegionAtlas Atlas { get; private set; }
+		[XmlName("TextureRegionAtlas")]
+		[SkipLoad]
+		public TextureRegionAtlas Atlas { get; internal set; }
 
 		/// <summary>
 		/// Gets a white texture region from the atlas, used for solid color rendering.
 		/// </summary>
+		[Browsable(false)]
+		[XmlIgnore]
 		public TextureRegion WhiteRegion
 		{
 			get
 			{
+				if (Atlas == null)
+				{
+					// Since we switch atlases sometimes
+					// In async context, Atlas could be null at the moment of access, so we need to check it every time
+					return DefaultAssets.WhiteRegion;
+				}
+
 				if (_whiteRegion == null)
 				{
-					_whiteRegion = Atlas["white"];
+					if (!Atlas.Regions.TryGetValue("white", out _whiteRegion))
+					{
+						_whiteRegion = DefaultAssets.WhiteRegion;
+					}
 				}
 
 				return _whiteRegion;
@@ -116,8 +87,10 @@ namespace Myra.Graphics2D.UI.Styles
 
 		/// <summary>
 		/// Gets the dictionary of fonts available in this stylesheet, keyed by font name.
+		/// Skip load, since it is loaded manually
 		/// </summary>
-		public Dictionary<string, SpriteFontBase> Fonts { get; private set; }
+		[SkipLoad]
+		public Dictionary<string, StylesheetFont> Fonts { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the style applied to the desktop background.
@@ -130,8 +103,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public LabelStyle LabelStyle
 		{
-			get => GetDefaultStyle(_labelStyles);
-			set => SetDefaultStyle(_labelStyles, value);
+			get => GetDefaultStyle(LabelStyles);
+			set => SetDefaultStyle(LabelStyles, value);
 		}
 
 		/// <summary>
@@ -140,8 +113,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public LabelStyle TooltipStyle
 		{
-			get => GetDefaultStyle(_tooltipStyles);
-			set => SetDefaultStyle(_tooltipStyles, value);
+			get => GetDefaultStyle(TooltipStyles);
+			set => SetDefaultStyle(TooltipStyles, value);
 		}
 
 		/// <summary>
@@ -150,8 +123,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public TextBoxStyle TextBoxStyle
 		{
-			get => GetDefaultStyle(_textBoxStyles);
-			set => SetDefaultStyle(_textBoxStyles, value);
+			get => GetDefaultStyle(TextBoxStyles);
+			set => SetDefaultStyle(TextBoxStyles, value);
 		}
 
 		/// <summary>
@@ -160,28 +133,28 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ButtonStyle ButtonStyle
 		{
-			get => GetDefaultStyle(_buttonStyles);
-			set => SetDefaultStyle(_buttonStyles, value);
+			get => GetDefaultStyle(ButtonStyles);
+			set => SetDefaultStyle(ButtonStyles, value);
 		}
 
 		/// <summary>
 		/// Gets or sets the default style for checkbox widgets.
 		/// </summary>
 		[XmlIgnore]
-		public ImageTextButtonStyle CheckBoxStyle
+		public CheckButtonStyle CheckBoxStyle
 		{
-			get => GetDefaultStyle(_checkBoxStyles);
-			set => SetDefaultStyle(_checkBoxStyles, value);
+			get => GetDefaultStyle(CheckBoxStyles);
+			set => SetDefaultStyle(CheckBoxStyles, value);
 		}
 
 		/// <summary>
 		/// Gets or sets the default style for radio button widgets.
 		/// </summary>
 		[XmlIgnore]
-		public ImageTextButtonStyle RadioButtonStyle
+		public CheckButtonStyle RadioButtonStyle
 		{
-			get => GetDefaultStyle(_radioButtonStyles);
-			set => SetDefaultStyle(_radioButtonStyles, value);
+			get => GetDefaultStyle(RadioButtonStyles);
+			set => SetDefaultStyle(RadioButtonStyles, value);
 		}
 
 		/// <summary>
@@ -190,8 +163,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SpinButtonStyle SpinButtonStyle
 		{
-			get => GetDefaultStyle(_spinButtonStyles);
-			set => SetDefaultStyle(_spinButtonStyles, value);
+			get => GetDefaultStyle(SpinButtonStyles);
+			set => SetDefaultStyle(SpinButtonStyles, value);
 		}
 
 		/// <summary>
@@ -200,8 +173,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SliderStyle HorizontalSliderStyle
 		{
-			get => GetDefaultStyle(_horizontalSliderStyles);
-			set => SetDefaultStyle(_horizontalSliderStyles, value);
+			get => GetDefaultStyle(HorizontalSliderStyles);
+			set => SetDefaultStyle(HorizontalSliderStyles, value);
 		}
 
 		/// <summary>
@@ -210,8 +183,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SliderStyle VerticalSliderStyle
 		{
-			get => GetDefaultStyle(_verticalSliderStyles);
-			set => SetDefaultStyle(_verticalSliderStyles, value);
+			get => GetDefaultStyle(VerticalSliderStyles);
+			set => SetDefaultStyle(VerticalSliderStyles, value);
 		}
 
 		/// <summary>
@@ -220,8 +193,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ProgressBarStyle HorizontalProgressBarStyle
 		{
-			get => GetDefaultStyle(_horizontalProgressBarStyles);
-			set => SetDefaultStyle(_horizontalProgressBarStyles, value);
+			get => GetDefaultStyle(HorizontalProgressBarStyles);
+			set => SetDefaultStyle(HorizontalProgressBarStyles, value);
 		}
 
 		/// <summary>
@@ -230,8 +203,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ProgressBarStyle VerticalProgressBarStyle
 		{
-			get => GetDefaultStyle(_verticalProgressBarStyles);
-			set => SetDefaultStyle(_verticalProgressBarStyles, value);
+			get => GetDefaultStyle(VerticalProgressBarStyles);
+			set => SetDefaultStyle(VerticalProgressBarStyles, value);
 		}
 
 		/// <summary>
@@ -240,8 +213,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SeparatorStyle HorizontalSeparatorStyle
 		{
-			get => GetDefaultStyle(_horizontalSeparatorStyles);
-			set => SetDefaultStyle(_horizontalSeparatorStyles, value);
+			get => GetDefaultStyle(HorizontalSeparatorStyles);
+			set => SetDefaultStyle(HorizontalSeparatorStyles, value);
 		}
 
 		/// <summary>
@@ -250,8 +223,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SeparatorStyle VerticalSeparatorStyle
 		{
-			get => GetDefaultStyle(_verticalSeparatorStyles);
-			set => SetDefaultStyle(_verticalSeparatorStyles, value);
+			get => GetDefaultStyle(VerticalSeparatorStyles);
+			set => SetDefaultStyle(VerticalSeparatorStyles, value);
 		}
 
 		/// <summary>
@@ -260,8 +233,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ComboBoxStyle ComboBoxStyle
 		{
-			get => GetDefaultStyle(_comboBoxStyles);
-			set => SetDefaultStyle(_comboBoxStyles, value);
+			get => GetDefaultStyle(ComboBoxStyles);
+			set => SetDefaultStyle(ComboBoxStyles, value);
 		}
 
 		/// <summary>
@@ -270,8 +243,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ListBoxStyle ListBoxStyle
 		{
-			get => GetDefaultStyle(_listBoxStyles);
-			set => SetDefaultStyle(_listBoxStyles, value);
+			get => GetDefaultStyle(ListBoxStyles);
+			set => SetDefaultStyle(ListBoxStyles, value);
 		}
 
 		/// <summary>
@@ -280,8 +253,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public TabControlStyle TabControlStyle
 		{
-			get => GetDefaultStyle(_tabControlStyles);
-			set => SetDefaultStyle(_tabControlStyles, value);
+			get => GetDefaultStyle(TabControlStyles);
+			set => SetDefaultStyle(TabControlStyles, value);
 		}
 
 		/// <summary>
@@ -290,8 +263,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public TreeStyle TreeStyle
 		{
-			get => GetDefaultStyle(_treeStyles);
-			set => SetDefaultStyle(_treeStyles, value);
+			get => GetDefaultStyle(TreeStyles);
+			set => SetDefaultStyle(TreeStyles, value);
 		}
 
 		/// <summary>
@@ -300,8 +273,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SplitPaneStyle HorizontalSplitPaneStyle
 		{
-			get => GetDefaultStyle(_horizontalSplitPaneStyles);
-			set => SetDefaultStyle(_horizontalSplitPaneStyles, value);
+			get => GetDefaultStyle(HorizontalSplitPaneStyles);
+			set => SetDefaultStyle(HorizontalSplitPaneStyles, value);
 		}
 
 		/// <summary>
@@ -310,8 +283,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public SplitPaneStyle VerticalSplitPaneStyle
 		{
-			get => GetDefaultStyle(_verticalSplitPaneStyles);
-			set => SetDefaultStyle(_verticalSplitPaneStyles, value);
+			get => GetDefaultStyle(VerticalSplitPaneStyles);
+			set => SetDefaultStyle(VerticalSplitPaneStyles, value);
 		}
 
 		/// <summary>
@@ -320,8 +293,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ScrollViewerStyle ScrollViewerStyle
 		{
-			get => GetDefaultStyle(_scrollViewerStyles);
-			set => SetDefaultStyle(_scrollViewerStyles, value);
+			get => GetDefaultStyle(ScrollViewerStyles);
+			set => SetDefaultStyle(ScrollViewerStyles, value);
 		}
 
 		/// <summary>
@@ -330,8 +303,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public MenuStyle HorizontalMenuStyle
 		{
-			get => GetDefaultStyle(_horizontalMenuStyles);
-			set => SetDefaultStyle(_horizontalMenuStyles, value);
+			get => GetDefaultStyle(HorizontalMenuStyles);
+			set => SetDefaultStyle(HorizontalMenuStyles, value);
 		}
 
 		/// <summary>
@@ -340,8 +313,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public MenuStyle VerticalMenuStyle
 		{
-			get => GetDefaultStyle(_verticalMenuStyles);
-			set => SetDefaultStyle(_verticalMenuStyles, value);
+			get => GetDefaultStyle(VerticalMenuStyles);
+			set => SetDefaultStyle(VerticalMenuStyles, value);
 		}
 
 		/// <summary>
@@ -350,8 +323,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public WindowStyle WindowStyle
 		{
-			get => GetDefaultStyle(_windowStyles);
-			set => SetDefaultStyle(_windowStyles, value);
+			get => GetDefaultStyle(WindowStyles);
+			set => SetDefaultStyle(WindowStyles, value);
 		}
 
 		/// <summary>
@@ -360,8 +333,8 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public FileDialogStyle FileDialogStyle
 		{
-			get => GetDefaultStyle(_fileDialogStyles);
-			set => SetDefaultStyle(_fileDialogStyles, value);
+			get => GetDefaultStyle(FileDialogStyles);
+			set => SetDefaultStyle(FileDialogStyles, value);
 		}
 
 		/// <summary>
@@ -370,134 +343,186 @@ namespace Myra.Graphics2D.UI.Styles
 		[XmlIgnore]
 		public ColorPickerDialogStyle ColorPickerDialogStyle
 		{
-			get => GetDefaultStyle(_colorPickerDialogStyles);
-			set => SetDefaultStyle(_colorPickerDialogStyles, value);
+			get => GetDefaultStyle(ColorPickerDialogStyles);
+			set => SetDefaultStyle(ColorPickerDialogStyles, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the default style for panel widgets.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle PanelStyle
+		{
+			get => GetDefaultStyle(PanelStyles);
+			set => SetDefaultStyle(PanelStyles, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the default style for horizontal stack panels.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle HorizontalStackPanelStyle
+		{
+			get => GetDefaultStyle(HorizontalStackPanelStyles);
+
+			set => SetDefaultStyle(HorizontalStackPanelStyles, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the default style for vertical stack panels.
+		/// </summary>
+		[XmlIgnore]
+		public WidgetStyle VerticalStackPanelStyle
+		{
+			get => GetDefaultStyle(VerticalStackPanelStyles);
+
+			set => SetDefaultStyle(VerticalStackPanelStyles, value);
 		}
 
 		/// <summary>
 		/// Gets the dictionary of named label styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, LabelStyle> LabelStyles => _labelStyles;
+		public Dictionary<string, LabelStyle> LabelStyles { get; } = new Dictionary<string, LabelStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named tooltip label styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, LabelStyle> TooltipStyles => _tooltipStyles;
+		public Dictionary<string, LabelStyle> TooltipStyles { get; } = new Dictionary<string, LabelStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named text box styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, TextBoxStyle> TextBoxStyles => _textBoxStyles;
+		public Dictionary<string, TextBoxStyle> TextBoxStyles { get; } = new Dictionary<string, TextBoxStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named button styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ButtonStyle> ButtonStyles => _buttonStyles;
+		public Dictionary<string, ButtonStyle> ButtonStyles { get; } = new Dictionary<string, ButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named checkbox styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ImageTextButtonStyle> CheckBoxStyles => _checkBoxStyles;
+		public Dictionary<string, CheckButtonStyle> CheckBoxStyles { get; } = new Dictionary<string, CheckButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named radio button styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ImageTextButtonStyle> RadioButtonStyles => _radioButtonStyles;
+		public Dictionary<string, CheckButtonStyle> RadioButtonStyles { get; } = new Dictionary<string, CheckButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named spin button styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SpinButtonStyle> SpinButtonStyles => _spinButtonStyles;
+		public Dictionary<string, SpinButtonStyle> SpinButtonStyles { get; } = new Dictionary<string, SpinButtonStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named horizontal slider styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SliderStyle> HorizontalSliderStyles => _horizontalSliderStyles;
+		public Dictionary<string, SliderStyle> HorizontalSliderStyles { get; } = new Dictionary<string, SliderStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named vertical slider styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SliderStyle> VerticalSliderStyles => _verticalSliderStyles;
+		public Dictionary<string, SliderStyle> VerticalSliderStyles { get; } = new Dictionary<string, SliderStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named horizontal progress bar styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ProgressBarStyle> HorizontalProgressBarStyles => _horizontalProgressBarStyles;
+		public Dictionary<string, ProgressBarStyle> HorizontalProgressBarStyles { get; } = new Dictionary<string, ProgressBarStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named vertical progress bar styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ProgressBarStyle> VerticalProgressBarStyles => _verticalProgressBarStyles;
+		public Dictionary<string, ProgressBarStyle> VerticalProgressBarStyles { get; } = new Dictionary<string, ProgressBarStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named horizontal separator styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SeparatorStyle> HorizontalSeparatorStyles => _horizontalSeparatorStyles;
+		public Dictionary<string, SeparatorStyle> HorizontalSeparatorStyles { get; } = new Dictionary<string, SeparatorStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named vertical separator styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SeparatorStyle> VerticalSeparatorStyles => _verticalSeparatorStyles;
+		public Dictionary<string, SeparatorStyle> VerticalSeparatorStyles { get; } = new Dictionary<string, SeparatorStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named combo box styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ComboBoxStyle> ComboBoxStyles => _comboBoxStyles;
+		public Dictionary<string, ComboBoxStyle> ComboBoxStyles { get; } = new Dictionary<string, ComboBoxStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named list box styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ListBoxStyle> ListBoxStyles => _listBoxStyles;
+		public Dictionary<string, ListBoxStyle> ListBoxStyles { get; } = new Dictionary<string, ListBoxStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named tab control styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, TabControlStyle> TabControlStyles => _tabControlStyles;
+		public Dictionary<string, TabControlStyle> TabControlStyles { get; } = new Dictionary<string, TabControlStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named tree styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, TreeStyle> TreeStyles => _treeStyles;
+		public Dictionary<string, TreeStyle> TreeStyles { get; } = new Dictionary<string, TreeStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named horizontal split pane styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SplitPaneStyle> HorizontalSplitPaneStyles => _horizontalSplitPaneStyles;
+		public Dictionary<string, SplitPaneStyle> HorizontalSplitPaneStyles { get; } = new Dictionary<string, SplitPaneStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named vertical split pane styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, SplitPaneStyle> VerticalSplitPaneStyles => _verticalSplitPaneStyles;
+		public Dictionary<string, SplitPaneStyle> VerticalSplitPaneStyles { get; } = new Dictionary<string, SplitPaneStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named scroll viewer styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ScrollViewerStyle> ScrollViewerStyles => _scrollViewerStyles;
+		public Dictionary<string, ScrollViewerStyle> ScrollViewerStyles { get; } = new Dictionary<string, ScrollViewerStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named horizontal menu styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, MenuStyle> HorizontalMenuStyles => _horizontalMenuStyles;
+		public Dictionary<string, MenuStyle> HorizontalMenuStyles { get; } = new Dictionary<string, MenuStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named vertical menu styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, MenuStyle> VerticalMenuStyles => _verticalMenuStyles;
+		public Dictionary<string, MenuStyle> VerticalMenuStyles { get; } = new Dictionary<string, MenuStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named window styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, WindowStyle> WindowStyles => _windowStyles;
+		public Dictionary<string, WindowStyle> WindowStyles { get; } = new Dictionary<string, WindowStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named file dialog styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, FileDialogStyle> FileDialogStyles => _fileDialogStyles;
+		public Dictionary<string, FileDialogStyle> FileDialogStyles { get; } = new Dictionary<string, FileDialogStyle>();
 
 		/// <summary>
 		/// Gets the dictionary of named color picker dialog styles, keyed by style identifier.
 		/// </summary>
-		public Dictionary<string, ColorPickerDialogStyle> ColorPickerDialogStyles => _colorPickerDialogStyles;
+		public Dictionary<string, ColorPickerDialogStyle> ColorPickerDialogStyles { get; } = new Dictionary<string, ColorPickerDialogStyle>();
+
+		/// <summary>
+		/// Gets the dictionary of named grid styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, GridStyle> GridStyles { get; } = new Dictionary<string, GridStyle>();
+
+		/// <summary>
+		/// Gets the dictionary of named panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> PanelStyles { get; } = new Dictionary<string, WidgetStyle>();
+
+		/// <summary>
+		/// Gets the dictionary of named horizontal stack panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> HorizontalStackPanelStyles { get; } = new Dictionary<string, WidgetStyle>();
+
+		/// <summary>
+		/// Gets the dictionary of named vertical stack panel styles, keyed by style identifier.
+		/// </summary>
+		public Dictionary<string, WidgetStyle> VerticalStackPanelStyles { get; } = new Dictionary<string, WidgetStyle>();
 
 		static Stylesheet()
 		{
@@ -530,114 +555,19 @@ namespace Myra.Graphics2D.UI.Styles
 		}
 
 		/// <summary>
-		/// Loads a stylesheet from XML source code.
+		/// Converts the stylesheet to an XML string representation.
 		/// </summary>
-		/// <param name="stylesheetXml">The XML string containing the stylesheet definition.</param>
-		/// <param name="textureRegionAtlas">The texture atlas containing textures referenced in the stylesheet.</param>
-		/// <param name="fonts">A dictionary of fonts available for use in the stylesheet.</param>
-		/// <returns>A new Stylesheet instance loaded from the provided XML source.</returns>
-		public static Stylesheet LoadFromSource(string stylesheetXml,
-			TextureRegionAtlas textureRegionAtlas,
-			Dictionary<string, SpriteFontBase> fonts)
+		/// <returns>An XML string containing all styles defined in this stylesheet.</returns>
+		public string ToXml()
 		{
-			var xDoc = XDocument.Parse(stylesheetXml);
+			var saveContext = new SaveContext();
+			saveContext.PrependNamespace = false;
 
-			var colors = new Dictionary<string, Color>();
-			var colorsNode = xDoc.Root.Element("Colors");
-			if (colorsNode != null)
-			{
-				foreach (var el in colorsNode.Elements())
-				{
-					var color = ColorStorage.FromName(el.Attribute("Value").Value);
-					if (color != null)
-					{
-						colors[el.Attribute(BaseContext.IdName).Value] = color.Value;
-					}
-				}
-			}
+			var root = saveContext.Save(this);
 
-			Func<Type, string, object> resourceGetter = (t, name) =>
-			{
-				if (typeof(IBrush).IsAssignableFrom(t))
-				{
-					TextureRegion region;
+			var xDoc = new XDocument(root);
 
-					if (!textureRegionAtlas.Regions.TryGetValue(name, out region))
-					{
-						var color = ColorStorage.FromName(name);
-						if (color != null)
-						{
-							return new SolidBrush(color.Value);
-						}
-					}
-					else
-					{
-						return region;
-					}
-
-					throw new Exception(string.Format("Could not find parse IBrush '{0}'", name));
-				}
-				else if (t == typeof(SpriteFontBase))
-				{
-					return fonts[name];
-				}
-
-				throw new Exception(string.Format("Type {0} isn't supported", t.Name));
-			};
-
-			var result = new Stylesheet
-			{
-				Atlas = textureRegionAtlas,
-				Fonts = fonts
-			};
-
-			var loadContext = new LoadContext
-			{
-				Assemblies = new Dictionary<Assembly, string[]>()
-				{
-					{ typeof( WidgetStyle ).Assembly, new string[] { typeof( WidgetStyle ).Namespace } }
-				},
-				ResourceGetter = resourceGetter,
-				NodesToIgnore = new HashSet<string>(new[] { "Designer", "Colors", "Fonts" }),
-				LegacyClassNames = LegacyClassNames,
-				LegacyPropertyNames = LegacyPropertyNames,
-				Colors = colors
-			};
-
-			loadContext.Load<object>(result, xDoc.Root, null);
-
-			return result;
-		}
-
-		/// <summary>
-		/// Gets an array of style names available for the specified widget type.
-		/// </summary>
-		/// <param name="name">The widget type name (e.g., "Button", "Label", "TextBox").</param>
-		/// <returns>An array of style identifiers for the widget type, or null if the widget type has no styles defined.</returns>
-		public string[] GetStylesByWidgetName(string name)
-		{
-			// Special case
-			if (name.Contains("Button"))
-			{
-				name = "Button";
-			}
-
-			var propertyName = name + "Styles";
-			var property = GetType().GetProperty(propertyName);
-			if (property == null)
-			{
-				return null;
-			}
-
-			var dict = (IDictionary)property.GetValue(this);
-
-			var result = new List<string>();
-			foreach (var k in dict.Keys)
-			{
-				result.Add((string)k);
-			}
-
-			return result.ToArray();
+			return xDoc.ToString();
 		}
 
 		private void CloneStylesTo<T>(Stylesheet destStylesheet, Func<Stylesheet, Dictionary<string, T>> stylesGetter) where T : WidgetStyle
@@ -661,7 +591,6 @@ namespace Myra.Graphics2D.UI.Styles
 			var result = new Stylesheet
 			{
 				Atlas = Atlas,
-				Fonts = new Dictionary<string, SpriteFontBase>()
 			};
 
 			// Clone all dictionary properties
@@ -687,11 +616,17 @@ namespace Myra.Graphics2D.UI.Styles
 			CloneStylesTo(result, s => s.TabControlStyles);
 			CloneStylesTo(result, s => s.TreeStyles);
 			CloneStylesTo(result, s => s.ScrollViewerStyles);
+			CloneStylesTo(result, s => s.GridStyles);
+			CloneStylesTo(result, s => s.PanelStyles);
 			CloneStylesTo(result, s => s.WindowStyles);
 
-			foreach (var pair in Fonts)
+			if (Fonts != null)
 			{
-				result.Fonts[pair.Key] = pair.Value;
+				result.Fonts = new Dictionary<string, StylesheetFont>();
+				foreach (var pair in Fonts)
+				{
+					result.Fonts[pair.Key] = pair.Value.Clone();
+				}
 			}
 
 			return result;

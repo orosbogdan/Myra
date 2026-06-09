@@ -1,8 +1,5 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using Myra.Utility;
-using System.ComponentModel;
-using System.Xml.Serialization;
-using System;
 using Myra.Events;
 
 namespace Myra.Graphics2D.UI
@@ -12,54 +9,12 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public abstract class ButtonBase : ContentControl
 	{
-		private bool _isPressed = false;
 		private bool _isClicked = false;
-
-		/// <summary>
-		/// Gets or sets the brush used to draw the background when the button is pressed.
-		/// </summary>
-		[Category("Appearance")]
-		public virtual IBrush PressedBackground { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the button is currently in the pressed state.
-		/// </summary>
-		[Browsable(false)]
-		[XmlIgnore]
-		public virtual bool IsPressed
-		{
-			get
-			{
-				return _isPressed;
-			}
-
-			set
-			{
-				if (value == _isPressed)
-				{
-					return;
-				}
-
-				_isPressed = value;
-				OnPressedChanged();
-			}
-		}
 
 		/// <summary>
 		/// Occurs when the button is clicked.
 		/// </summary>
 		public event MyraEventHandler Click;
-
-		/// <summary>
-		/// Occurs when the pressed state changes.
-		/// </summary>
-		public event MyraEventHandler PressedChanged;
-
-		/// <summary>
-		/// Occurs when the pressed state is about to change due to user interaction. Set Cancel to true to prevent the change.
-		/// </summary>
-		public event MyraEventHandler<ValueChangingEventArgs<bool>> PressedChangingByUser;
-
 
 		/// <summary>
 		/// Simulates a click on the button by firing touch down and touch up events.
@@ -68,40 +23,6 @@ namespace Myra.Graphics2D.UI
 		{
 			OnTouchDown();
 			OnTouchUp();
-		}
-
-		/// <summary>
-		/// Raises the pressed changed event and updates the content if it implements IPressable.
-		/// </summary>
-		public virtual void OnPressedChanged()
-		{
-			PressedChanged.Invoke(this, InputEventType.PressedChanged);
-
-			var asPressable = Content as IPressable;
-			if (asPressable != null)
-			{
-				asPressable.IsPressed = IsPressed;
-			}
-		}
-
-		/// <summary>
-		/// Sets the pressed state by user interaction, raising the PressedChangingByUser event.
-		/// </summary>
-		/// <param name="value">The new pressed state value.</param>
-		protected void SetValueByUser(bool value)
-		{
-			if (value != IsPressed && PressedChangingByUser != null)
-			{
-				var args = new ValueChangingEventArgs<bool>(_isPressed, value);
-				PressedChangingByUser(this, args);
-
-				if (args.Cancel)
-				{
-					return;
-				}
-			}
-
-			IsPressed = value;
 		}
 
 		/// <summary>
@@ -152,45 +73,10 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Gets the current background brush based on button state (pressed, hovered, disabled, or normal).
+		/// Applies the specified button style to this button.
 		/// </summary>
-		/// <returns>The background brush to use for rendering.</returns>
-		public override IBrush GetCurrentBackground()
-		{
-			var result = base.GetCurrentBackground();
-
-			if (Enabled)
-			{
-				if (IsPressed && PressedBackground != null)
-				{
-					result = PressedBackground;
-				}
-				else if (UseOverBackground && OverBackground != null)
-				{
-					result = OverBackground;
-				}
-			}
-			else
-			{
-				if (DisabledBackground != null)
-				{
-					result = DisabledBackground;
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Applies the specified button style to the button.
-		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplyButtonStyle(ButtonStyle style)
-		{
-			ApplyWidgetStyle(style);
-
-			PressedBackground = style.PressedBackground;
-		}
+		/// <param name="style">The button style to apply.</param>
+		public void ApplyButtonStyle(ButtonStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Applies the specified image button style to the button.
@@ -198,23 +84,13 @@ namespace Myra.Graphics2D.UI
 		/// <param name="style">The image button style to apply.</param>
 		public void ApplyImageButtonStyle(ImageButtonStyle style)
 		{
-			ApplyButtonStyle(style);
+			ApplyStyle(style);
 
 			if (style.ImageStyle != null)
 			{
 				var image = (Image)Content;
-				image.ApplyPressableImageStyle(style.ImageStyle);
+				image.ApplyImageStyle(style.ImageStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies a named button style from the stylesheet to the button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style.</param>
-		/// <param name="name">The name of the button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplyButtonStyle(stylesheet.ButtonStyles.SafelyGetStyle(name));
 		}
 
 		/// <summary>

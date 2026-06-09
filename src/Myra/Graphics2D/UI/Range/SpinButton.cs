@@ -4,6 +4,8 @@ using System.Linq;
 using Myra.Graphics2D.UI.Styles;
 using System.Xml.Serialization;
 using Myra.Events;
+using System.Collections;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework.Input;
@@ -106,21 +108,6 @@ namespace Myra.Graphics2D.UI
 
 			set
 			{
-				if (value == null && !Nullable)
-				{
-					throw new Exception("value can't be null when Nullable is false");
-				}
-
-				if (value.HasValue && Minimum.HasValue && value.Value < Minimum.Value)
-				{
-					throw new Exception("Value can't be lower than Minimum");
-				}
-
-				if (value.HasValue && Maximum.HasValue && value.Value > Maximum.Value)
-				{
-					throw new Exception("Value can't be higher than Maximum");
-				}
-
 				if (FixedNumberSize)
 				{
 					string MajorString = "";
@@ -277,10 +264,11 @@ namespace Myra.Graphics2D.UI
 		public event MyraEventHandler<ValueChangedEventArgs<float?>> ValueChangedByUser;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified style.
+		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
-		public SpinButton(string styleName = Stylesheet.DefaultStyleName)
+		public SpinButton(Stylesheet stylesheet, string styleName = Stylesheet.DefaultStyleName)
 		{
 			ChildrenLayout = _layout;
 			AcceptsKeyboardFocus = true;
@@ -337,10 +325,20 @@ namespace Myra.Graphics2D.UI
 			_downButton.Click += DownButtonOnUp;
 			Children.Add(_downButton);
 
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 
 			Value = 0;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SpinButton"/> class with the specified style.
+		/// </summary>
+		/// <param name="styleName">The name of the style to apply. Defaults to the default stylesheet style.</param>
+		public SpinButton(string styleName = Stylesheet.DefaultStyleName) : this(Stylesheet.Current, styleName)
+		{
+		}
+
+		internal override IDictionary GetStylesDictionary(Stylesheet stylesheet) => stylesheet.SpinButtonStyles;
 
 		private static float? StringToFloat(string s)
 		{
@@ -484,37 +482,28 @@ namespace Myra.Graphics2D.UI
 		}
 
 		/// <summary>
-		/// Applies the specified spin button style to this spin button and its components.
+		/// Applies the specified widget style to this spin button.
 		/// </summary>
-		/// <param name="style">The spin button style to apply.</param>
-		public void ApplySpinButtonStyle(SpinButtonStyle style)
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
 		{
-			ApplyWidgetStyle(style);
+			base.ApplyStyle(style);
 
-			if (style.TextBoxStyle != null)
+			var spinButtonStyle = (SpinButtonStyle)style;
+			if (spinButtonStyle.TextBoxStyle != null)
 			{
-				_textField.ApplyTextBoxStyle(style.TextBoxStyle);
+				_textField.ApplyTextBoxStyle(spinButtonStyle.TextBoxStyle);
 			}
 
-			if (style.UpButtonStyle != null)
+			if (spinButtonStyle.UpButtonStyle != null)
 			{
-				_upButton.ApplyImageButtonStyle(style.UpButtonStyle);
+				_upButton.ApplyImageButtonStyle(spinButtonStyle.UpButtonStyle);
 			}
 
-			if (style.DownButtonStyle != null)
+			if (spinButtonStyle.DownButtonStyle != null)
 			{
-				_downButton.ApplyImageButtonStyle(style.DownButtonStyle);
+				_downButton.ApplyImageButtonStyle(spinButtonStyle.DownButtonStyle);
 			}
-		}
-
-		/// <summary>
-		/// Applies the style with the specified name from the stylesheet to this spin button.
-		/// </summary>
-		/// <param name="stylesheet">The stylesheet containing the style to apply.</param>
-		/// <param name="name">The name of the spin button style to apply.</param>
-		protected override void InternalSetStyle(Stylesheet stylesheet, string name)
-		{
-			ApplySpinButtonStyle(stylesheet.SpinButtonStyles.SafelyGetStyle(name));
 		}
 
 		private void UpButtonOnUp(object sender, MyraEventArgs eventArgs)

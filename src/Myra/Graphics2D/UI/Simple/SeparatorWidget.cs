@@ -31,25 +31,41 @@ namespace Myra.Graphics2D.UI
 		public abstract Orientation Orientation { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SeparatorWidget"/> class.
+		/// Initializes a new instance of the <see cref="SeparatorWidget"/> class with the specified stylesheet and style.
 		/// </summary>
+		/// <param name="stylesheet">The stylesheet to use for applying the style.</param>
 		/// <param name="styleName">The name of the style to apply to the separator.</param>
-		protected SeparatorWidget(string styleName)
+		protected SeparatorWidget(Stylesheet stylesheet, string styleName)
 		{
-			SetStyle(styleName);
+			SetStyle(stylesheet, styleName);
 		}
 
 		/// <summary>
-		/// Applies the specified style to the separator widget.
+		/// Initializes a new instance of the <see cref="SeparatorWidget"/> class.
 		/// </summary>
-		/// <param name="style">The style to apply.</param>
-		public void ApplySeparatorStyle(SeparatorStyle style)
+		/// <param name="styleName">The name of the style to apply to the separator.</param>
+		protected SeparatorWidget(string styleName) : this(Stylesheet.Current, styleName)
 		{
-			ApplyWidgetStyle(style);
-
-			Renderable = style.Image;
-			Thickness = style.Thickness;
 		}
+
+		/// <summary>
+		/// Applies the specified widget style to this separator.
+		/// </summary>
+		/// <param name="style">The widget style to apply.</param>
+		protected override void ApplyStyle(WidgetStyle style)
+		{
+			base.ApplyStyle(style);
+
+			var separatorStyle = (SeparatorStyle)style;
+			Renderable = separatorStyle.Image;
+			Thickness = separatorStyle.Thickness;
+		}
+
+		/// <summary>
+		/// Applies the specified separator style to this separator.
+		/// </summary>
+		/// <param name="style">The separator style to apply.</param>
+		public void ApplySeparatorStyle(SeparatorStyle style) => ApplyStyle(style);
 
 		/// <summary>
 		/// Measures the size required for the separator widget based on its orientation.

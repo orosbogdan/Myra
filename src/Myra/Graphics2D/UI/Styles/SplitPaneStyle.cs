@@ -1,9 +1,11 @@
-﻿namespace Myra.Graphics2D.UI.Styles
+﻿using System.ComponentModel;
+
+namespace Myra.Graphics2D.UI.Styles
 {
 	/// <summary>
 	/// Style class for split pane splitter handle buttons.
 	/// </summary>
-	public class SplitPanelButtonStyle: ButtonStyle
+	public class SplitPanelButtonStyle : ButtonStyle
 	{
 		/// <summary>
 		/// Gets or sets the width or height of the splitter handle in pixels, or null for default sizing.
@@ -21,7 +23,7 @@
 		/// Initializes a new instance of the <see cref="SplitPanelButtonStyle"/> class by copying properties from another style.
 		/// </summary>
 		/// <param name="style">The source split panel button style to copy from.</param>
-		public SplitPanelButtonStyle(SplitPanelButtonStyle style): base(style)
+		public SplitPanelButtonStyle(SplitPanelButtonStyle style) : base(style)
 		{
 			HandleSize = style.HandleSize;
 		}
@@ -39,11 +41,12 @@
 	/// <summary>
 	/// Style class that defines the visual appearance of split pane widgets.
 	/// </summary>
-	public class SplitPaneStyle: WidgetStyle
+	public class SplitPaneStyle : WidgetStyle
 	{
 		/// <summary>
 		/// Gets or sets the style applied to the split pane's splitter handle.
 		/// </summary>
+		[Browsable(false)]
 		public SplitPanelButtonStyle HandleStyle { get; set; }
 
 		/// <summary>

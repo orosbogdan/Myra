@@ -10,7 +10,7 @@ namespace Myra.Tests
 		[Fact]
 		public void LabelTest()
 		{
-			var root = Utility.LoadFromResourceRootClone("labelWithPaddings.xmmp");
+			var root = Utility.LoadProjectRootClone("labelWithPaddings.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel = (Panel)root;
@@ -30,7 +30,7 @@ namespace Myra.Tests
 		[Fact]
 		public void LabelTest2()
 		{
-			var root = Utility.LoadFromResourceRootClone("marginBorderPadding.xmmp");
+			var root = Utility.LoadProjectRootClone("marginBorderPadding.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel1 = (Panel)root;
@@ -59,7 +59,7 @@ namespace Myra.Tests
 		[Fact]
 		public void CheckButtonTest()
 		{
-			var root = Utility.LoadFromResourceRootClone("checkButton.xmmp");
+			var root = Utility.LoadProjectRootClone("checkButton.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel = (Panel)root;
@@ -83,7 +83,7 @@ namespace Myra.Tests
 		[Fact]
 		public void NewButtonsTest()
 		{
-			var root = Utility.LoadFromResourceRootClone("newButtons.xmmp");
+			var root = Utility.LoadProjectRootClone("newButtons.xmmp");
 
 			Assert.IsType<HorizontalStackPanel>(root);
 			var rootPanel = (HorizontalStackPanel)root;
@@ -131,7 +131,7 @@ namespace Myra.Tests
 		[Fact]
 		public void TextBoxTest()
 		{
-			var root = Utility.LoadFromResourceRootClone("scrolledTextField.xmmp");
+			var root = Utility.LoadProjectRootClone("scrolledTextField.xmmp");
 
 			Assert.IsType<Panel>(root);
 			var panel = (Panel)root;

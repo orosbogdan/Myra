@@ -109,7 +109,10 @@ namespace Myra.Graphics2D.UI
 			_childrenDirty = false;
 		}
 
-		private void InvalidateChildren()
+		/// <summary>
+		/// Invalidates the child layout, marking it as needing recalculation.
+		/// </summary>
+		protected virtual void InvalidateChildren()
 		{
 			InvalidateMeasure();
 			_childrenDirty = true;
