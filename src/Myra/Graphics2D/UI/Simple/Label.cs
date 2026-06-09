@@ -24,7 +24,7 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Label : Widget
 	{
-		private readonly Color?[] _colors = new Color?[(int)WidgetVisualState.Total];
+		private readonly Color?[] _colors = new Color?[WidgetVisualStateTotal];
 		private readonly RichTextLayout _richText = new RichTextLayout
 		{
 			SupportsCommands = true
@@ -180,8 +180,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public Color TextColor
 		{
-			get => _colors[(int)WidgetVisualState.Normal].Value;
-			set => _colors[(int)WidgetVisualState.Normal] = value;
+			get => _colors[WidgetVisualStateNormal].Value;
+			set => _colors[WidgetVisualStateNormal] = value;
 		}
 
 		/// <summary>
@@ -190,8 +190,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public Color? OverTextColor
 		{
-			get => _colors[(int)WidgetVisualState.Over];
-			set => _colors[(int)WidgetVisualState.Over] = value;
+			get => _colors[WidgetVisualStateOver];
+			set => _colors[WidgetVisualStateOver] = value;
 		}
 
 		/// <summary>
@@ -200,8 +200,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public Color? DisabledTextColor
 		{
-			get => _colors[(int)WidgetVisualState.Disabled];
-			set => _colors[(int)WidgetVisualState.Disabled] = value;
+			get => _colors[WidgetVisualStateDisabled];
+			set => _colors[WidgetVisualStateDisabled] = value;
 		}
 
 		/// <summary>
@@ -210,8 +210,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public Color? FocusedTextColor
 		{
-			get => _colors[(int)WidgetVisualState.Focused];
-			set => _colors[(int)WidgetVisualState.Focused] = value;
+			get => _colors[WidgetVisualStateFocused];
+			set => _colors[WidgetVisualStateFocused] = value;
 		}
 
 		/// <summary>
@@ -220,8 +220,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public Color? PressedTextColor
 		{
-			get => _colors[(int)WidgetVisualState.Pressed];
-			set => _colors[(int)WidgetVisualState.Pressed] = value;
+			get => _colors[WidgetVisualStatePressed];
+			set => _colors[WidgetVisualStatePressed] = value;
 		}
 
 		/// <summary>
@@ -409,7 +409,7 @@ namespace Myra.Graphics2D.UI
 			AutoEllipsisString = label.AutoEllipsisString;
 			TextAlign = label.TextAlign;
 
-			for (var i = 0; i < (int)WidgetVisualState.Total; ++i)
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
 			{
 				_colors[i] = label._colors[i];
 			}

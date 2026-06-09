@@ -47,18 +47,21 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public partial class Widget : BaseObject, ITransformable
 	{
-		internal enum WidgetVisualState
-		{
-			Normal = 0,
-			Disabled = 1,
-			Over = 2,
-			Focused = 3,
-			Pressed = 4,
-			Total = 5
-		}
+		/// <summary>The widget is in its normal state.</summary>
+		internal const int WidgetVisualStateNormal = 0;
+		/// <summary>The widget is disabled.</summary>
+		internal const int WidgetVisualStateDisabled = 1;
+		/// <summary>The mouse is over the widget.</summary>
+		internal const int WidgetVisualStateOver = 2;
+		/// <summary>The widget has keyboard focus.</summary>
+		internal const int WidgetVisualStateFocused = 3;
+		/// <summary>The widget is pressed/active.</summary>
+		internal const int WidgetVisualStatePressed = 4;
+		/// <summary>The total number of visual states.</summary>
+		internal const int WidgetVisualStateTotal = 5;
 
-		private readonly IBrush[] _backgrounds = new IBrush[(int)WidgetVisualState.Total];
-		private readonly IBrush[] _borders = new IBrush[(int)WidgetVisualState.Total];
+		private readonly IBrush[] _backgrounds = new IBrush[WidgetVisualStateTotal];
+		private readonly IBrush[] _borders = new IBrush[WidgetVisualStateTotal];
 		private MouseCursorType? _mouseCursorType;
 		private Vector2? _startPos;
 		private Point _startLeftTop;
@@ -680,8 +683,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush Background
 		{
-			get => _backgrounds[(int)WidgetVisualState.Normal];
-			set => _backgrounds[(int)WidgetVisualState.Normal] = value;
+			get => _backgrounds[WidgetVisualStateNormal];
+			set => _backgrounds[WidgetVisualStateNormal] = value;
 		}
 
 		/// <summary>
@@ -690,8 +693,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush OverBackground
 		{
-			get => _backgrounds[(int)WidgetVisualState.Over];
-			set => _backgrounds[(int)WidgetVisualState.Over] = value;
+			get => _backgrounds[WidgetVisualStateOver];
+			set => _backgrounds[WidgetVisualStateOver] = value;
 		}
 
 		/// <summary>
@@ -700,8 +703,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush DisabledBackground
 		{
-			get => _backgrounds[(int)WidgetVisualState.Disabled];
-			set => _backgrounds[(int)WidgetVisualState.Disabled] = value;
+			get => _backgrounds[WidgetVisualStateDisabled];
+			set => _backgrounds[WidgetVisualStateDisabled] = value;
 		}
 
 		/// <summary>
@@ -710,8 +713,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush FocusedBackground
 		{
-			get => _backgrounds[(int)WidgetVisualState.Focused];
-			set => _backgrounds[(int)WidgetVisualState.Focused] = value;
+			get => _backgrounds[WidgetVisualStateFocused];
+			set => _backgrounds[WidgetVisualStateFocused] = value;
 		}
 
 		/// <summary>
@@ -720,8 +723,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush PressedBackground
 		{
-			get => _backgrounds[(int)WidgetVisualState.Pressed];
-			set => _backgrounds[(int)WidgetVisualState.Pressed] = value;
+			get => _backgrounds[WidgetVisualStatePressed];
+			set => _backgrounds[WidgetVisualStatePressed] = value;
 		}
 
 		/// <summary>
@@ -730,8 +733,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush Border
 		{
-			get => _borders[(int)WidgetVisualState.Normal];
-			set => _borders[(int)WidgetVisualState.Normal] = value;
+			get => _borders[WidgetVisualStateNormal];
+			set => _borders[WidgetVisualStateNormal] = value;
 		}
 
 		/// <summary>
@@ -740,8 +743,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush OverBorder
 		{
-			get => _borders[(int)WidgetVisualState.Over];
-			set => _borders[(int)WidgetVisualState.Over] = value;
+			get => _borders[WidgetVisualStateOver];
+			set => _borders[WidgetVisualStateOver] = value;
 		}
 
 		/// <summary>
@@ -750,8 +753,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush DisabledBorder
 		{
-			get => _borders[(int)WidgetVisualState.Disabled];
-			set => _borders[(int)WidgetVisualState.Disabled] = value;
+			get => _borders[WidgetVisualStateDisabled];
+			set => _borders[WidgetVisualStateDisabled] = value;
 		}
 
 		/// <summary>
@@ -760,8 +763,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush FocusedBorder
 		{
-			get => _borders[(int)WidgetVisualState.Focused];
-			set => _borders[(int)WidgetVisualState.Focused] = value;
+			get => _borders[WidgetVisualStateFocused];
+			set => _borders[WidgetVisualStateFocused] = value;
 		}
 
 		/// <summary>
@@ -770,8 +773,8 @@ namespace Myra.Graphics2D.UI
 		[Category("Appearance")]
 		public IBrush PressedBorder
 		{
-			get => _borders[(int)WidgetVisualState.Pressed];
-			set => _borders[(int)WidgetVisualState.Pressed] = value;
+			get => _borders[WidgetVisualStatePressed];
+			set => _borders[WidgetVisualStatePressed] = value;
 		}
 
 		/// <summary>
@@ -790,7 +793,7 @@ namespace Myra.Graphics2D.UI
 				}
 
 				_isPressed = value;
-				foreach(var child in ChildrenCopy)
+				foreach (var child in ChildrenCopy)
 				{
 					child.IsPressed = value;
 				}
@@ -959,44 +962,44 @@ namespace Myra.Graphics2D.UI
 		/// Gets the current visual element based on the widget's state, selecting from the provided array of visual values.
 		/// </summary>
 		/// <typeparam name="T">The type of visual element.</typeparam>
-		/// <param name="values">Array of visual values indexed by WidgetVisualState.</param>
+		/// <param name="values">Array of visual values indexed by WidgetVisualState constants.</param>
 		/// <returns>The current visual element appropriate for the widget's current state.</returns>
 		protected T GetCurrentVisual<T>(T[] values)
 		{
-			var result = values[(int)WidgetVisualState.Normal];
+			var result = values[WidgetVisualStateNormal];
 
 			do
 			{
 				if (Enabled)
 				{
-					if (IsPressed && values[(int)WidgetVisualState.Pressed] != null)
+					if (IsPressed && values[WidgetVisualStatePressed] != null)
 					{
-						result = values[(int)WidgetVisualState.Pressed];
+						result = values[WidgetVisualStatePressed];
 						break;
 					}
 
-					if (IsKeyboardFocused && values[(int)WidgetVisualState.Focused] != null)
+					if (IsKeyboardFocused && values[WidgetVisualStateFocused] != null)
 					{
-						result = values[(int)WidgetVisualState.Focused];
+						result = values[WidgetVisualStateFocused];
 						break;
 					}
 
-					if (UseOverBackground && values[(int)WidgetVisualState.Over] != null)
+					if (UseOverBackground && values[WidgetVisualStateOver] != null)
 					{
-						result = values[(int)WidgetVisualState.Over];
+						result = values[WidgetVisualStateOver];
 						break;
 					}
 				}
 				else
 				{
-					if (values[(int)WidgetVisualState.Disabled] != null)
+					if (values[WidgetVisualStateDisabled] != null)
 					{
-						result = values[(int)WidgetVisualState.Disabled];
+						result = values[WidgetVisualStateDisabled];
 						break;
 					}
-					else if (values[(int)WidgetVisualState.Over] != null)
+					else if (values[WidgetVisualStateOver] != null)
 					{
-						result = values[(int)WidgetVisualState.Over];
+						result = values[WidgetVisualStateOver];
 						break;
 					}
 				}
@@ -1934,7 +1937,7 @@ namespace Myra.Graphics2D.UI
 			BeforeRender = w.BeforeRender;
 			AfterRender = w.AfterRender;
 
-			for (var i = 0; i < (int)WidgetVisualState.Total; ++i)
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
 			{
 				_backgrounds[i] = w._backgrounds[i];
 				_borders[i] = w._borders[i];

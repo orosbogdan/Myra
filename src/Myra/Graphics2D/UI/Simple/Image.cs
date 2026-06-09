@@ -36,7 +36,7 @@ namespace Myra.Graphics2D.UI
 	/// </summary>
 	public class Image : Widget
 	{
-		private IImage[] _renderables = new IImage[(int)WidgetVisualState.Total];
+		private IImage[] _renderables = new IImage[WidgetVisualStateTotal];
 
 #if MONOGAME
 		private bool _isAnisotropicFiltering = false;
@@ -68,17 +68,17 @@ namespace Myra.Graphics2D.UI
 		{
 			get
 			{
-				return _renderables[(int)WidgetVisualState.Normal];
+				return _renderables[WidgetVisualStateNormal];
 			}
 
 			set
 			{
-				if (value == _renderables[(int)WidgetVisualState.Normal])
+				if (value == _renderables[WidgetVisualStateNormal])
 				{
 					return;
 				}
 
-				_renderables[(int)WidgetVisualState.Normal] = value;
+				_renderables[WidgetVisualStateNormal] = value;
 				InvalidateMeasure();
 			}
 		}
@@ -92,17 +92,17 @@ namespace Myra.Graphics2D.UI
 		{
 			get
 			{
-				return _renderables[(int)WidgetVisualState.Disabled];
+				return _renderables[WidgetVisualStateDisabled];
 			}
 
 			set
 			{
-				if (value == _renderables[(int)WidgetVisualState.Disabled])
+				if (value == _renderables[WidgetVisualStateDisabled])
 				{
 					return;
 				}
 
-				_renderables[(int)WidgetVisualState.Disabled] = value;
+				_renderables[WidgetVisualStateDisabled] = value;
 				InvalidateMeasure();
 			}
 		}
@@ -116,17 +116,17 @@ namespace Myra.Graphics2D.UI
 		{
 			get
 			{
-				return _renderables[(int)WidgetVisualState.Over];
+				return _renderables[WidgetVisualStateOver];
 			}
 
 			set
 			{
-				if (value == _renderables[(int)WidgetVisualState.Over])
+				if (value == _renderables[WidgetVisualStateOver])
 				{
 					return;
 				}
 
-				_renderables[(int)WidgetVisualState.Over] = value;
+				_renderables[WidgetVisualStateOver] = value;
 				InvalidateMeasure();
 			}
 		}
@@ -140,17 +140,17 @@ namespace Myra.Graphics2D.UI
 		{
 			get
 			{
-				return _renderables[(int)WidgetVisualState.Focused];
+				return _renderables[WidgetVisualStateFocused];
 			}
 
 			set
 			{
-				if (value == _renderables[(int)WidgetVisualState.Focused])
+				if (value == _renderables[WidgetVisualStateFocused])
 				{
 					return;
 				}
 
-				_renderables[(int)WidgetVisualState.Focused] = value;
+				_renderables[WidgetVisualStateFocused] = value;
 				InvalidateMeasure();
 			}
 		}
@@ -164,17 +164,17 @@ namespace Myra.Graphics2D.UI
 		{
 			get
 			{
-				return _renderables[(int)WidgetVisualState.Pressed];
+				return _renderables[WidgetVisualStatePressed];
 			}
 
 			set
 			{
-				if (value == _renderables[(int)WidgetVisualState.Pressed])
+				if (value == _renderables[WidgetVisualStatePressed])
 				{
 					return;
 				}
 
-				_renderables[(int)WidgetVisualState.Pressed] = value;
+				_renderables[WidgetVisualStatePressed] = value;
 				InvalidateMeasure();
 			}
 		}
@@ -202,7 +202,7 @@ namespace Myra.Graphics2D.UI
 		{
 			var result = Mathematics.PointZero;
 
-			for (var i = 0; i < (int)WidgetVisualState.Total; ++i)
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
 			{
 				if (_renderables[i] != null)
 				{
@@ -286,7 +286,7 @@ namespace Myra.Graphics2D.UI
 			Color = image.Color;
 			ResizeMode = image.ResizeMode;
 
-			for (var i = 0; i < (int)WidgetVisualState.Total; ++i)
+			for (var i = 0; i < WidgetVisualStateTotal; ++i)
 			{
 				_renderables[i] = image._renderables[i];
 			}
