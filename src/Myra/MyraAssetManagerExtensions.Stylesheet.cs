@@ -1,9 +1,23 @@
 ﻿using Myra.Graphics2D.UI.Styles;
 using Myra.MML;
+using Myra.Utility;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Globalization;
+
+
+#if MONOGAME || FNA
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+#elif STRIDE
+using Stride.Core.Mathematics;
+using Texture2D = Stride.Graphics.Texture;
+#else
+using System.Drawing;
+using Texture2D = System.Object;
+#endif
 
 namespace AssetManagementBase
 {
@@ -11,10 +25,10 @@ namespace AssetManagementBase
 	{
 		private static AssetLoader<Stylesheet> _stylesheetLoader = (manager, assetName, settings, tag) =>
 		{
-			var result = new Stylesheet();
-
 			var xmlData = manager.ReadAsString(assetName);
 			var xDoc = XDocument.Parse(xmlData);
+
+			var result = new Stylesheet();
 
 			// Load atlas
 			var attr = xDoc.Root.Attribute("TextureRegionAtlas");
@@ -22,44 +36,47 @@ namespace AssetManagementBase
 			{
 				throw new Exception("Mandatory attribute 'TextureRegionAtlas' doesnt exist");
 			}
+
 			result.Atlas = manager.LoadTextureRegionAtlas(attr.Value);
 
 			// Load fonts
-			var fonts = new Dictionary<string, StylesheetFont>();
 			var fontsNode = xDoc.Root.Element("Fonts");
+
+			var usedSpaceAttr = fontsNode.Attribute("UsedSpace");
+			Texture2D existingTexture = null;
+			if (usedSpaceAttr != null)
+			{
+				result.Fonts.AtlasUsedSpace = usedSpaceAttr.Value.ParseRectangle();
+
+				existingTexture = result.Atlas.Texture;
+			}
 
 			foreach (var el in fontsNode.Elements())
 			{
-				if (el.Attribute(BaseContext.IdName) == null)
-				{
-					throw new Exception($"Font is missing mandatory 'Id' attribute");
-				}
-				var key = el.Attribute(BaseContext.IdName).Value;
-
-				if (el.Attribute("File") == null)
-				{
-					throw new Exception($"Font '{key}' is missing mandatory 'File' attribute");
-				}
-				var file = el.Attribute("File").Value;
-
 				var font = new StylesheetFont
 				{
-					Id = key,
-					File = file
+					Id = el.Attribute(BaseContext.IdName).Value,
+					File = el.Attribute("File").Value
 				};
 
-				if (el.Attribute("Size") != null)
+				if (font.File.EndsWith(".ttf") || font.File.EndsWith(".otf"))
 				{
-					font.Size = int.Parse(el.Attribute("Size").Value);
+					font.Size = float.Parse(el.Attribute("Size").Value, CultureInfo.InvariantCulture);
+					var fontSystem = manager.LoadFontSystem(font.File, existingTexture: existingTexture,
+						existingTextureUsedSpace: result.Fonts.AtlasUsedSpace != null ? result.Fonts.AtlasUsedSpace.Value : Rectangle.Empty);
+					font.Font = fontSystem.GetFont(font.Size.Value);
+				}
+				else if (font.File.EndsWith(".fnt"))
+				{
+					font.Font = manager.MyraLoadStaticSpriteFont(font.File);
+				}
+				else
+				{
+					throw new Exception(string.Format("Font '{0}' isn't supported", font.File));
 				}
 
-				font.Validate();
-				font.Font = manager.LoadFont(font.BuildFontFileKey(), null);
-
-				fonts[key] = font;
+				result.Fonts[font.Id] = font;
 			}
-
-			result.Fonts = fonts;
 
 			// Load rest
 			var loadContext = new LoadContext

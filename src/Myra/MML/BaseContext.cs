@@ -32,7 +32,7 @@ namespace Myra.MML
 
 		public static ITypeSerializer FindSerializer(Type type)
 		{
-			if (type.IsNullablePrimitive())
+			if (type.IsNullable())
 			{
 				type = type.GetNullableType();
 			}
@@ -76,10 +76,7 @@ namespace Myra.MML
 					propertyType.IsEnum ||
 					propertyType.IsNullableEnum() ||
 					propertyType == typeof(string) ||
-					propertyType == typeof(Vector2) ||
-					propertyType == typeof(Color) ||
-					propertyType == typeof(Color?) ||
-					propertyType == typeof(Thickness) ||
+					FindSerializer(propertyType) != null ||
 					IsTypeExternalAsset(propertyType))
 				{
 					simpleProperties.Add(property);

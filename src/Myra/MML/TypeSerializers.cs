@@ -1,5 +1,9 @@
 ﻿using System.Globalization;
 using Myra.Graphics2D;
+using Myra.Utility;
+using FontStashSharp.RichText;
+using System;
+
 
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
@@ -83,6 +87,22 @@ namespace Myra.MML
 		}
 	}
 
+	internal sealed class ColorSerializer : TypeSerializer<Color>
+	{
+		public override Color DeserializeT(string str)
+		{
+			var color = ColorStorage.FromName(str);
+			if (color == null)
+			{
+				throw new Exception(string.Format("Could not find parse color '{0}'", str));
+			}
+
+			return color.Value;
+		}
+
+		public override string SerializeT(Color obj) => obj.ToColorString();
+	}
+
 	internal sealed class ThicknessSerializer : TypeSerializer<Thickness>
 	{
 		public override Thickness DeserializeT(string str)
@@ -94,5 +114,12 @@ namespace Myra.MML
 		{
 			return obj.ToString();
 		}
+	}
+
+	internal sealed class RectangleSerializer : TypeSerializer<Rectangle>
+	{
+		public override Rectangle DeserializeT(string str) => str.ParseRectangle();
+
+		public override string SerializeT(Rectangle obj) => obj.RectangleToString();
 	}
 }

@@ -1,5 +1,5 @@
 <Stylesheet TextureRegionAtlas="default_ui_skin_2x.xmat">
-  <Fonts>
+  <Fonts UsedSpace="0, 0, 1024, 320">
     <Font Id="default-font" File="Inter-Regular.ttf" Size="40" />
     <Font Id="tooltip-font" File="Inter-Regular.ttf" Size="32" />
   </Fonts>
