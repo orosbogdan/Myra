@@ -16,7 +16,7 @@ namespace MyraViewer
 
 		public ViewerGame(string filePath)
 		{
-			_filePath = filePath;
+			_filePath = Path.GetFullPath(filePath);
 
 			// Restore state
 			_state = State.Load();
@@ -56,8 +56,9 @@ namespace MyraViewer
 			var project = assetManager.LoadProject(_filePath);
 			_desktop.Root = project.Root;
 
-#if MONOGAME
+			Window.Title = _filePath;
 
+#if MONOGAME
 			// Inform Myra that external text input is available
 			// So it stops translating Keys to chars
 			_desktop.HasExternalTextInput = true;

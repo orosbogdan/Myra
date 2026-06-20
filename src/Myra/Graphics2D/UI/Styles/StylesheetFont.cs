@@ -2,7 +2,6 @@
 using Myra.Attributes;
 using Myra.MML;
 using System;
-using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace Myra.Graphics2D.UI.Styles
@@ -33,8 +32,7 @@ namespace Myra.Graphics2D.UI.Styles
 		/// <summary>
 		/// Gets or sets the font size (only used for TTF and OTF fonts).
 		/// </summary>
-		[DefaultValue(0)]
-		public int Size { get; set; }
+		public float? Size { get; set; }
 
 		/// <summary>
 		/// Gets or sets the loaded sprite font instance.

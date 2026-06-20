@@ -176,17 +176,6 @@ namespace Myra.MML
 					break;
 				}
 
-				if (propertyType == typeof(Color) || propertyType == typeof(Color?))
-				{
-					value = ColorStorage.FromName(attr.Value);
-					if (value == null)
-					{
-						throw new Exception(string.Format("Could not find parse color '{0}'", attr.Value));
-					}
-
-					break;
-				}
-
 				if (typeof(IBrush).IsAssignableFrom(propertyType))
 				{
 					value = AssetManager.LoadBrush(attr.Value, Stylesheet);

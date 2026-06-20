@@ -86,11 +86,10 @@ namespace Myra.Graphics2D.UI.Styles
 		}
 
 		/// <summary>
-		/// Gets the dictionary of fonts available in this stylesheet, keyed by font name.
-		/// Skip load, since it is loaded manually
+		/// Gets the collection of fonts used in the stylesheet.
 		/// </summary>
 		[SkipLoad]
-		public Dictionary<string, StylesheetFont> Fonts { get; internal set; }
+		public StylesheetFontsCollection Fonts { get; } = new StylesheetFontsCollection();
 
 		/// <summary>
 		/// Gets or sets the style applied to the desktop background.
@@ -622,10 +621,9 @@ namespace Myra.Graphics2D.UI.Styles
 
 			if (Fonts != null)
 			{
-				result.Fonts = new Dictionary<string, StylesheetFont>();
-				foreach (var pair in Fonts)
+				foreach (var font in Fonts)
 				{
-					result.Fonts[pair.Key] = pair.Value.Clone();
+					result.Fonts[font.Id] = font.Clone();
 				}
 			}
 

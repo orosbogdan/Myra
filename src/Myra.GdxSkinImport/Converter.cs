@@ -71,13 +71,10 @@ public class Converter
 
 		_result.Atlas = _atlas;
 
-		var fonts = new Dictionary<string, StylesheetFont>();
 		foreach (var pair in _fonts)
 		{
-			fonts[pair.Key] = new StylesheetFont { Id = pair.Value.Id, File = pair.Value.File };
+			_result.Fonts[pair.Key] = new StylesheetFont { Id = pair.Value.Id, File = pair.Value.File };
 		}
-
-		_result.Fonts = fonts;
 
 		return _result;
 	}

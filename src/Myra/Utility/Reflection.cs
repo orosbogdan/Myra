@@ -28,17 +28,11 @@ namespace Myra.Utility
 
 		public static bool HasAttribute<T>(this MemberInfo property, bool inherit = true) where T : Attribute => FindAttribute<T>(property, inherit) != null;
 
-		public static bool IsNullablePrimitive(this Type type)
-		{
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) &&
-					type.GenericTypeArguments[0].IsPrimitive;
-		}
+		public static bool IsNullable(this Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
-		public static bool IsNullableEnum(this Type type)
-		{
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) &&
-					type.GenericTypeArguments[0].IsEnum;
-		}
+		public static bool IsNullablePrimitive(this Type type) => type.IsNullable() && type.GenericTypeArguments[0].IsPrimitive;
+
+		public static bool IsNullableEnum(this Type type) => type.IsNullable() && type.GenericTypeArguments[0].IsEnum;
 
 		public static Type GetNullableType(this Type type)
 		{

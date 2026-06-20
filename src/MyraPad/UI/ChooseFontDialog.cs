@@ -31,10 +31,8 @@ namespace MyraPad.UI
 			_keys.Clear();
 
 			var row = 0;
-			foreach (var pair in Stylesheet.Fonts)
+			foreach (var font in Stylesheet.Fonts)
 			{
-				var font = pair.Value;
-
 				if (!string.IsNullOrEmpty(_textFilter.Text) && !font.Id.Contains(_textFilter.Text))
 				{
 					continue;
@@ -68,7 +66,7 @@ namespace MyraPad.UI
 				Grid.SetRow(labelName, row);
 				_gridData.Widgets.Add(labelName);
 
-				_keys[row] = pair.Key;
+				_keys[row] = font.Id;
 
 				++row;
 			}

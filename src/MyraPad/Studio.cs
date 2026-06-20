@@ -36,13 +36,13 @@ namespace MyraPad
 			// Restore state
 			_state = State.Load();
 
-			//Load via program argument
+			// Load via program argument
 			if (args.Length > 0)
 			{
 				string filePathArg = args[0];
 				if (!string.IsNullOrEmpty(filePathArg))
 				{
-					_state.EditedFile = filePathArg;
+					_state.EditedFile = Path.GetFullPath(filePathArg);
 					_state.LastFolder = Path.GetDirectoryName(filePathArg);
 				}
 			}

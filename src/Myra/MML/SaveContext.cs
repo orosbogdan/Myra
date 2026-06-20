@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using Myra.Attributes;
 using System.Linq;
 
+
 #if MONOGAME || FNA
 using Microsoft.Xna.Framework;
 #elif STRIDE
@@ -41,16 +42,6 @@ namespace Myra.MML
 			{
 				// Custom serializer (e.g., for Vector2, Rectangle)
 				str = serializer.Serialize(value);
-			}
-			else if (propertyType == typeof(Color?))
-			{
-				// Nullable color: convert to hex string
-				str = ((Color?)value).Value.ToColorString();
-			}
-			else if (propertyType == typeof(Color))
-			{
-				// Non-nullable color: convert to hex string
-				str = ((Color)value).ToColorString();
 			}
 			else
 			{
@@ -95,9 +86,14 @@ namespace Myra.MML
 				{
 					if (asDict.Count > 0)
 					{
-						// Serialize each key-value pair in dictionary, preserving parent type context
-						var dictRoot = new XElement(propertyName);
-						el.Add(dictRoot);
+						var dictRoot = el;
+
+						// If not a [Content] property and non-empty, create wrapper element for collection
+						if (property.FindAttribute<ContentAttribute>() == null && asDict.Count > 0)
+						{
+							dictRoot = new XElement(propertyName);
+							el.Add(dictRoot);
+						}
 
 						foreach (DictionaryEntry entry in asDict)
 						{
